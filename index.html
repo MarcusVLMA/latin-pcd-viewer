@@ -1,0 +1,124 @@
+<html>
+    <head></head>
+    <body>
+        <div style="position: absolute; background-color: #ffffff;">
+            <label for="pcdInput">Carregue uma nuvem:</label><br/>
+            <input type="file"
+                id="pcdInput" name="pcdInput"
+                accept=".pcd">
+        </div>
+        <canvas id="c"></canvas>
+    </body>
+    <style>
+        html, body {
+            margin: 0;
+            height: 100%;
+        }
+
+        #c {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+    </style>
+    <script type="module">
+        import * as THREE from './js/pcd-viewer/node_modules/three/build/three.module.js';
+        
+        import { PCDLoader } from './js/pcd-viewer/node_modules/three/examples/jsm/loaders/PCDLoader.js'
+        import { TrackballControls} from './js/pcd-viewer/node_modules/three/examples/jsm/controls/TrackballControls.js'
+
+        import { GUI } from './js/pcd-viewer/node_modules/three/examples/jsm/libs/dat.gui.module.js'
+
+        import {
+            ColorGUIHelper,
+            SizeGUIHelper
+        } from './js/pcd-viewer/helpers/index.js'
+
+        var fileCounter = 1;
+        var center = new THREE.Vector3(0, 0, 0);
+
+        function main() {
+            const canvas = document.querySelector('#c');
+            const renderer = new THREE.WebGLRenderer({canvas});
+            
+            const fov = 90; const aspect = 2; const near = 0.1; const far = 300;
+            const camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
+            var controls = new TrackballControls( camera, renderer.domElement );
+
+            controls.rotateSpeed = 15.0;
+            controls.zoomSpeed = 1;
+            controls.panSpeed = 1;
+
+            controls.staticMoving = true;
+
+            controls.minDistance = 0.3;
+            controls.maxDistance = 0.3 * 100;
+
+            const scene = new THREE.Scene();
+            scene.background = new THREE.Color(0x000000);
+
+            const color = 0xFFFFFF;
+            const intensity = 1;
+            const light = new THREE.AmbientLight(color, intensity);
+            
+            scene.add(light);
+
+            function resizeRendererToDisplaySize(renderer) {
+                const canvas = renderer.domElement;
+                const width = canvas.clientWidth;
+                const height = canvas.clientHeight;
+                const needResize = canvas.width !== width || canvas.height !== height;
+                if(needResize) {
+                    renderer.setSize(width, height, false);
+                }
+                return needResize;
+            }
+
+            var input = document.getElementById("pcdInput");
+            const gui = new GUI();
+            const loader = new PCDLoader();
+
+            function addPCDFile() {
+                let inputUrl = URL.createObjectURL(input.files[0]);
+                loader.load(inputUrl, (pointCloud) => {
+                    scene.add(pointCloud);
+    
+                    let inputCenter = pointCloud.geometry.boundingSphere.center;
+                    center.x = ( center.x + inputCenter.x ) / 2;
+                    center.y = ( center.y + inputCenter.y ) / 2;
+                    center.z = ( center.z + inputCenter.z ) / 2;
+
+                    controls.target.set( center.x, center.y, center.z );
+                    controls.update();
+                    
+                    gui.addColor(new ColorGUIHelper(pointCloud.material, 'color'), 'value').name(`Color ${fileCounter}`);
+                    gui.add(new SizeGUIHelper(pointCloud.material, 'size'), 'value', 0.1, 3, 0.1).name(`Size ${fileCounter}`);
+
+                    fileCounter += 1;
+                })
+            }
+
+            input.addEventListener('change', addPCDFile);
+
+            function render(time) {
+                time *= 0.001;
+
+                if(resizeRendererToDisplaySize(renderer)) {
+                    const canvas = renderer.domElement;
+                    camera.aspect = canvas.clientWidth/canvas.clientHeight;
+                    camera.updateProjectionMatrix();
+                }
+                
+                controls.update();
+
+                renderer.render(scene, camera);
+
+                requestAnimationFrame(render);
+            }
+            
+            requestAnimationFrame(render);
+        }
+
+        main();
+    </script>
+</html>
