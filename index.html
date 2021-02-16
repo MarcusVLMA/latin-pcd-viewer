@@ -6,6 +6,10 @@
             <input type="file"
                 id="pcdInput" name="pcdInput"
                 accept=".pcd">
+            <br/>
+            <input id="findNoseTipButton" style="margin-top: 10px;" type="submit" value="Encontrar pontas dos narizes">
+            <input id="selectNoseTipButton" style="margin-top: 10px;" type="submit" value="Selecionar uma ponta de nariz">
+            <input id="downloadButton" style="margin-top: 10px;" type="submit" value="Download">
         </div>
         <canvas id="c"></canvas>
     </body>
@@ -31,28 +35,34 @@
 
         import {
             ColorGUIHelper,
-            SizeGUIHelper
+            SizeGUIHelper,
         } from './js/pcd-viewer/helpers/index.js'
 
         var fileCounter = 1;
         var center = new THREE.Vector3(0, 0, 0);
+        var findNoseTipButton = document.getElementById("findNoseTipButton");
+        var selectNoseTipButton = document.getElementById("selectNoseTipButton");
+        var downloadButton = document.getElementById("downloadButton");
 
         function main() {
             const canvas = document.querySelector('#c');
             const renderer = new THREE.WebGLRenderer({canvas});
             
-            const fov = 90; const aspect = 2; const near = 0.1; const far = 300;
+            const fov = 50; const aspect = 2; const near = 0.1; const far = 10000;
             const camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
+
+            const mouse = new THREE.Vector2();
+
             var controls = new TrackballControls( camera, renderer.domElement );
 
             controls.rotateSpeed = 15.0;
-            controls.zoomSpeed = 1;
+            controls.zoomSpeed = 3;
             controls.panSpeed = 1;
 
             controls.staticMoving = true;
 
-            controls.minDistance = 0.3;
-            controls.maxDistance = 0.3 * 100;
+            // controls.minDistance = 0.3;
+            // controls.maxDistance = 0.3 * 1000;
 
             const scene = new THREE.Scene();
             scene.background = new THREE.Color(0x000000);
@@ -74,15 +84,52 @@
                 return needResize;
             }
 
+            findNoseTipButton.addEventListener('click', findNosesTips);
+            selectNoseTipButton.addEventListener('click', toggleRaycaster);
+            downloadButton.addEventListener('click', download);
+            
+
             var input = document.getElementById("pcdInput");
             const gui = new GUI();
             const loader = new PCDLoader();
 
+            let pcdFile = {};
+            let runningRaycaster = false;
+            let selectedNosetipCloud = {};
+
             function addPCDFile() {
                 let inputUrl = URL.createObjectURL(input.files[0]);
                 loader.load(inputUrl, (pointCloud) => {
+                    if ('cloud' in pcdFile && pcdFile.cloud) {
+                        scene.remove(pcdFile.cloud);
+                    }
+                    
+                    if ('guiColor' in pcdFile && pcdFile.guiColor) {
+                        gui.remove(pcdFile.guiColor);
+                    }
+
+                    if ('guiSize' in pcdFile && pcdFile.guiSize) {
+                        gui.remove(pcdFile.guiSize);
+                    }
+
+                    if ('cloud' in selectedNosetipCloud && selectedNosetipCloud.cloud) {
+                        scene.remove(selectedNosetipCloud.cloud);
+                        delete selectedNosetipCloud.cloud;
+                    }
+                    
+                    if ('guiColor' in selectedNosetipCloud && selectedNosetipCloud.guiColor) {
+                        gui.remove(selectedNosetipCloud.guiColor);
+                        delete selectedNosetipCloud.guiColor;
+                    }
+
+                    if ('guiSize' in selectedNosetipCloud && selectedNosetipCloud.guiSize) {
+                        gui.remove(selectedNosetipCloud.guiSize);
+                        delete selectedNosetipCloud.guiSize;
+                    }
+
+                    pointCloud.material.size = 1;
                     scene.add(pointCloud);
-    
+
                     let inputCenter = pointCloud.geometry.boundingSphere.center;
                     center.x = ( center.x + inputCenter.x ) / 2;
                     center.y = ( center.y + inputCenter.y ) / 2;
@@ -91,14 +138,89 @@
                     controls.target.set( center.x, center.y, center.z );
                     controls.update();
                     
-                    gui.addColor(new ColorGUIHelper(pointCloud.material, 'color'), 'value').name(`Color ${fileCounter}`);
-                    gui.add(new SizeGUIHelper(pointCloud.material, 'size'), 'value', 0.1, 3, 0.1).name(`Size ${fileCounter}`);
+                    const guiColor = gui.addColor(new ColorGUIHelper(pointCloud.material, 'color'), 'value').name(`Color ${fileCounter}`);
+                    const guiSize = gui.add(new SizeGUIHelper(pointCloud.material, 'size'), 'value', 1, 60, 1).name(`Size ${fileCounter}`);
 
                     fileCounter += 1;
+                    pcdFile = {
+                        cloud: pointCloud,
+                        guiColor,
+                        guiSize,
+                    };
                 })
             }
 
+            function addPointCloudFromCloudLog(cloudLog, minSize = 1, maxSize = 60, step = 1) {
+                const randomColor = `#${Math.floor(Math.random()*16777215).toString(16)}`;
+                var material = new THREE.PointsMaterial({ size: 1, color: randomColor });
+                var geometry = new THREE.Geometry();
+                
+                cloudLog.cloud.forEach((point) => {
+                    geometry.vertices.push(new THREE.Vector3(point.x, point.y, point.z));
+                });
+                
+                var newCloud = new THREE.Points(geometry, material);
+                scene.add(newCloud)
+
+                gui.addColor(new ColorGUIHelper(newCloud.material, 'color'), 'value').name(cloudLog.cloud_label);
+                gui.add(new SizeGUIHelper(newCloud.material, 'size'), 'value', minSize, maxSize, step).name(cloudLog.cloud_label);
+
+                fileCounter += 1;
+            }
+
+            async function findNosesTips() {
+                let inputUrl = URL.createObjectURL(input.files[0]);
+                let formData = new FormData();
+                let sendBlob = await fetch(inputUrl).then(blob => blob.blob());
+                let sendFile = new File([sendBlob], "random");
+                formData.append('file', sendFile);
+                fetch('http://localhost:3000/find-nosetip', {method: 'POST', body: formData}).then((response) => {
+                    response.json().then((res) => {
+                        res.intermediary_clouds.forEach((cloudLog) => addPointCloudFromCloudLog(cloudLog));
+                        const noseTipCloudLog = {
+                            cloud_label: 'Nose tip',
+                            cloud: [{x: res.nosetip.x, y: res.nosetip.y, z: res.nosetip.z}]
+                        };
+                        addPointCloudFromCloudLog(noseTipCloudLog, 1, 100, 1);
+                    })
+                });
+            }
+
+            function toggleRaycaster() {
+                if(runningRaycaster) {
+                    canvas.removeEventListener('click', runRaycast);
+                } else {
+                    canvas.addEventListener('click', runRaycast);
+                }
+
+                runningRaycaster = !runningRaycaster;
+            }
+
+            function download() {
+                var saveData = (function () {
+                var a = document.createElement("a");
+                document.body.appendChild(a);
+                a.style = "display: none";
+                return function (data, fileName) {
+                    var blob = new Blob([data], {type: "octet/stream"}),
+                        url = window.URL.createObjectURL(blob);
+                    a.href = url;
+                    a.download = fileName;
+                    a.click();
+                    window.URL.revokeObjectURL(url);
+                    };
+                }());
+
+                let baseFile = "# .PCD v0.7 - Point Cloud Data file format\nVERSION 0.7\nFIELDS x y z\nSIZE 4 4 4\nTYPE F F F\nCOUNT 1 1 1\nWIDTH 1\nHEIGHT 1\nVIEWPOINT 0 0 0 1 0 0 0\nPOINTS 1\nDATA ascii";
+                baseFile = baseFile + `\n${selectedNosetipCloud.point.x} ${selectedNosetipCloud.point.y} ${selectedNosetipCloud.point.z}`
+                
+                saveData(baseFile, `nosetip_${input.files[0].name}`);
+            }
+
             input.addEventListener('change', addPCDFile);
+
+            const raycaster = new THREE.Raycaster();
+            raycaster.params.Points.threshold = 0.5;
 
             function render(time) {
                 time *= 0.001;
@@ -108,15 +230,69 @@
                     camera.aspect = canvas.clientWidth/canvas.clientHeight;
                     camera.updateProjectionMatrix();
                 }
-                
-                controls.update();
 
+                controls.update();
                 renderer.render(scene, camera);
 
                 requestAnimationFrame(render);
             }
             
             requestAnimationFrame(render);
+
+            function runRaycast(e) {
+                mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
+                mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
+                
+                raycaster.setFromCamera(mouse, camera);
+
+                var intersects = raycaster.intersectObject(pcdFile.cloud);
+                if (intersects.length) {
+                    if ('cloud' in selectedNosetipCloud && selectedNosetipCloud.cloud) {
+                        scene.remove(selectedNosetipCloud.cloud);
+                    }
+                    
+                    if ('guiColor' in selectedNosetipCloud && selectedNosetipCloud.guiColor) {
+                        gui.remove(selectedNosetipCloud.guiColor);
+                    }
+
+                    if ('guiSize' in selectedNosetipCloud && selectedNosetipCloud.guiSize) {
+                        gui.remove(selectedNosetipCloud.guiSize);
+                    }
+
+                    var newColor = new THREE.Color();
+                    newColor.setRGB( 1, 1, 1 );
+
+                    var index = intersects[0].index;
+
+                    toggleRaycaster();
+
+                    var material = new THREE.PointsMaterial({ size: 5, color: '#FFFFFF' });
+                    var geometry = new THREE.Geometry();
+                    
+                    const point = {
+                        x: pcdFile.cloud.geometry.getAttribute('position').getX(index), 
+                        y: pcdFile.cloud.geometry.getAttribute('position').getY(index),
+                        z: pcdFile.cloud.geometry.getAttribute('position').getZ(index)
+                    }
+                    geometry.vertices.push(new THREE.Vector3(point.x, point.y, point.z));
+
+                    
+                    var newCloud = new THREE.Points(geometry, material);
+                    scene.add(newCloud)
+
+                    const guiColor = gui.addColor(new ColorGUIHelper(newCloud.material, 'color'), 'value').name(`Selected point ${fileCounter}`);
+                    const guiSize = gui.add(new SizeGUIHelper(newCloud.material, 'size'), 'value', 1, 100, 1).name(`Selected point ${fileCounter}`);
+
+                    selectedNosetipCloud = {
+                        cloud: newCloud,
+                        point,
+                        guiColor,
+                        guiSize
+                    }
+
+                    fileCounter += 1;
+                }
+            }
         }
 
         main();

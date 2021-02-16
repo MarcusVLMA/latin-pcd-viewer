@@ -1,3 +1,5 @@
+import * as THREE from '../node_modules/three/build/three.module.js';
+
 export class ColorGUIHelper {
     constructor(object, prop) {
         this.object = object;
