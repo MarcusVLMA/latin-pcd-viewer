@@ -13,8 +13,8 @@ app.get("/", (req, res) => {
 });
 
 app.post('/find-nosetip', (req, res, next) => {
-    const form = formidable({ multiples: false });
     
+    const form = formidable({ multiples: true });
     form.on('fileBegin', (name, file) => {
         file.path = `./uploaded_files/${file.name}`;
     });
@@ -24,7 +24,33 @@ app.post('/find-nosetip', (req, res, next) => {
           next(err);
           return;
         }
-        let response = nosetip_finder.findNoseTip(file.file.path);
+        
+        let flexibilizeThresholds = fields.flexibilizeThresholds === "true";
+        let flexibilizeCrop = fields.flexibilizeCrop === "true";
+        let computationRadiusOrKSize = fields.computationRadiusOrKSize;
+        let computationMethod = fields.computationMethod;
+        let minGaussianCurvature = fields.minGaussianCurvature;
+        let shapeIndexLimit = fields.shapeIndexLimit;
+        let minCropSize = fields.minCropSize;
+        let maxCropSize = fields.maxCropSize;
+        let minPointsToContinue = fields.minPointsToContinue;
+        let removeIsolatedPointsRadius = fields.removeIsolatedPointsRadius;
+        let removeIsolatedPointsThreshold = fields.removeIsolatedPointsThreshold;
+        
+        let response = nosetip_finder.findNoseTip(
+          file.file.path,
+          flexibilizeThresholds,
+          flexibilizeCrop,
+          computationRadiusOrKSize,
+          computationMethod,
+          minGaussianCurvature,
+          shapeIndexLimit,
+          minCropSize,
+          maxCropSize,
+          minPointsToContinue,
+          removeIsolatedPointsRadius,
+          removeIsolatedPointsThreshold,
+          );
         
         fs.unlink(file.file.path, (error) => {
           if(error) throw error;
