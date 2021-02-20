@@ -36,6 +36,7 @@ app.post('/find-nosetip', (req, res, next) => {
         let minPointsToContinue = fields.minPointsToContinue;
         let removeIsolatedPointsRadius = fields.removeIsolatedPointsRadius;
         let removeIsolatedPointsThreshold = fields.removeIsolatedPointsThreshold;
+        let pointIndexToAnalyze = fields.pointIndexToAnalyze;
         
         let response = nosetip_finder.findNoseTip(
           file.file.path,
@@ -50,6 +51,7 @@ app.post('/find-nosetip', (req, res, next) => {
           minPointsToContinue,
           removeIsolatedPointsRadius,
           removeIsolatedPointsThreshold,
+          pointIndexToAnalyze,
           );
         
         fs.unlink(file.file.path, (error) => {

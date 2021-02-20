@@ -19,33 +19,34 @@
                 <input type="checkbox" id="flexibilizeCrop" name="flexibilizeCrop" checked="checked">
                 <br/>
                 <label for="computationMethod">Método de computação:</label>
-                <input type="text" id="computationMethod" name="computationMethod" value="radius">
+                <input type="text" id="computationMethod" name="computationMethod" value="radius" style="width: 80px">
                 <br/>
                 <label for="computationRadiusOrKSize">Valor K usado para computar Normal e PC:</label>
-                <input type="number" id="computationRadiusOrKSize" name="computationRadiusOrKSize" value="13">
+                <input type="number" id="computationRadiusOrKSize" name="computationRadiusOrKSize" value="13" style="width: 80px">
                 <br/>
                 <label for="minGaussianCurvature">GC mínima</label>
-                <input type="number" id="minGaussianCurvature" name="minGaussianCurvature" value="0.0015">
+                <input type="number" id="minGaussianCurvature" name="minGaussianCurvature" value="0.0015" style="width: 80px">
                 <br/>
                 <label for="shapeIndexLimit">Limite de SI:</label>
-                <input type="number" id="shapeIndexLimit" name="shapeIndexLimit" value="-0.85">
+                <input type="number" id="shapeIndexLimit" name="shapeIndexLimit" value="-0.85" style="width: 80px">
                 <br/>
                 <label for="minCropSize">Tamanho de Crop mínimo:</label>
-                <input type="number" id="minCropSize" name="minCropSize" value="100">
+                <input type="number" id="minCropSize" name="minCropSize" value="100" style="width: 80px">
                 <br/>
                 <label for="maxCropSize">Tamanho de Crop máximo:</label>
-                <input type="number" id="maxCropSize" name="maxCropSize" value="240">
+                <input type="number" id="maxCropSize" name="maxCropSize" value="240" style="width: 80px">
                 <br/>
                 <label for="minPointsToContinue">Quantidade mínima de pontos após filtros:</label>
-                <input type="number" id="minPointsToContinue" name="minPointsToContinue" value="15">
+                <input type="number" id="minPointsToContinue" name="minPointsToContinue" value="15" style="width: 80px">
                 <br/>
                 <label for="removeIsolatedPointsRadius">Raio de busca de pontos isolados:</label>
-                <input type="number" id="removeIsolatedPointsRadius" name="removeIsolatedPointsRadius" value="5">
+                <input type="number" id="removeIsolatedPointsRadius" name="removeIsolatedPointsRadius" value="5" style="width: 80px">
                 <br/>
                 <label for="removeIsolatedPointsThreshold">Threshold para pontos isolados:</label>
-                <input type="number" id="removeIsolatedPointsThreshold" name="removeIsolatedPointsThreshold" value="6">
+                <input type="number" id="removeIsolatedPointsThreshold" name="removeIsolatedPointsThreshold" value="6" style="width: 80px">
                 <br/>
                 <input id="findNoseTipButton" style="margin-top: 10px;" type="submit" value="Encontrar pontas dos narizes">
+                <div id="pointAnalysisResult"></div>
             </div>
         </div>
         <canvas id="c"></canvas>
@@ -134,6 +135,7 @@
             let cloudLogFiles = [];
             let runningRaycaster = false;
             let selectedNosetipCloud = {};
+            let pointAnalysis = {};
 
             function cleanPCDFile() {
                 if ('cloud' in pcdFile && pcdFile.cloud) {
@@ -151,6 +153,12 @@
                 pcdFile = {};
             }
 
+            function cleanPointAnalysis() {
+                pointAnalysis = {};
+                var analysisContainer = document.getElementById("pointAnalysisResult");
+                analysisContainer.innerHTML = '';
+            }
+
             function cleanSelectedNosetipCloud() {
                 if ('cloud' in selectedNosetipCloud && selectedNosetipCloud.cloud) {
                     scene.remove(selectedNosetipCloud.cloud);
@@ -166,6 +174,9 @@
                     gui.remove(selectedNosetipCloud.guiSize);
                     delete selectedNosetipCloud.guiSize;
                 }
+
+                selectedNosetipCloud = {};
+                cleanPointAnalysis();
             }
 
             function cleanCloudLogEntries() {
@@ -182,6 +193,17 @@
                 cleanPCDFile();
                 cleanSelectedNosetipCloud();
                 cleanCloudLogEntries();
+            }
+
+            function insertPointAnalysisOnHTML() {
+                var analysisContainer = document.getElementById("pointAnalysisResult");
+                analysisContainer.innerHTML = `
+                <h3>Point Analysis result</h3>
+                <span><b>Gaussian Curvature: </b>${pointAnalysis.gaussian_curvature.toFixed(5)}</span><br/>
+                <span><b>Shape Index: </b>${pointAnalysis.shape_index.toFixed(5)}</span><br/>
+                <span><b>Normal (x,y,z): </b>(${pointAnalysis.normal.x.toFixed(5)}, ${pointAnalysis.normal.y.toFixed(5)}, ${pointAnalysis.normal.z.toFixed(5)})</span><br/>
+                <span><b>PCs (k1,k2): </b>(${pointAnalysis.principal_curvatures.k1.toFixed(5)}, ${pointAnalysis.principal_curvatures.k2.toFixed(5)})</span><br/>
+                `;
             }
 
             function addPCDFile() {
@@ -243,6 +265,7 @@
 
             async function findNosesTips() {
                 cleanCloudLogEntries();
+                cleanPointAnalysis();
 
                 let inputUrl = URL.createObjectURL(input.files[0]);
                 let formData = new FormData();
@@ -275,10 +298,17 @@
                 formData.append('minPointsToContinue', minPointsToContinue.value);
                 formData.append('removeIsolatedPointsRadius', removeIsolatedPointsRadius.value);
                 formData.append('removeIsolatedPointsThreshold', removeIsolatedPointsThreshold.value);
-                
+
+                if('index' in selectedNosetipCloud) {
+                    formData.append('pointIndexToAnalyze', selectedNosetipCloud.index);
+                }
 
                 fetch('http://localhost:3000/find-nosetip', {method: 'POST', body: formData}).then((response) => {
                     response.json().then((res) => {
+                        if(res.point_analysis) {
+                            pointAnalysis = res.point_analysis;
+                            insertPointAnalysisOnHTML();
+                        }
                         res.intermediary_clouds.forEach((cloudLog) => addPointCloudFromCloudLog(cloudLog));
                         const noseTipCloudLog = {
                             cloud_label: 'Nose tip',
@@ -350,17 +380,8 @@
 
                 var intersects = raycaster.intersectObject(pcdFile.cloud);
                 if (intersects.length) {
-                    if ('cloud' in selectedNosetipCloud && selectedNosetipCloud.cloud) {
-                        scene.remove(selectedNosetipCloud.cloud);
-                    }
-                    
-                    if ('guiColor' in selectedNosetipCloud && selectedNosetipCloud.guiColor) {
-                        gui.remove(selectedNosetipCloud.guiColor);
-                    }
-
-                    if ('guiSize' in selectedNosetipCloud && selectedNosetipCloud.guiSize) {
-                        gui.remove(selectedNosetipCloud.guiSize);
-                    }
+                    cleanSelectedNosetipCloud();
+                    cleanPointAnalysis();
 
                     var newColor = new THREE.Color();
                     newColor.setRGB( 1, 1, 1 );
@@ -378,17 +399,17 @@
                         z: pcdFile.cloud.geometry.getAttribute('position').getZ(index)
                     }
                     geometry.vertices.push(new THREE.Vector3(point.x, point.y, point.z));
-
                     
                     var newCloud = new THREE.Points(geometry, material);
                     scene.add(newCloud)
 
                     const guiColor = gui.addColor(new ColorGUIHelper(newCloud.material, 'color'), 'value').name(`Selected point ${fileCounter}`);
-                    const guiSize = gui.add(new SizeGUIHelper(newCloud.material, 'size'), 'value', 30, 150, 1).name(`Selected point ${fileCounter}`);
+                    const guiSize = gui.add(new SizeGUIHelper(newCloud.material, 'size'), 'value', 150, 400, 1).name(`Selected point ${fileCounter}`);
 
                     selectedNosetipCloud = {
                         cloud: newCloud,
                         point,
+                        index,
                         guiColor,
                         guiSize
                     }
