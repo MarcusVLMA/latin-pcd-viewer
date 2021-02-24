@@ -48,6 +48,7 @@
                 <input id="findNoseTipButton" style="margin-top: 10px;" type="submit" value="Encontrar pontas dos narizes">
                 <div id="pointAnalysisResult"></div>
             </div>
+            <div id="avaliableCloudsContainer" style="background-color: #ffffff; margin-top: 24px;"></div>
         </div>
         <canvas id="c"></canvas>
     </body>
@@ -82,7 +83,11 @@
         var selectNoseTipButton = document.getElementById("selectNoseTipButton");
         var downloadButton = document.getElementById("downloadButton");
 
+        var avaliableClouds = [];
+
         function main() {
+            loadAvaliableClouds();
+
             const canvas = document.querySelector('#c');
             const renderer = new THREE.WebGLRenderer({canvas});
             
@@ -122,7 +127,7 @@
                 return needResize;
             }
 
-            findNoseTipButton.addEventListener('click', findNosesTips);
+            findNoseTipButton.addEventListener('click', () => findNosesTips());
             selectNoseTipButton.addEventListener('click', toggleRaycaster);
             downloadButton.addEventListener('click', download);
             
@@ -249,7 +254,18 @@
                 });
                 
                 var newCloud = new THREE.Points(geometry, material);
-                scene.add(newCloud)
+                scene.add(newCloud);
+
+                if(!pcdFile || (Object.keys(pcdFile).length === 0 && pcdFile.constructor === Object)) {
+                    newCloud.geometry.computeBoundingSphere();
+                    let inputCenter = newCloud.geometry.boundingSphere.center;
+                    center.x = inputCenter.x;
+                    center.y = inputCenter.y;
+                    center.z = inputCenter.z;
+
+                    controls.target.set( center.x, center.y, center.z );
+                    controls.update();
+                }
 
                 const guiColor = gui.addColor(new ColorGUIHelper(newCloud.material, 'color'), 'value').name(cloudLog.cloud_label);
                 const guiSize = gui.add(new SizeGUIHelper(newCloud.material, 'size'), 'value', minSize, maxSize, step).name(cloudLog.cloud_label);
@@ -263,17 +279,20 @@
                 fileCounter += 1;
             }
 
-            async function findNosesTips() {
+            async function findNosesTips(cloudName = "") {
                 cleanCloudLogEntries();
                 cleanPointAnalysis();
 
-                let inputUrl = URL.createObjectURL(input.files[0]);
                 let formData = new FormData();
-                let sendBlob = await fetch(inputUrl).then(blob => blob.blob());
-                
-                let randomFilename = Math.random().toString(36).substring(7) + ".pcd"
-                let sendFile = new File([sendBlob], randomFilename);
-                formData.append('file', sendFile);
+
+                if(!cloudName) {
+                    let inputUrl = URL.createObjectURL(input.files[0]);
+                    let sendBlob = await fetch(inputUrl).then(blob => blob.blob());
+                    
+                    let randomFilename = Math.random().toString(36).substring(7) + ".pcd"
+                    let sendFile = new File([sendBlob], randomFilename);
+                    formData.append('file', sendFile);
+                }
                 
                 let flexibilizeThresholds = document.getElementById("flexibilizeThresholds");
                 let flexibilizeCrop = document.getElementById("flexibilizeCrop");
@@ -303,12 +322,13 @@
                     formData.append('pointIndexToAnalyze', selectedNosetipCloud.index);
                 }
 
-                fetch('http://localhost:3000/find-nosetip', {method: 'POST', body: formData}).then((response) => {
+                fetch(`http://localhost:3000/find-nosetip/${cloudName}`, {method: 'POST', body: formData}).then((response) => {
                     response.json().then((res) => {
                         if(res.point_analysis) {
                             pointAnalysis = res.point_analysis;
                             insertPointAnalysisOnHTML();
                         }
+                        
                         res.intermediary_clouds.forEach((cloudLog) => addPointCloudFromCloudLog(cloudLog));
                         const noseTipCloudLog = {
                             cloud_label: 'Nose tip',
@@ -416,6 +436,59 @@
 
                     fileCounter += 1;
                 }
+            }
+            
+            let lastExploredAvaliableCloud = "";
+
+            function setAvaliableCloudsHTML() {
+                const avaliableCloudsContainer = document.getElementById("avaliableCloudsContainer");
+
+                for(let cloudName of avaliableClouds) {
+                    var input = document.createElement("input");
+                    input.type = "submit";
+                    input.id = "input-" + cloudName;
+                    input.value = "Explorar";
+                    input.style = "margin-right: 8px; margin-top: 8px;";
+
+                    var label = document.createElement("label");
+                    label.for = cloudName;
+                    label.id = "label-" + cloudName;
+                    label.innerText = cloudName;
+
+                    input.addEventListener('click', () => {
+                        if(lastExploredAvaliableCloud) {
+                            const oldLabel = document.getElementById("label-" + lastExploredAvaliableCloud);
+                            oldLabel.style = "";
+                        }
+
+                        lastExploredAvaliableCloud = cloudName;
+                        const newLabel = document.getElementById("label-" + lastExploredAvaliableCloud);
+                        newLabel.style = "font-weight: bold;"
+
+
+                        cleanPCDFile();
+                        findNosesTips(cloudName);
+                    });
+
+                    avaliableCloudsContainer.appendChild(input);
+                    avaliableCloudsContainer.appendChild(label);
+
+                    let br = document.createElement("br");
+                    avaliableCloudsContainer.appendChild(br);
+                }
+            }
+
+            function loadAvaliableClouds() {
+                fetch('http://localhost:3000/avaliable-clouds', {method: 'GET'}).then((response) => {
+                        response.json().then((res) => {
+                            if(res.length) {
+                                res.forEach((cloudName) => {
+                                    avaliableClouds.push(cloudName);
+                                });
+                                setAvaliableCloudsHTML();
+                            }
+                        })
+                    });
             }
         }
 

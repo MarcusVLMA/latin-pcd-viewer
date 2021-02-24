@@ -4,12 +4,26 @@ const formidable = require('formidable')
 const nosetip_finder = require('./nosetip_finder')
 const app = express();
 
+const AVALIABLE_CLOUDS_DIRECTORY = './avaliable_clouds';
+
 app.use(express.static('public'));
 
 app.get('/favicon.ico', (req, res) => res.sendStatus(204));
 
 app.get("/", (req, res) => {
     res.sendFile(__dirname + '/index.html');
+});
+
+app.get("/avaliable-clouds", (req, res) => {
+  const avaliableClouds = [];
+
+  fs.readdirSync(AVALIABLE_CLOUDS_DIRECTORY).forEach(file => {
+    if(file !== "README.md") {
+      avaliableClouds.push(file);
+    }
+  });
+
+  res.json(avaliableClouds);
 });
 
 app.post('/find-nosetip', (req, res, next) => {
@@ -60,6 +74,49 @@ app.post('/find-nosetip', (req, res, next) => {
           res.json(response);
         });
       });
+});
+
+app.post('/find-nosetip/:filename', (req, res, next) => {
+  const form = formidable({ multiples: true });
+
+  form.parse(req, async (err, fields, file) => {
+      if (err) {
+        next(err);
+        return;
+      }
+      
+      let filePath = `./avaliable_clouds/${req.params.filename}`;
+      let flexibilizeThresholds = fields.flexibilizeThresholds === "true";
+      let flexibilizeCrop = fields.flexibilizeCrop === "true";
+      let computationRadiusOrKSize = fields.computationRadiusOrKSize;
+      let computationMethod = fields.computationMethod;
+      let minGaussianCurvature = fields.minGaussianCurvature;
+      let shapeIndexLimit = fields.shapeIndexLimit;
+      let minCropSize = fields.minCropSize;
+      let maxCropSize = fields.maxCropSize;
+      let minPointsToContinue = fields.minPointsToContinue;
+      let removeIsolatedPointsRadius = fields.removeIsolatedPointsRadius;
+      let removeIsolatedPointsThreshold = fields.removeIsolatedPointsThreshold;
+      let pointIndexToAnalyze = fields.pointIndexToAnalyze;
+
+      let response = await nosetip_finder.findNoseTip(
+        filePath,
+        flexibilizeThresholds,
+        flexibilizeCrop,
+        computationRadiusOrKSize,
+        computationMethod,
+        minGaussianCurvature,
+        shapeIndexLimit,
+        minCropSize,
+        maxCropSize,
+        minPointsToContinue,
+        removeIsolatedPointsRadius,
+        removeIsolatedPointsThreshold,
+        pointIndexToAnalyze,
+        );
+      
+      res.json(response);
+    });
 });
 
 app.listen(process.env.PORT || 3000);
