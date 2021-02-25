@@ -1,7 +1,9 @@
 const express = require('express');
-const fs = require('fs')
-const formidable = require('formidable')
-const nosetip_finder = require('./nosetip_finder')
+const fs = require('fs');
+const path = require('path');
+const formidable = require('formidable');
+const nosetip_finder = require('./nosetip_finder');
+const point_explorer = require('./point_explorer');
 const app = express();
 
 const AVALIABLE_CLOUDS_DIRECTORY = './avaliable_clouds';
@@ -15,19 +17,56 @@ app.get("/", (req, res) => {
 });
 
 app.get("/avaliable-clouds", (req, res) => {
-  const avaliableClouds = [];
+  const avaliableClouds = {};
 
   fs.readdirSync(AVALIABLE_CLOUDS_DIRECTORY).forEach(file => {
-    if(file !== "README.md") {
-      avaliableClouds.push(file);
+    if(fs.lstatSync(path.resolve(AVALIABLE_CLOUDS_DIRECTORY, file)).isDirectory()) {
+      avaliableClouds[file] = [];
+      fs.readdirSync(AVALIABLE_CLOUDS_DIRECTORY + "/" + file).forEach(innerfile => {
+        avaliableClouds[file].push(innerfile);
+      });
     }
   });
 
   res.json(avaliableClouds);
 });
 
-app.post('/find-nosetip', (req, res, next) => {
+app.get("/avaliable-clouds/:folder/:cloud", (req, res) => {
+  res.sendFile(__dirname + AVALIABLE_CLOUDS_DIRECTORY.substring(1) + "/" + req.params.folder + "/" + req.params.cloud);
+});
+
+app.post('/point-analysis', (req, res) => {
+  const form = formidable({ multiples: true });
+  form.on('fileBegin', (name, file) => {
+    file.path = `./uploaded_files/${file.name}`;
+  });
+
+  form.parse(req, (err, fields, file) => {
+    if(err) {
+      next(err);
+      return;
+    }
     
+    let computationMethod = fields.computationMethod;
+    let computationSize = fields.computationSize;
+    let pointIndexToAnalyze = fields.pointIndexToAnalyze;
+
+    let response = point_explorer.getPointAnalysis(
+      file.file.path,
+      computationMethod,
+      computationSize,
+      pointIndexToAnalyze
+    );
+
+    fs.unlink(file.file.path, (error) => {
+      if(error) throw error;
+      
+      res.json(response);
+    });
+  });
+});
+
+app.post('/find-nosetip', (req, res, next) => {
     const form = formidable({ multiples: true });
     form.on('fileBegin', (name, file) => {
         file.path = `./uploaded_files/${file.name}`;
@@ -76,7 +115,7 @@ app.post('/find-nosetip', (req, res, next) => {
       });
 });
 
-app.post('/find-nosetip/:filename', (req, res, next) => {
+app.post('/find-nosetip/:folder/:filename', (req, res, next) => {
   const form = formidable({ multiples: true });
 
   form.parse(req, async (err, fields, file) => {
@@ -85,7 +124,7 @@ app.post('/find-nosetip/:filename', (req, res, next) => {
         return;
       }
       
-      let filePath = `./avaliable_clouds/${req.params.filename}`;
+      let filePath = `./avaliable_clouds/${req.params.folder}/${req.params.filename}`;
       let flexibilizeThresholds = fields.flexibilizeThresholds === "true";
       let flexibilizeCrop = fields.flexibilizeCrop === "true";
       let computationRadiusOrKSize = fields.computationRadiusOrKSize;

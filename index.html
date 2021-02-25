@@ -1,17 +1,33 @@
 <html>
-    <head></head>
+    <head>
+        <title>LATIN PCD Viewer</title>
+    </head>
     <body>
-        <div style="position: absolute;">
+        <div style="position: absolute; height: 100%; overflow-y: scroll;">
             <div style="background-color: #ffffff;">
                 <label for="pcdInput">Carregue uma nuvem:</label><br/>
                 <input type="file"
                     id="pcdInput" name="pcdInput"
                     accept=".pcd">
                 <br/>
-                <input id="selectNoseTipButton" style="margin-top: 10px;" type="submit" value="Selecionar um ponto">
+            </div>
+            <div id="avaliableFoldersContainer"></div>
+            <div id="avaliableCloudsContainer" style="background-color: #ffffff;"></div>
+            <div style="background-color: #ffffff; margin-top: 24px;">
+                <h4>Análise de ponto</h4>
+                <label for="pointAnalysisComputationMethod">Método de computação:</label>
+                <input type="text" id="pointAnalysisComputationMethod" name="pointAnalysisComputationMethod" value="radius" style="width: 80px">
+                <br/>
+                <label for="pointAnalysisComputationRadiusOrKSize">Valor K usado para computar Normal e PC:</label>
+                <input type="number" id="pointAnalysisComputationRadiusOrKSize" name="pointAnalysisComputationRadiusOrKSize" value="13" style="width: 80px">
+                <br/>
+                <input id="selectNoseTipButton" style="margin-top: 10px;" type="submit" value="Selecionar ponto">
+                <input id="analysisNoseTipButton" style="margin-top: 10px;" type="submit" value="Analisar">
                 <input id="downloadButton" style="margin-top: 10px;" type="submit" value="Download">
+                <div id="pointAnalysisResult"></div>
             </div>
             <div style="background-color: #ffffff; margin-top: 24px;">
+                <h4>Encontrar ponta de nariz</h4>
                 <label for="flexibilizeThresholds">Flexibilizar Thresholds:</label>
                 <input type="checkbox" id="flexibilizeThresholds" name="flexibilizeThresholds" checked="checked">
                 <br/>
@@ -46,9 +62,7 @@
                 <input type="number" id="removeIsolatedPointsThreshold" name="removeIsolatedPointsThreshold" value="6" style="width: 80px">
                 <br/>
                 <input id="findNoseTipButton" style="margin-top: 10px;" type="submit" value="Encontrar pontas dos narizes">
-                <div id="pointAnalysisResult"></div>
             </div>
-            <div id="avaliableCloudsContainer" style="background-color: #ffffff; margin-top: 24px;"></div>
         </div>
         <canvas id="c"></canvas>
     </body>
@@ -81,12 +95,15 @@
         var center = new THREE.Vector3(0, 0, 0);
         var findNoseTipButton = document.getElementById("findNoseTipButton");
         var selectNoseTipButton = document.getElementById("selectNoseTipButton");
+        var analysisNoseTipButton = document.getElementById("analysisNoseTipButton");
         var downloadButton = document.getElementById("downloadButton");
 
+        var avaliableFolders = [];
         var avaliableClouds = [];
 
         function main() {
             loadAvaliableClouds();
+            // loadAvaliableFolders();
 
             const canvas = document.querySelector('#c');
             const renderer = new THREE.WebGLRenderer({canvas});
@@ -129,6 +146,7 @@
 
             findNoseTipButton.addEventListener('click', () => findNosesTips());
             selectNoseTipButton.addEventListener('click', toggleRaycaster);
+            analysisNoseTipButton.addEventListener('click', getPointAnalysis)
             downloadButton.addEventListener('click', download);
             
 
@@ -203,7 +221,7 @@
             function insertPointAnalysisOnHTML() {
                 var analysisContainer = document.getElementById("pointAnalysisResult");
                 analysisContainer.innerHTML = `
-                <h3>Point Analysis result</h3>
+                <h5>Point Analysis result</h5>
                 <span><b>Gaussian Curvature: </b>${pointAnalysis.gaussian_curvature.toFixed(5)}</span><br/>
                 <span><b>Shape Index: </b>${pointAnalysis.shape_index.toFixed(5)}</span><br/>
                 <span><b>Normal (x,y,z): </b>(${pointAnalysis.normal.x.toFixed(5)}, ${pointAnalysis.normal.y.toFixed(5)}, ${pointAnalysis.normal.z.toFixed(5)})</span><br/>
@@ -211,32 +229,42 @@
                 `;
             }
 
-            function addPCDFile() {
-                let inputUrl = URL.createObjectURL(input.files[0]);
-                loader.load(inputUrl, (pointCloud) => {
-                    cleanScene();
+            function addPCDFile(blobURL = undefined) {
+                let inputUrl = '';
 
-                    pointCloud.material.size = 0.5;
-                    scene.add(pointCloud);
+                if(blobURL) {
+                    inputUrl = blobURL;
+                } else {
+                    inputUrl = URL.createObjectURL(input.files[0]);
+                }
 
-                    let inputCenter = pointCloud.geometry.boundingSphere.center;
-                    center.x = ( center.x + inputCenter.x ) / 2;
-                    center.y = ( center.y + inputCenter.y ) / 2;
-                    center.z = ( center.z + inputCenter.z ) / 2;
+                if(inputUrl) {
+                    loader.load(inputUrl, (pointCloud) => {
+                        cleanScene();
 
-                    controls.target.set( center.x, center.y, center.z );
-                    controls.update();
-                    
-                    const guiColor = gui.addColor(new ColorGUIHelper(pointCloud.material, 'color'), 'value').name(`Color ${fileCounter}`);
-                    const guiSize = gui.add(new SizeGUIHelper(pointCloud.material, 'size'), 'value', 30, 150, 1).name(`Size ${fileCounter}`);
+                        pointCloud.material.size = 0.5;
+                        scene.add(pointCloud);
 
-                    fileCounter += 1;
-                    pcdFile = {
-                        cloud: pointCloud,
-                        guiColor,
-                        guiSize,
-                    };
-                })
+                        let inputCenter = pointCloud.geometry.boundingSphere.center;
+                        center.x = ( center.x + inputCenter.x ) / 2;
+                        center.y = ( center.y + inputCenter.y ) / 2;
+                        center.z = ( center.z + inputCenter.z ) / 2;
+
+                        controls.target.set( center.x, center.y, center.z );
+                        controls.update();
+                        
+                        const guiColor = gui.addColor(new ColorGUIHelper(pointCloud.material, 'color'), 'value').name(`Color ${fileCounter}`);
+                        const guiSize = gui.add(new SizeGUIHelper(pointCloud.material, 'size'), 'value', 30, 150, 1).name(`Size ${fileCounter}`);
+
+                        fileCounter += 1;
+                        pcdFile = {
+                            cloud: pointCloud,
+                            blobURL: inputUrl,
+                            guiColor,
+                            guiSize,
+                        };
+                    });
+                }
             }
 
             function addPointCloudFromCloudLog(cloudLog, minSize = 30, maxSize = 150, step = 1, initialPointSize = 0.5, color = undefined) {
@@ -279,20 +307,18 @@
                 fileCounter += 1;
             }
 
-            async function findNosesTips(cloudName = "") {
+            async function findNosesTips() {
                 cleanCloudLogEntries();
                 cleanPointAnalysis();
 
                 let formData = new FormData();
 
-                if(!cloudName) {
-                    let inputUrl = URL.createObjectURL(input.files[0]);
-                    let sendBlob = await fetch(inputUrl).then(blob => blob.blob());
-                    
-                    let randomFilename = Math.random().toString(36).substring(7) + ".pcd"
-                    let sendFile = new File([sendBlob], randomFilename);
-                    formData.append('file', sendFile);
-                }
+                let inputUrl = pcdFile.blobURL;
+                let sendBlob = await fetch(inputUrl).then(blob => blob.blob());
+                
+                let randomFilename = Math.random().toString(36).substring(7) + ".pcd"
+                let sendFile = new File([sendBlob], randomFilename);
+                formData.append('file', sendFile);
                 
                 let flexibilizeThresholds = document.getElementById("flexibilizeThresholds");
                 let flexibilizeCrop = document.getElementById("flexibilizeCrop");
@@ -318,11 +344,10 @@
                 formData.append('removeIsolatedPointsRadius', removeIsolatedPointsRadius.value);
                 formData.append('removeIsolatedPointsThreshold', removeIsolatedPointsThreshold.value);
 
-                if('index' in selectedNosetipCloud) {
-                    formData.append('pointIndexToAnalyze', selectedNosetipCloud.index);
-                }
+                formData.append('pointIndexToAnalyze', -1); // Disabled here for now
+                
 
-                fetch(`http://localhost:3000/find-nosetip/${cloudName}`, {method: 'POST', body: formData}).then((response) => {
+                fetch(`http://localhost:3000/find-nosetip`, {method: 'POST', body: formData}).then((response) => {
                     response.json().then((res) => {
                         if(res.point_analysis) {
                             pointAnalysis = res.point_analysis;
@@ -370,7 +395,7 @@
                 saveData(baseFile, `nosetip_${input.files[0].name}`);
             }
 
-            input.addEventListener('change', addPCDFile);
+            input.addEventListener('change', () => addPCDFile());
 
             const raycaster = new THREE.Raycaster();
             raycaster.params.Points.threshold = 0.5;
@@ -438,39 +463,35 @@
                 }
             }
             
-            let lastExploredAvaliableCloud = "";
+            let currentSelectedAvaliableFolder = "";
+            let currentSelectedAvaliableCloud = "";
 
-            function setAvaliableCloudsHTML() {
+            function setAvaliableCloudsHTML(folder) {
                 const avaliableCloudsContainer = document.getElementById("avaliableCloudsContainer");
+                avaliableCloudsContainer.innerHTML = '';
 
-                for(let cloudName of avaliableClouds) {
-                    var input = document.createElement("input");
-                    input.type = "submit";
-                    input.id = "input-" + cloudName;
-                    input.value = "Explorar";
-                    input.style = "margin-right: 8px; margin-top: 8px;";
+                for(let cloudName of avaliableClouds[folder]) {
+                    var loadInput = document.createElement("input");
+                    loadInput.type = "submit";
+                    loadInput.id = "load-input-" + cloudName;
+                    loadInput.value = "Carregar";
+                    loadInput.style = "margin-right: 8px; margin-top: 8px;";
 
                     var label = document.createElement("label");
-                    label.for = cloudName;
+                    label.for = "load-input-" + cloudName;
                     label.id = "label-" + cloudName;
                     label.innerText = cloudName;
 
-                    input.addEventListener('click', () => {
-                        if(lastExploredAvaliableCloud) {
-                            const oldLabel = document.getElementById("label-" + lastExploredAvaliableCloud);
-                            oldLabel.style = "";
-                        }
-
-                        lastExploredAvaliableCloud = cloudName;
-                        const newLabel = document.getElementById("label-" + lastExploredAvaliableCloud);
-                        newLabel.style = "font-weight: bold;"
-
-
-                        cleanPCDFile();
-                        findNosesTips(cloudName);
+                    loadInput.addEventListener('click', () => {
+                        fetch('http://localhost:3000/avaliable-clouds/bosphorus/bs000_CAU_A22A25_0.pcd', {method: 'GET'}).then((response) => {
+                            response.blob().then((res) => {
+                                var pcdBlob = URL.createObjectURL(res);
+                                addPCDFile(pcdBlob);
+                            })
+                        });
                     });
 
-                    avaliableCloudsContainer.appendChild(input);
+                    avaliableCloudsContainer.appendChild(loadInput);
                     avaliableCloudsContainer.appendChild(label);
 
                     let br = document.createElement("br");
@@ -478,17 +499,73 @@
                 }
             }
 
+            function setAvaliableFoldersHTML() {
+                const FOLDER_CONTAINER_DEFAULT_STYLE = "padding: 12px; display: inline-block; text-align: center; cursor: pointer;";
+
+                const avaliableFoldersContainer = document.getElementById("avaliableFoldersContainer");
+                avaliableFoldersContainer.style = "background-color: #FFFFFF; overflow: auto; white-space: nowrap; margin-top: 24px; max-width: 450px;";
+
+                for(let folder in avaliableClouds) {
+                    var folderContainer = document.createElement("div");
+                    folderContainer.id = "folder-" + folder;
+                    folderContainer.innerText = folder;
+                    folderContainer.style = FOLDER_CONTAINER_DEFAULT_STYLE;
+                    folderContainer.addEventListener('click', () => {
+                        if(currentSelectedAvaliableFolder) {
+                            const oldFolderContainer = document.getElementById("folder-" + currentSelectedAvaliableFolder);
+                            oldFolderContainer.style = FOLDER_CONTAINER_DEFAULT_STYLE;
+                        }
+
+                        currentSelectedAvaliableFolder = folder;
+                        const newFolderContainer = document.getElementById("folder-" + currentSelectedAvaliableFolder);
+                        newFolderContainer.style = FOLDER_CONTAINER_DEFAULT_STYLE + " font-weight: bold;";
+
+                        setAvaliableCloudsHTML(folder);
+                    });
+                    avaliableFoldersContainer.appendChild(folderContainer);
+                }
+            }
+
             function loadAvaliableClouds() {
                 fetch('http://localhost:3000/avaliable-clouds', {method: 'GET'}).then((response) => {
                         response.json().then((res) => {
-                            if(res.length) {
-                                res.forEach((cloudName) => {
-                                    avaliableClouds.push(cloudName);
-                                });
-                                setAvaliableCloudsHTML();
-                            }
+                            avaliableClouds = res;
+                            setAvaliableFoldersHTML();
                         })
                     });
+            }
+
+            async function getPointAnalysis() {
+                if(!selectedNosetipCloud || (Object.keys(selectedNosetipCloud).length === 0 && selectedNosetipCloud.constructor === Object)) {
+                    alert('Selecione um ponto antes de realizar sua análise')
+                } else {
+                    let formData = new FormData();
+
+                    let inputUrl = pcdFile.blobURL;
+                    let sendBlob = await fetch(inputUrl).then(blob => blob.blob());
+                    
+                    let randomFilename = Math.random().toString(36).substring(7) + ".pcd"
+                    let sendFile = new File([sendBlob], randomFilename);
+                    formData.append('file', sendFile);
+                    
+                    let pointAnalysisComputationMethod = document.getElementById("pointAnalysisComputationMethod");
+                    let pointAnalysisComputationRadiusOrKSize = document.getElementById("pointAnalysisComputationRadiusOrKSize");
+                    
+                    formData.append('computationMethod', pointAnalysisComputationMethod.value);
+                    formData.append('computationSize', pointAnalysisComputationRadiusOrKSize.value);
+                    formData.append('pointIndexToAnalyze', selectedNosetipCloud.index);
+
+                    fetch(`http://localhost:3000/point-analysis`, {method: 'POST', body: formData}).then((response) => {
+                        response.json().then((res) => {
+                            console.log(res);
+                            if(res.point_analysis) {
+                                pointAnalysis = res.point_analysis;
+                                
+                                insertPointAnalysisOnHTML();
+                            }
+                        });
+                    });
+                }
             }
         }
 
