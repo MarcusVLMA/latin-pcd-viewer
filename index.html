@@ -12,7 +12,7 @@
                 <br/>
             </div>
             <div id="avaliableFoldersContainer"></div>
-            <div id="avaliableCloudsContainer" style="background-color: #ffffff;"></div>
+            <div id="avaliableCloudsContainer" style="background-color: #ffffff; max-height: 200px; overflow-y: scroll;"></div>
             <div style="background-color: #ffffff; margin-top: 24px;">
                 <h4>Análise de ponto</h4>
                 <label for="pointAnalysisComputationMethod">Método de computação:</label>
@@ -41,7 +41,7 @@
                 <input type="number" id="computationRadiusOrKSize" name="computationRadiusOrKSize" value="13" style="width: 80px">
                 <br/>
                 <label for="minGaussianCurvature">GC mínima</label>
-                <input type="number" id="minGaussianCurvature" name="minGaussianCurvature" value="0.0015" style="width: 80px">
+                <input type="number" id="minGaussianCurvature" name="minGaussianCurvature" value="0.015" style="width: 80px">
                 <br/>
                 <label for="shapeIndexLimit">Limite de SI:</label>
                 <input type="number" id="shapeIndexLimit" name="shapeIndexLimit" value="-0.85" style="width: 80px">
@@ -61,7 +61,10 @@
                 <label for="removeIsolatedPointsThreshold">Threshold para pontos isolados:</label>
                 <input type="number" id="removeIsolatedPointsThreshold" name="removeIsolatedPointsThreshold" value="6" style="width: 80px">
                 <br/>
-                <input id="findNoseTipButton" style="margin-top: 10px;" type="submit" value="Encontrar pontas dos narizes">
+                <label for="nosetipSearchRadius">Raio para seleção da ponta do nariz:</label>
+                <input type="number" id="nosetipSearchRadius" name="nosetipSearchRadius" value="12" style="width: 80px">
+                <br/>
+                <input id="findNoseTipButton" style="margin-top: 10px;" type="submit" value="Encontrar ponta do nariz">
             </div>
         </div>
         <canvas id="c"></canvas>
@@ -146,9 +149,25 @@
 
             findNoseTipButton.addEventListener('click', () => findNosesTips());
             selectNoseTipButton.addEventListener('click', toggleRaycaster);
+            document.addEventListener('keydown', (e) => {
+                if(e.key == "s" || e.key == "S") {
+                    toggleRaycaster();
+                }
+            }, false)
+
             analysisNoseTipButton.addEventListener('click', getPointAnalysis)
             downloadButton.addEventListener('click', download);
             
+            document.addEventListener('keydown', (e) => {
+                if(e.key == "r" || e.key == "R") {
+                    focusOnRandomPoint();
+                }
+            }, false)
+            document.addEventListener('keydown', (e) => {
+                if(e.key == "f" || e.key == "F") {
+                    toggleFocusRaycaster();
+                }
+            }, false)
 
             var input = document.getElementById("pcdInput");
             const gui = new GUI();
@@ -157,6 +176,7 @@
             let pcdFile = {};
             let cloudLogFiles = [];
             let runningRaycaster = false;
+            let runningFocusRaycaster = false;
             let selectedNosetipCloud = {};
             let pointAnalysis = {};
 
@@ -229,28 +249,32 @@
                 `;
             }
 
-            function addPCDFile(blobURL = undefined) {
+            function addPCDFile(blobURL = undefined, cloudName = undefined) {
                 let inputUrl = '';
+                let filename = '';
 
                 if(blobURL) {
                     inputUrl = blobURL;
+                    filename = cloudName;
                 } else {
                     inputUrl = URL.createObjectURL(input.files[0]);
+                    filename = input.files[0].name;
                 }
 
                 if(inputUrl) {
                     loader.load(inputUrl, (pointCloud) => {
                         cleanScene();
 
-                        pointCloud.material.size = 0.5;
+                        pointCloud.material.size = 0.8;
                         scene.add(pointCloud);
-
+                        // pointCloud.geometry.computeBoundingSphere();
                         let inputCenter = pointCloud.geometry.boundingSphere.center;
-                        center.x = ( center.x + inputCenter.x ) / 2;
-                        center.y = ( center.y + inputCenter.y ) / 2;
-                        center.z = ( center.z + inputCenter.z ) / 2;
+                        center.x = inputCenter.x;
+                        center.y = inputCenter.y;
+                        center.z = inputCenter.z;
 
                         controls.target.set( center.x, center.y, center.z );
+                        camera.position.set( center.x, center.y, center.z + 200 )
                         controls.update();
                         
                         const guiColor = gui.addColor(new ColorGUIHelper(pointCloud.material, 'color'), 'value').name(`Color ${fileCounter}`);
@@ -260,6 +284,7 @@
                         pcdFile = {
                             cloud: pointCloud,
                             blobURL: inputUrl,
+                            filename,
                             guiColor,
                             guiSize,
                         };
@@ -331,6 +356,7 @@
                 let minPointsToContinue = document.getElementById("minPointsToContinue");
                 let removeIsolatedPointsRadius = document.getElementById("removeIsolatedPointsRadius");
                 let removeIsolatedPointsThreshold = document.getElementById("removeIsolatedPointsThreshold");                
+                let nosetipSearchRadius = document.getElementById("nosetipSearchRadius");
 
                 formData.append('flexibilizeThresholds', flexibilizeThresholds.checked);
                 formData.append('flexibilizeCrop', flexibilizeCrop.checked);
@@ -343,6 +369,7 @@
                 formData.append('minPointsToContinue', minPointsToContinue.value);
                 formData.append('removeIsolatedPointsRadius', removeIsolatedPointsRadius.value);
                 formData.append('removeIsolatedPointsThreshold', removeIsolatedPointsThreshold.value);
+                formData.append('nosetipSearchRadius', nosetipSearchRadius.value);
 
                 formData.append('pointIndexToAnalyze', -1); // Disabled here for now
                 
@@ -374,6 +401,16 @@
                 runningRaycaster = !runningRaycaster;
             }
 
+            function toggleFocusRaycaster(e) {
+                if(runningFocusRaycaster) {
+                    canvas.removeEventListener('click', focusOnNewPoint);
+                } else {
+                    canvas.addEventListener('click', focusOnNewPoint);
+                }
+
+                runningFocusRaycaster = !runningFocusRaycaster;
+            }
+
             function download() {
                 var saveData = (function () {
                 var a = document.createElement("a");
@@ -392,13 +429,16 @@
                 let baseFile = "# .PCD v0.7 - Point Cloud Data file format\nVERSION 0.7\nFIELDS x y z\nSIZE 4 4 4\nTYPE F F F\nCOUNT 1 1 1\nWIDTH 1\nHEIGHT 1\nVIEWPOINT 0 0 0 1 0 0 0\nPOINTS 1\nDATA ascii";
                 baseFile = baseFile + `\n${selectedNosetipCloud.point.x} ${selectedNosetipCloud.point.y} ${selectedNosetipCloud.point.z}`
                 
-                saveData(baseFile, `nosetip_${input.files[0].name}`);
+                saveData(baseFile, `nosetip_${pcdFile.filename}`);
             }
 
             input.addEventListener('change', () => addPCDFile());
 
             const raycaster = new THREE.Raycaster();
             raycaster.params.Points.threshold = 0.5;
+
+            const focusRaycaster = new THREE.Raycaster();
+            focusRaycaster.params.Points.threshold = 10;
 
             function render(time) {
                 time *= 0.001;
@@ -483,10 +523,10 @@
                     label.innerText = cloudName;
 
                     loadInput.addEventListener('click', () => {
-                        fetch('http://localhost:3000/avaliable-clouds/bosphorus/bs000_CAU_A22A25_0.pcd', {method: 'GET'}).then((response) => {
+                        fetch(`http://localhost:3000/avaliable-clouds/${folder}/${cloudName}`, {method: 'GET'}).then((response) => {
                             response.blob().then((res) => {
                                 var pcdBlob = URL.createObjectURL(res);
-                                addPCDFile(pcdBlob);
+                                addPCDFile(pcdBlob, cloudName);
                             })
                         });
                     });
@@ -557,7 +597,6 @@
 
                     fetch(`http://localhost:3000/point-analysis`, {method: 'POST', body: formData}).then((response) => {
                         response.json().then((res) => {
-                            console.log(res);
                             if(res.point_analysis) {
                                 pointAnalysis = res.point_analysis;
                                 
@@ -566,6 +605,43 @@
                         });
                     });
                 }
+            }
+
+            function focusOnNewPoint(e) {
+                mouse.x = ( e.clientX / window.innerWidth ) * 2 - 1;
+                mouse.y = - ( e.clientY / window.innerHeight ) * 2 + 1;
+                
+                focusRaycaster.setFromCamera(mouse, camera);
+
+                var intersects = focusRaycaster.intersectObject(pcdFile.cloud);
+                if (intersects.length) {
+                    var index = intersects[0].index;
+                    
+                    const point = {
+                        x: pcdFile.cloud.geometry.getAttribute('position').getX(index), 
+                        y: pcdFile.cloud.geometry.getAttribute('position').getY(index),
+                        z: pcdFile.cloud.geometry.getAttribute('position').getZ(index)
+                    }
+                    controls.target.set( point.x, point.y, point.z );
+                    camera.position.set( point.x, point.y, point.z + 50 )
+                    controls.update();
+
+                    toggleFocusRaycaster();
+                }
+            }
+
+            function focusOnRandomPoint() {
+                const cloudLength = pcdFile.cloud.geometry.getAttribute('position').count;
+                const randomIndex = Math.floor(Math.random() * (cloudLength - 0));
+
+                const point = {
+                    x: pcdFile.cloud.geometry.getAttribute('position').getX(randomIndex), 
+                    y: pcdFile.cloud.geometry.getAttribute('position').getY(randomIndex),
+                    z: pcdFile.cloud.geometry.getAttribute('position').getZ(randomIndex)
+                }
+                controls.target.set( point.x, point.y, point.z );
+                camera.position.set( point.x, point.y, point.z - 40 )
+                controls.update();
             }
         }
 
