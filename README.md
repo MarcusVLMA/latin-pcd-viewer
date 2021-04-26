@@ -5,4 +5,9 @@ Run a `npm install` on root folder and in public/js/pcd-viewer to install all de
 
 To run the application, run `nodemon app.js` in root folder.
 
-**Obs:** This web app have `nosetip_finder.node` as a dependency and you probably will need to compile it in your computer. You can check the [Nosetip Finder repository](https://github.com/MarcusVLMA/nosetip_finder/) for more info.
+### Observations: 
+- This web app have `nosetip_finder.node` as a dependency. You may need to build it from your computer. 
+- Because of this dependency, this web application is currenly limited to version 10 of Node.js.
+- You need [Point Cloud Library](https://pointclouds.org/) and its dependencies installed to `nosetip_finder.node` work.
+
+Check the [Nosetip Finder repository](https://github.com/MarcusVLMA/nosetip_finder/) for more info about this module and how to build it.
