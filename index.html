@@ -15,6 +15,10 @@
             <div id="avaliableCloudsContainer" style="background-color: #ffffff; max-height: 200px; overflow-y: scroll;"></div>
             <div style="background-color: #ffffff; margin-top: 24px;">
                 <h4>Análise de ponto</h4>
+                <label for="pointXYZ">Ponto</label>
+                <input type="text" id="pointXYZ" name="pointXYZ" placeholder="X,Y,Z">
+                <input id="pointXYZSelect" style="margin-top: 10px;" type="submit" value="Selecionar ponto">
+                <br/>
                 <label for="pointAnalysisComputationMethod">Método de computação:</label>
                 <input type="text" id="pointAnalysisComputationMethod" name="pointAnalysisComputationMethod" value="radius" style="width: 80px">
                 <br/>
@@ -103,6 +107,8 @@
         var analysisNoseTipButton = document.getElementById("analysisNoseTipButton");
         var downloadButton = document.getElementById("downloadButton");
         var clearSceneButton = document.getElementById("clearScene");
+        var pointXYZInput = document.getElementById("pointXYZ");
+        var pointXYZSelectButton = document.getElementById("pointXYZSelect");
 
         var avaliableFolders = [];
         var avaliableClouds = [];
@@ -489,6 +495,7 @@
                         y: pcdFile.cloud.geometry.getAttribute('position').getY(index),
                         z: pcdFile.cloud.geometry.getAttribute('position').getZ(index)
                     }
+                    console.log(point)
 
                     let geometry = new THREE.BufferGeometry().setFromPoints(
                         [new THREE.Vector3(point.x, point.y, point.z)]
@@ -584,9 +591,81 @@
                     });
             }
 
+            pointXYZSelectButton.addEventListener("click", selectPointFromInput);
+
+            function selectPointFromInput() {
+                if (!pcdFile.cloud) {
+                    alert('Selecione uma nuvem antes de realizar sua análise');
+                    return;
+                }
+
+                if  (!pointXYZInput.value) {
+                    alert('Selecione um ponto antes de realizar sua análise');
+                    return;
+                }
+
+                let pointArray;
+
+                if (pointXYZInput.value.includes(',')) {
+                    pointArray = pointXYZInput.value.split(',').map(p => parseFloat(p));
+                } else {
+                    pointArray = pointXYZInput.value.split(' ').map(p => parseFloat(p));
+                }
+
+                if (pointArray.length !== 3) {
+                    alert('Selecione um ponto válido.');
+                    return;
+                }
+
+                // refactor later
+                const point = {
+                    x: pointArray[0],
+                    y: pointArray[1],
+                    z: pointArray[2]
+                }
+
+                let geometry = new THREE.BufferGeometry().setFromPoints(
+                    [new THREE.Vector3(point.x, point.y, point.z)]
+                );
+
+                const points = pcdFile.cloud.geometry.attributes.position.array;
+                let index = -1;
+                const ref = {x: 1.981187105178833, y: -3.249020576477051, z: 0.3294447064399719};
+                // 1.981187105178833,-3.249020576477051,0.3294447064399719
+
+                for (let i = 0; i < points.length; i+=3) {
+                    if (points[i] === point.x && points[i+1] === point.y && points[i+2] === point.z) {
+                        index = i;
+                        break;
+                    }
+                }
+
+                if (index === -1) {
+                    alert('Esse ponto não existe!!');
+                    return;
+                }
+
+                var material = new THREE.PointsMaterial({ size: 1.5, color: '#FFFFFF' });
+                var newCloud = new THREE.Points(geometry, material);
+                scene.add(newCloud)
+
+                const guiColor = gui.addColor(new ColorGUIHelper(newCloud.material, 'color'), 'value').name(`Selected point ${fileCounter}`);
+                const guiSize = gui.add(new SizeGUIHelper(newCloud.material, 'size'), 'value', 150, 400, 1).name(`Selected point ${fileCounter}`);
+
+                selectedNosetipCloud = {
+                    cloud: newCloud,
+                    point,
+                    index,
+                    guiColor,
+                    guiSize
+                }
+
+                fileCounter += 1;
+            }
+
             async function getPointAnalysis() {
                 if(!selectedNosetipCloud || (Object.keys(selectedNosetipCloud).length === 0 && selectedNosetipCloud.constructor === Object)) {
-                    alert('Selecione um ponto antes de realizar sua análise')
+                    alert('Selecione um ponto antes de realizar sua análise');
                 } else {
                     let formData = new FormData();
 
