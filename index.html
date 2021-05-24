@@ -83,7 +83,7 @@
     </style>
     <script type="module">
         import * as THREE from './js/pcd-viewer/node_modules/three/build/three.module.js';
-        
+
         import { PCDLoader } from './js/pcd-viewer/node_modules/three/examples/jsm/loaders/PCDLoader.js'
         import { TrackballControls} from './js/pcd-viewer/node_modules/three/examples/jsm/controls/TrackballControls.js'
 
@@ -110,7 +110,7 @@
 
             const canvas = document.querySelector('#c');
             const renderer = new THREE.WebGLRenderer({canvas});
-            
+
             const fov = 50; const aspect = 2; const near = 0.1; const far = 10000;
             const camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
 
@@ -133,7 +133,7 @@
             const color = 0xFFFFFF;
             const intensity = 1;
             const light = new THREE.AmbientLight(color, intensity);
-            
+
             scene.add(light);
 
             function resizeRendererToDisplaySize(renderer) {
@@ -157,7 +157,7 @@
 
             analysisNoseTipButton.addEventListener('click', getPointAnalysis)
             downloadButton.addEventListener('click', download);
-            
+
             document.addEventListener('keydown', (e) => {
                 if(e.key == "r" || e.key == "R") {
                     focusOnRandomPoint();
@@ -184,7 +184,7 @@
                 if ('cloud' in pcdFile && pcdFile.cloud) {
                     scene.remove(pcdFile.cloud);
                 }
-                
+
                 if ('guiColor' in pcdFile && pcdFile.guiColor) {
                     gui.remove(pcdFile.guiColor);
                 }
@@ -207,7 +207,7 @@
                     scene.remove(selectedNosetipCloud.cloud);
                     delete selectedNosetipCloud.cloud;
                 }
-                
+
                 if ('guiColor' in selectedNosetipCloud && selectedNosetipCloud.guiColor) {
                     gui.remove(selectedNosetipCloud.guiColor);
                     delete selectedNosetipCloud.guiColor;
@@ -276,7 +276,7 @@
                         controls.target.set( center.x, center.y, center.z );
                         camera.position.set( center.x, center.y, center.z + 200 )
                         controls.update();
-                        
+
                         const guiColor = gui.addColor(new ColorGUIHelper(pointCloud.material, 'color'), 'value').name(`Color ${fileCounter}`);
                         const guiSize = gui.add(new SizeGUIHelper(pointCloud.material, 'size'), 'value', 30, 150, 1).name(`Size ${fileCounter}`);
 
@@ -294,18 +294,20 @@
 
             function addPointCloudFromCloudLog(cloudLog, minSize = 30, maxSize = 150, step = 1, initialPointSize = 0.5, color = undefined) {
                 let materialColor = color;
-                
+
                 if(!color) {
                     materialColor = `#${Math.floor(Math.random()*16777215).toString(16)}`;
                 }
-                
+
                 var material = new THREE.PointsMaterial({ size: initialPointSize, color: materialColor });
-                var geometry = new THREE.Geometry();
-                
+
+                const points = [];
+
                 cloudLog.cloud.forEach((point) => {
-                    geometry.vertices.push(new THREE.Vector3(point.x, point.y, point.z));
+                    points.push(new THREE.Vector3(point.x, point.y, point.z));
                 });
-                
+
+                let geometry = new THREE.BufferGeometry().setFromPoints(points);
                 var newCloud = new THREE.Points(geometry, material);
                 scene.add(newCloud);
 
@@ -340,11 +342,11 @@
 
                 let inputUrl = pcdFile.blobURL;
                 let sendBlob = await fetch(inputUrl).then(blob => blob.blob());
-                
+
                 let randomFilename = Math.random().toString(36).substring(7) + ".pcd"
                 let sendFile = new File([sendBlob], randomFilename);
                 formData.append('file', sendFile);
-                
+
                 let flexibilizeThresholds = document.getElementById("flexibilizeThresholds");
                 let flexibilizeCrop = document.getElementById("flexibilizeCrop");
                 let computationRadiusOrKSize = document.getElementById("computationRadiusOrKSize");
@@ -355,7 +357,7 @@
                 let maxCropSize = document.getElementById("maxCropSize");
                 let minPointsToContinue = document.getElementById("minPointsToContinue");
                 let removeIsolatedPointsRadius = document.getElementById("removeIsolatedPointsRadius");
-                let removeIsolatedPointsThreshold = document.getElementById("removeIsolatedPointsThreshold");                
+                let removeIsolatedPointsThreshold = document.getElementById("removeIsolatedPointsThreshold");
                 let nosetipSearchRadius = document.getElementById("nosetipSearchRadius");
 
                 formData.append('flexibilizeThresholds', flexibilizeThresholds.checked);
@@ -372,7 +374,7 @@
                 formData.append('nosetipSearchRadius', nosetipSearchRadius.value);
 
                 formData.append('pointIndexToAnalyze', -1); // Disabled here for now
-                
+
 
                 fetch(`http://localhost:3000/find-nosetip`, {method: 'POST', body: formData}).then((response) => {
                     response.json().then((res) => {
@@ -380,7 +382,7 @@
                             pointAnalysis = res.point_analysis;
                             insertPointAnalysisOnHTML();
                         }
-                        
+
                         res.intermediary_clouds.forEach((cloudLog) => addPointCloudFromCloudLog(cloudLog));
                         const noseTipCloudLog = {
                             cloud_label: 'Nose tip',
@@ -428,7 +430,7 @@
 
                 let baseFile = "# .PCD v0.7 - Point Cloud Data file format\nVERSION 0.7\nFIELDS x y z\nSIZE 4 4 4\nTYPE F F F\nCOUNT 1 1 1\nWIDTH 1\nHEIGHT 1\nVIEWPOINT 0 0 0 1 0 0 0\nPOINTS 1\nDATA ascii";
                 baseFile = baseFile + `\n${selectedNosetipCloud.point.x} ${selectedNosetipCloud.point.y} ${selectedNosetipCloud.point.z}`
-                
+
                 saveData(baseFile, `nosetip_${pcdFile.filename}`);
             }
 
@@ -454,13 +456,13 @@
 
                 requestAnimationFrame(render);
             }
-            
+
             requestAnimationFrame(render);
 
             function runRaycast(e) {
                 mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
                 mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
-                
+
                 raycaster.setFromCamera(mouse, camera);
 
                 var intersects = raycaster.intersectObject(pcdFile.cloud);
@@ -476,15 +478,17 @@
                     toggleRaycaster();
 
                     var material = new THREE.PointsMaterial({ size: 1.5, color: '#FFFFFF' });
-                    var geometry = new THREE.Geometry();
-                    
+
                     const point = {
-                        x: pcdFile.cloud.geometry.getAttribute('position').getX(index), 
+                        x: pcdFile.cloud.geometry.getAttribute('position').getX(index),
                         y: pcdFile.cloud.geometry.getAttribute('position').getY(index),
                         z: pcdFile.cloud.geometry.getAttribute('position').getZ(index)
                     }
-                    geometry.vertices.push(new THREE.Vector3(point.x, point.y, point.z));
-                    
+
+                    let geometry = new THREE.BufferGeometry().setFromPoints(
+                        [new THREE.Vector3(point.x, point.y, point.z)]
+                    );
+
                     var newCloud = new THREE.Points(geometry, material);
                     scene.add(newCloud)
 
@@ -502,7 +506,7 @@
                     fileCounter += 1;
                 }
             }
-            
+
             let currentSelectedAvaliableFolder = "";
             let currentSelectedAvaliableCloud = "";
 
@@ -583,14 +587,14 @@
 
                     let inputUrl = pcdFile.blobURL;
                     let sendBlob = await fetch(inputUrl).then(blob => blob.blob());
-                    
+
                     let randomFilename = Math.random().toString(36).substring(7) + ".pcd"
                     let sendFile = new File([sendBlob], randomFilename);
                     formData.append('file', sendFile);
-                    
+
                     let pointAnalysisComputationMethod = document.getElementById("pointAnalysisComputationMethod");
                     let pointAnalysisComputationRadiusOrKSize = document.getElementById("pointAnalysisComputationRadiusOrKSize");
-                    
+
                     formData.append('computationMethod', pointAnalysisComputationMethod.value);
                     formData.append('computationSize', pointAnalysisComputationRadiusOrKSize.value);
                     formData.append('pointIndexToAnalyze', selectedNosetipCloud.index);
@@ -599,7 +603,7 @@
                         response.json().then((res) => {
                             if(res.point_analysis) {
                                 pointAnalysis = res.point_analysis;
-                                
+
                                 insertPointAnalysisOnHTML();
                             }
                         });
@@ -610,15 +614,15 @@
             function focusOnNewPoint(e) {
                 mouse.x = ( e.clientX / window.innerWidth ) * 2 - 1;
                 mouse.y = - ( e.clientY / window.innerHeight ) * 2 + 1;
-                
+
                 focusRaycaster.setFromCamera(mouse, camera);
 
                 var intersects = focusRaycaster.intersectObject(pcdFile.cloud);
                 if (intersects.length) {
                     var index = intersects[0].index;
-                    
+
                     const point = {
-                        x: pcdFile.cloud.geometry.getAttribute('position').getX(index), 
+                        x: pcdFile.cloud.geometry.getAttribute('position').getX(index),
                         y: pcdFile.cloud.geometry.getAttribute('position').getY(index),
                         z: pcdFile.cloud.geometry.getAttribute('position').getZ(index)
                     }
@@ -635,7 +639,7 @@
                 const randomIndex = Math.floor(Math.random() * (cloudLength - 0));
 
                 const point = {
-                    x: pcdFile.cloud.geometry.getAttribute('position').getX(randomIndex), 
+                    x: pcdFile.cloud.geometry.getAttribute('position').getX(randomIndex),
                     y: pcdFile.cloud.geometry.getAttribute('position').getY(randomIndex),
                     z: pcdFile.cloud.geometry.getAttribute('position').getZ(randomIndex)
                 }
