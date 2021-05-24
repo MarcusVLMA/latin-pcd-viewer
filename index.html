@@ -65,6 +65,8 @@
                 <input type="number" id="nosetipSearchRadius" name="nosetipSearchRadius" value="12" style="width: 80px">
                 <br/>
                 <input id="findNoseTipButton" style="margin-top: 10px;" type="submit" value="Encontrar ponta do nariz">
+                <br/>
+                <input id="clearScene" style="margin-top: 10px;" type="submit" value="Limpar tela">
             </div>
         </div>
         <canvas id="c"></canvas>
@@ -100,6 +102,7 @@
         var selectNoseTipButton = document.getElementById("selectNoseTipButton");
         var analysisNoseTipButton = document.getElementById("analysisNoseTipButton");
         var downloadButton = document.getElementById("downloadButton");
+        var clearSceneButton = document.getElementById("clearScene");
 
         var avaliableFolders = [];
         var avaliableClouds = [];
@@ -237,6 +240,8 @@
                 cleanSelectedNosetipCloud();
                 cleanCloudLogEntries();
             }
+
+            clearSceneButton.addEventListener('click', cleanScene);
 
             function insertPointAnalysisOnHTML() {
                 var analysisContainer = document.getElementById("pointAnalysisResult");
