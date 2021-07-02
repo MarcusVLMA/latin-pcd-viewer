@@ -45,10 +45,10 @@
                 <input type="number" id="computationRadiusOrKSize" name="computationRadiusOrKSize" value="13" style="width: 80px">
                 <br/>
                 <label for="minGaussianCurvature">GC mínima</label>
-                <input type="number" id="minGaussianCurvature" name="minGaussianCurvature" value="0.015" style="width: 80px">
+                <input type="number" id="minGaussianCurvature" name="minGaussianCurvature" value="0.0038" style="width: 80px">
                 <br/>
                 <label for="shapeIndexLimit">Limite de SI:</label>
-                <input type="number" id="shapeIndexLimit" name="shapeIndexLimit" value="-0.85" style="width: 80px">
+                <input type="number" id="shapeIndexLimit" name="shapeIndexLimit" value="-0.78" style="width: 80px">
                 <br/>
                 <label for="minCropSize">Tamanho de Crop mínimo:</label>
                 <input type="number" id="minCropSize" name="minCropSize" value="100" style="width: 80px">
@@ -127,9 +127,9 @@
 
             var controls = new TrackballControls( camera, renderer.domElement );
 
-            controls.rotateSpeed = 15.0;
-            controls.zoomSpeed = 3;
-            controls.panSpeed = 1;
+            controls.rotateSpeed = 5.0;
+            controls.zoomSpeed = 2;
+            controls.panSpeed = 0.5;
 
             controls.staticMoving = true;
 
@@ -303,7 +303,7 @@
                 }
             }
 
-            function addPointCloudFromCloudLog(cloudLog, minSize = 30, maxSize = 150, step = 1, initialPointSize = 0.5, color = undefined) {
+            function addPointCloudFromCloudLog(cloudLog, minSize = 30, maxSize = 150, step = 1, initialPointSize = 2, color = undefined) {
                 let materialColor = color;
 
                 if(!color) {
@@ -346,6 +346,11 @@
             }
 
             async function findNosesTips() {
+                if (!pcdFile.cloud) {
+                    alert('Selecione uma nuvem primeiro!!');
+                    return;
+                }
+
                 cleanCloudLogEntries();
                 cleanPointAnalysis();
 
@@ -395,6 +400,7 @@
                         }
 
                         res.intermediary_clouds.forEach((cloudLog) => addPointCloudFromCloudLog(cloudLog));
+
                         const noseTipCloudLog = {
                             cloud_label: 'Nose tip',
                             cloud: [{x: res.nosetip.x, y: res.nosetip.y, z: res.nosetip.z}]
@@ -495,7 +501,6 @@
                         y: pcdFile.cloud.geometry.getAttribute('position').getY(index),
                         z: pcdFile.cloud.geometry.getAttribute('position').getZ(index)
                     }
-                    console.log(point)
 
                     let geometry = new THREE.BufferGeometry().setFromPoints(
                         [new THREE.Vector3(point.x, point.y, point.z)]
@@ -629,12 +634,14 @@
                 );
 
                 const points = pcdFile.cloud.geometry.attributes.position.array;
+                console.log('aaa', points)
                 let index = -1;
                 const ref = {x: 1.981187105178833, y: -3.249020576477051, z: 0.3294447064399719};
                 // 1.981187105178833,-3.249020576477051,0.3294447064399719
 
+                const fixed = 2;
                 for (let i = 0; i < points.length; i+=3) {
-                    if (points[i] === point.x && points[i+1] === point.y && points[i+2] === point.z) {
+                    if (points[i].toFixed(fixed) === point.x.toFixed(fixed) && points[i+1].toFixed(fixed) === point.y.toFixed(fixed) && points[i+2].toFixed(fixed) === point.z.toFixed(fixed)) {
                         index = i;
                         break;
                     }
