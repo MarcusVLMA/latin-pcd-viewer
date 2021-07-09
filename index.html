@@ -45,10 +45,10 @@
                 <input type="number" id="computationRadiusOrKSize" name="computationRadiusOrKSize" value="13" style="width: 80px">
                 <br/>
                 <label for="minGaussianCurvature">GC mínima</label>
-                <input type="number" id="minGaussianCurvature" name="minGaussianCurvature" value="0.0038" style="width: 80px">
+                <input type="number" id="minGaussianCurvature" name="minGaussianCurvature" value="0.0038" step="0.001" style="width: 80px">
                 <br/>
                 <label for="shapeIndexLimit">Limite de SI:</label>
-                <input type="number" id="shapeIndexLimit" name="shapeIndexLimit" value="-0.78" style="width: 80px">
+                <input type="number" id="shapeIndexLimit" name="shapeIndexLimit" value="-0.78" step="0.01" style="width: 80px">
                 <br/>
                 <label for="minCropSize">Tamanho de Crop mínimo:</label>
                 <input type="number" id="minCropSize" name="minCropSize" value="100" style="width: 80px">
@@ -68,9 +68,42 @@
                 <label for="nosetipSearchRadius">Raio para seleção da ponta do nariz:</label>
                 <input type="number" id="nosetipSearchRadius" name="nosetipSearchRadius" value="12" style="width: 80px">
                 <br/>
-                <input id="findNoseTipButton" style="margin-top: 10px;" type="submit" value="Encontrar ponta do nariz">
+                <label for="gfSearchRadius">Raio para filtragem das features da MC:</label>
+                <input type="number" id="gfSearchRadius" name="gfSearchRadius" value="10" min="0" step="5" style="width: 80px">
                 <br/>
+                <label for="sum">Features:</label>
+                <br/>
+                <input type="checkbox" data-feature name="sum" id="sum" value="Somatório">
+                <label for="sum">Somatório</label>
+                <br/>
+                <input type="checkbox" data-feature name="eigenentropy" id="eigenentropy" value="Autoentropia">
+                <label for="eigenentropy">Autoentropia</label>
+                <br/>
+                <input type="checkbox" data-feature name="anisotropy" id="anisotropy" value="Anisotropia">
+                <label for="anisotropy">Anisotropia</label>
+                <br/>
+                <input type="checkbox" data-feature name="planarity" id="planarity" value="Planaridade">
+                <label for="planarity">Planaridade</label>
+                <br/>
+                <input type="checkbox" data-feature name="linearity" id="linearity" value="Linearidade">
+                <label for="linearity">Linearidade</label>
+                <br/>
+                <input type="checkbox" data-feature name="surface-variation" id="surface-variation" value="Variação de superfı́cie">
+                <label for="surface-variation">Variação de superfı́cie</label>
+                <br/>
+                <input type="checkbox" data-feature name="sphericity" id="sphericity" value="Esfericidade">
+                <label for="sphericity">Esfericidade</label>
+                <br/>
+                <input type="checkbox" data-feature name="verticality" id="verticality" value="Verticalidade">
+                <label for="verticality">Verticalidade</label>
+                <br/>
+                <label for="featuresThreshold">Threshold para as feature da MC:</label>
+                <br/>
+                <input type="text" id="featuresThreshold" name="featuresThreshold" value="0" style="width: 300px">
+                <br/>
+                <input id="findNoseTipButton" style="margin-top: 10px;" type="submit" value="Encontrar ponta do nariz">
                 <input id="clearScene" style="margin-top: 10px;" type="submit" value="Limpar tela">
+                <br/>
             </div>
         </div>
         <canvas id="c"></canvas>
@@ -345,9 +378,32 @@
                 fileCounter += 1;
             }
 
+            const allCheckboxes = document.querySelectorAll("input[type='checkbox'][data-feature]");
+
+            [...allCheckboxes].forEach(c => c.addEventListener('change', e => {
+                e.currentTarget.timeval = new Date().getTime();
+            }));
+
             async function findNosesTips() {
                 if (!pcdFile.cloud) {
                     alert('Selecione uma nuvem primeiro!!');
+                    return;
+                }
+
+                const features = [...allCheckboxes]
+                    .filter(c => c.checked)
+                    .sort((a, b) => a.timeval - b.timeval)
+                    .map(f => f.value).join(',');
+
+                if (!features) {
+                    alert('Selecione alguma feature!');
+                    return;
+                }
+
+                let featuresThreshold = document.getElementById('featuresThreshold').value.replace(/(^,)|(,$)/g, '');
+
+                if (features.split(',').length !== featuresThreshold.split(',').length) {
+                    alert('Número de features e thresholds devem ser iguais.');
                     return;
                 }
 
@@ -375,6 +431,7 @@
                 let removeIsolatedPointsRadius = document.getElementById("removeIsolatedPointsRadius");
                 let removeIsolatedPointsThreshold = document.getElementById("removeIsolatedPointsThreshold");
                 let nosetipSearchRadius = document.getElementById("nosetipSearchRadius");
+                let gfSearchRadius = document.getElementById("gfSearchRadius");
 
                 formData.append('flexibilizeThresholds', flexibilizeThresholds.checked);
                 formData.append('flexibilizeCrop', flexibilizeCrop.checked);
@@ -388,26 +445,30 @@
                 formData.append('removeIsolatedPointsRadius', removeIsolatedPointsRadius.value);
                 formData.append('removeIsolatedPointsThreshold', removeIsolatedPointsThreshold.value);
                 formData.append('nosetipSearchRadius', nosetipSearchRadius.value);
+                formData.append('gfSearchRadius', gfSearchRadius.value);
+                formData.append('features', features);
+                formData.append('featuresThreshold', featuresThreshold);
 
-                formData.append('pointIndexToAnalyze', -1); // Disabled here for now
-
-
-                fetch(`http://localhost:3000/find-nosetip`, {method: 'POST', body: formData}).then((response) => {
-                    response.json().then((res) => {
-                        if(res.point_analysis) {
-                            pointAnalysis = res.point_analysis;
-                            insertPointAnalysisOnHTML();
-                        }
-
-                        res.intermediary_clouds.forEach((cloudLog) => addPointCloudFromCloudLog(cloudLog));
-
-                        const noseTipCloudLog = {
-                            cloud_label: 'Nose tip',
-                            cloud: [{x: res.nosetip.x, y: res.nosetip.y, z: res.nosetip.z}]
-                        };
-                        addPointCloudFromCloudLog(noseTipCloudLog, 150, 400, 1, 4, '#FFFFFF');
-                    })
+                const response = await fetch('http://localhost:3000/find-nosetip', {
+                    method: 'POST',
+                    body: formData
                 });
+                const data = await response.json();
+
+                if (!response.ok) {
+                    alert('Algum erro ocorreu: ' + data.msg);
+
+                    return;
+                }
+
+                data.intermediary_clouds.forEach(cloudLog => addPointCloudFromCloudLog(cloudLog));
+
+                const noseTipCloudLog = {
+                    cloud_label: 'Nose tip',
+                    cloud: [{x: data.nosetip.x, y: data.nosetip.y, z: data.nosetip.z}]
+                };
+
+                addPointCloudFromCloudLog(noseTipCloudLog, 150, 400, 1, 4, '#FFFFFF');
             }
 
             function toggleRaycaster() {
