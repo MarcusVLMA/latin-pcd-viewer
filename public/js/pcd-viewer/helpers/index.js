@@ -1,13 +1,13 @@
 import * as THREE from '../node_modules/three/build/three.module.js';
 
 export class ColorGUIHelper {
-    constructor(object, prop) {
+    constructor (object, prop) {
         this.object = object;
         this.prop = prop;
     }
 
     get value() {
-        return `#${this.object[this.prop].getHexString()}`
+        return `#${this.object[this.prop].getHexString()}`;
     }
 
     set value(hexString) {
@@ -16,7 +16,7 @@ export class ColorGUIHelper {
 }
 
 export class SizeGUIHelper {
-    constructor(object, prop) {
+    constructor (object, prop) {
         this.object = object;
         this.prop = prop;
     }
