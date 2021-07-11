@@ -1,0 +1,96 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    height: 100%;
+    font-size: 62.5%;
+}
+
+body {
+    font-size: 1.6rem;
+    height: 100%;
+}
+
+#canvas {
+    width: 100%;
+    height: 100%;
+}
+
+.sidemenu {
+    position: fixed;
+    left: 0;
+    right: 0;
+    height: 100%;
+    overflow-y: auto;
+    width: 40rem;
+    background-color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.separator {
+    width: 100%;
+    height: 12px;
+    background-color: red;
+    margin: 0.5rem 0;
+}
+
+.p1-all {
+    padding: 1rem;
+}
+
+.avaliable-folders-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.avaliable-folder {
+    transition: 0.2s all;
+}
+
+.avaliable-folder:hover {
+    cursor: pointer;
+}
+
+.avaliable-clouds-container {
+    min-height: 20rem;
+    overflow-y: auto;
+    width: 100%;
+    padding: 0.8rem 1rem 1rem;
+}
+
+.load-cloud-input-container {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    width: 100%;
+}
+
+.load-cloud-input-container:not(:last-child) {
+    margin-bottom: 1rem;
+}
+
+.load-cloud-input-container input {
+    margin-right: 0.5rem;
+}
+
+.load-cloud-input {
+    margin: 1rem 2rem 0 1rem;
+}
+
+.input-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.blocked {
+    cursor: not-allowed;
+}
