@@ -3,3 +3,4 @@ uploaded_files/*
 avaliable_clouds/*
 !avaliable_clouds/README.md
 !uploaded_files/.gitkeep
+modules
