@@ -4,6 +4,7 @@ const path = require('path');
 const formidable = require('formidable');
 const fiducialPointFinder = require('./modules/fiducial_point_finder');
 const pointExplorer = require('./modules/point_explorer');
+const pipeline = require('./modules/pipeline');
 const app = express();
 
 const AVALIABLE_CLOUDS_DIRECTORY = './avaliable_clouds';
@@ -139,9 +140,145 @@ app.post('/find-fiducial-point', (req, res, next) => {
             });
         } catch (error) {
             console.error(error);
-            return res.status(500).json({ 'msg': error.message });
+            res.status(500).json({ 'msg': error.message });
         }
     });
 });
 
-app.listen(process.env.PORT || 3000);
+app.post('/gaussian-curvature', (req, res) => {
+    const form = formidable({ multiples: true });
+
+    form.on('fileBegin', (name, file) => {
+        file.path = `./uploaded_files/${file.name}`;
+    });
+
+    form.parse(req, (err, fields, file) => {
+        if (err) {
+            console.error(err);
+            next(err);
+            return;
+        }
+
+        const filename = file.file.path;
+        const kdtreeMethod = fields.kdtreeMethod;
+        const kdtreeValue = fields.kdtreeValue;
+        const thresholdMin = fields.thresholdMin;
+        const thresholdMax = fields.thresholdMax;
+
+        console.log(kdtreeMethod, kdtreeValue, thresholdMin, thresholdMax)
+
+        try {
+            const response = pipeline.gaussianCurvature(
+                filename,
+                kdtreeMethod,
+                kdtreeValue,
+                thresholdMin,
+                thresholdMax
+            );
+
+            fs.unlink(filename, error => {
+                if (error) {
+                    console.error(error);
+                    return res.status(500).json({ 'msg': error.message });
+                }
+
+                res.status(200).json(response);
+            });
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({ 'msg': error.message });
+        }
+    });
+});
+
+app.post('/shape-index', (req, res) => {
+    const form = formidable({ multiples: true });
+
+    form.on('fileBegin', (name, file) => {
+        file.path = `./uploaded_files/${file.name}`;
+    });
+
+    form.parse(req, (err, fields, file) => {
+        if (err) {
+            console.error(err);
+            next(err);
+            return;
+        }
+
+        const filename = file.file.path;
+        const kdtreeMethod = fields.kdtreeMethod;
+        const kdtreeValue = fields.kdtreeValue;
+        const thresholdMin = fields.thresholdMin;
+        const thresholdMax = fields.thresholdMax;
+
+        try {
+            const response = pipeline.shapeIndex(
+                filename,
+                kdtreeMethod,
+                kdtreeValue,
+                thresholdMin,
+                thresholdMax
+            );
+
+            fs.unlink(filename, error => {
+                if (error) {
+                    console.error(error);
+                    return res.status(500).json({ 'msg': error.message });
+                }
+
+                res.status(200).json(response);
+            });
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({ 'msg': error.message });
+        }
+    });
+});
+
+app.post('/geometric-feature', (req, res) => {
+    const form = formidable({ multiples: true });
+
+    form.on('fileBegin', (name, file) => {
+        file.path = `./uploaded_files/${file.name}`;
+    });
+
+    form.parse(req, (err, fields, file) => {
+        if (err) {
+            console.error(err);
+            next(err);
+            return;
+        }
+
+        const filename = file.file.path;
+        const feature = fields.feature;
+        const kdtreeMethod = fields.kdtreeMethod;
+        const kdtreeValue = fields.kdtreeValue;
+        const thresholdMin = fields.thresholdMin;
+        const thresholdMax = fields.thresholdMax;
+
+        try {
+            const response = pipeline.geometricFeature(
+                filename,
+                feature,
+                kdtreeMethod,
+                kdtreeValue,
+                thresholdMin,
+                thresholdMax
+            );
+
+            fs.unlink(filename, error => {
+                if (error) {
+                    console.error(error);
+                    return res.status(500).json({ 'msg': error.message });
+                }
+
+                res.status(200).json(response);
+            });
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({ 'msg': error.message });
+        }
+    });
+});
+
+app.listen(process.env.PORT || 3000, () => console.log('Server listening on 3000!'));
