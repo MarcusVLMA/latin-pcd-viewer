@@ -285,4 +285,39 @@ app.post('/geometric-feature', (req, res) => {
     });
 });
 
+app.post('/filtering', (req, res) => {
+    const form = formidable({ multiples: true });
+
+    form.on('fileBegin', (name, file) => {
+        file.path = `./uploaded_files/${file.name}`;
+    });
+
+    form.parse(req, (err, fields, file) => {
+        if (err) {
+            console.error(err);
+            next(err);
+            return;
+        }
+
+        const filename = file.file.path;
+        const filters = JSON.parse(fields.filters);
+
+        try {
+            const response = pipeline.applyFilters(filename, filters);
+
+            fs.unlink(filename, error => {
+                if (error) {
+                    console.error(error);
+                    return res.status(500).json({ 'msg': error.message });
+                }
+
+                res.status(200).json(response);
+            });
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({ 'msg': error.message });
+        }
+    });
+});
+
 app.listen(process.env.PORT || 3000, () => console.log('Server listening on 3000!'));
