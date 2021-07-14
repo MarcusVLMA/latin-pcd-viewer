@@ -165,8 +165,6 @@ app.post('/gaussian-curvature', (req, res) => {
         const thresholdMin = fields.thresholdMin;
         const thresholdMax = fields.thresholdMax;
 
-        console.log(kdtreeMethod, kdtreeValue, thresholdMin, thresholdMax)
-
         try {
             const response = pipeline.gaussianCurvature(
                 filename,
@@ -255,6 +253,11 @@ app.post('/geometric-feature', (req, res) => {
         const kdtreeValue = fields.kdtreeValue;
         const thresholdMin = fields.thresholdMin;
         const thresholdMax = fields.thresholdMax;
+        const outputFilename = path.join(
+            __dirname,
+            'intermediary_clouds',
+            `gf_${feature}_${filename.split('/')[filename.split('/').length-1]}`
+        );
 
         try {
             const response = pipeline.geometricFeature(
@@ -263,7 +266,8 @@ app.post('/geometric-feature', (req, res) => {
                 kdtreeMethod,
                 kdtreeValue,
                 thresholdMin,
-                thresholdMax
+                thresholdMax,
+                outputFilename
             );
 
             fs.unlink(filename, error => {

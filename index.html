@@ -48,6 +48,306 @@
 
         <div class="separator"></div>
 
+
+        <div class="pipeline-container p1-all">
+            <h4>Filtros</h2>
+
+            <div class="filters-container">
+                <div class="input-container">
+                    <input id="filters-input" class="filters" list="filters" placeholder="Escolha um filtro..." />
+                    <datalist id="filters">
+                        <option value="Shape Index">
+                        <option value="Curvatura Gaussiana">
+                        <option value="Soma">
+                        <option value="Omnivariância">
+                        <option value="Autoentropia">
+                        <option value="Anisotropia">
+                        <option value="Planaridade">
+                        <option value="Linearidade">
+                        <option value="Esfericidade">
+                        <option value="Variação de Superfície">
+                        <option value="Verticalidade">
+                    </datalist>
+                </div>
+                <button id="add-filter" class="add-filter">Adicionar filtro</button>
+            </div>
+
+            <div class="pipeline-filter" draggable="true">
+                <div class="collapsible" data-feature="Shape Index">
+                    <span>Shape Index</span>
+                    <button class="remove-filter">X</button>
+                </div>
+                <!-- Shape Index -->
+                <div class="content">
+                    <label for="shapeIndexKDTreeMethodRadius">Método de computação:</label>
+                    <input type="radio" id="shapeIndexKDTreeMethodRadius" name="shapeIndexKDTreeMethod" value="radius" checked>
+                    <label for="shapeIndexKDTreeMethodRadius">Raio</label>
+                    <input type="radio" id="shapeIndexKDTreeMethodK" name="shapeIndexKDTreeMethod" value="k">
+                    <label for="shapeIndexKDTreeMethodK">K Vizinhos</label>
+                    <br/>
+                    <label for="shapeIndexKDTreeValue">Valor usado para computar Normal e PC:</label>
+                    <input type="number" id="shapeIndexKDTreeValue" name="shapeIndexKDTreeValue" value="13" style="width: 40px">
+                    <br/>
+                    <label for="shapeIndexMinThreshold">Threshold mínimo:</label>
+                    <input type="number" id="shapeIndexMinThreshold" name="shapeIndexMinThreshold" value="13" style="width: 80px">
+                    <br/>
+                    <label for="shapeIndexMaxThreshold">Threshold máximo:</label>
+                    <input type="number" id="shapeIndexMaxThreshold" name="shapeIndexMaxThreshold" value="13" style="width: 80px">
+                    <br/>
+                </div>
+            </div>
+
+            <div class="pipeline-filter" draggable="true">
+                <div class="collapsible" data-feature="Curvatura Gaussiana">
+                    <span>Curvatura Gaussiana</span>
+                    <button class="remove-filter">X</button>
+                </div>
+                <!-- Curvatura Gaussiana -->
+                <div class="content">
+                    <label for="gaussianCurvatureKDTreeMethodRadius">Método de computação:</label>
+                    <input type="radio" id="gaussianCurvatureKDTreeMethodRadius" name="gaussianCurvatureKDTreeMethod" value="radius" checked>
+                    <label for="gaussianCurvatureKDTreeMethodRadius">Raio</label>
+                    <input type="radio" id="gaussianCurvatureKDTreeMethodK" name="gaussianCurvatureKDTreeMethod" value="k">
+                    <label for="gaussianCurvatureKDTreeMethodK">K Vizinhos</label>
+                    <br/>
+                    <label for="gaussianCurvatureKDTreeValue">Valor usado para computar Normal e PC:</label>
+                    <input type="number" id="gaussianCurvatureKDTreeValue" name="gaussianCurvatureKDTreeValue" value="13" style="width: 40px">
+                    <br/>
+                    <label for="gaussianCurvatureMinThreshold">Threshold mínimo:</label>
+                    <input type="number" id="gaussianCurvatureMinThreshold" name="gaussianCurvatureMinThreshold" value="13" style="width: 80px">
+                    <br/>
+                    <label for="gaussianCurvatureMaxThreshold">Threshold máximo:</label>
+                    <input type="number" id="gaussianCurvatureMaxThreshold" name="gaussianCurvatureMaxThreshold" value="13" style="width: 80px">
+                    <br/>
+                </div>
+            </div>
+
+            <div class="pipeline-filter" draggable="true">
+                <div class="collapsible" data-feature="Soma">
+                    <span>Soma</span>
+                    <button class="remove-filter">X</button>
+                </div>
+                <!-- Soma -->
+                <div class="content">
+                    <label for="gfSumKDTreeMethodRadius">Método de computação:</label>
+                    <input type="radio" id="gfSumKDTreeMethodRadius" name="gfSumKDTreeMethod" value="radius" checked>
+                    <label for="gfSumKDTreeMethodRadius">Raio</label>
+                    <input type="radio" id="gfSumKDTreeMethodK" name="gfSumKDTreeMethod" value="k">
+                    <label for="gfSumKDTreeMethodK">K Vizinhos</label>
+                    <br/>
+                    <label for="gfSumKDTreeValue">Valor usado para calcular a vizinhança:</label>
+                    <input type="number" id="gfSumKDTreeValue" name="gfSumKDTreeValue" value="13" style="width: 40px">
+                    <br/>
+                    <label for="gfSumMinThreshold">Threshold mínimo:</label>
+                    <input type="number" id="gfSumMinThreshold" name="gfSumMinThreshold" value="13" style="width: 80px">
+                    <br/>
+                    <label for="gfSumMaxThreshold">Threshold máximo:</label>
+                    <input type="number" id="gfSumMaxThreshold" name="gfSumMaxThreshold" value="13" style="width: 80px">
+                    <br/>
+                </div>
+            </div>
+
+            <div class="pipeline-filter" draggable="true">
+                <div class="collapsible" data-feature="Omnivariância">
+                    <span>Omnivariância</span>
+                    <button class="remove-filter">X</button>
+                </div>
+                <!-- Omnivariância -->
+                <div class="content">
+                    <label for="gfOmnivarianceKDTreeMethodRadius">Método de computação:</label>
+                    <input type="radio" id="gfOmnivarianceKDTreeMethodRadius" name="gfOmnivarianceKDTreeMethod" value="radius" checked>
+                    <label for="gfOmnivarianceKDTreeMethodRadius">Raio</label>
+                    <input type="radio" id="gfOmnivarianceKDTreeMethodK" name="gfOmnivarianceKDTreeMethod" value="k">
+                    <label for="gfOmnivarianceKDTreeMethodK">K Vizinhos</label>
+                    <br/>
+                    <label for="gfOmnivarianceKDTreeValue">Valor usado para calcular a vizinhança:</label>
+                    <input type="number" id="gfOmnivarianceKDTreeValue" name="gfOmnivarianceKDTreeValue" value="13" style="width: 40px">
+                    <br/>
+                    <label for="gfOmnivarianceMinThreshold">Threshold mínimo:</label>
+                    <input type="number" id="gfOmnivarianceMinThreshold" name="gfOmnivarianceMinThreshold" value="13" style="width: 80px">
+                    <br/>
+                    <label for="gfOmnivarianceMaxThreshold">Threshold máximo:</label>
+                    <input type="number" id="gfOmnivarianceMaxThreshold" name="gfOmnivarianceMaxThreshold" value="13" style="width: 80px">
+                    <br/>
+                </div>
+            </div>
+
+            <div class="pipeline-filter" draggable="true">
+                <div class="collapsible" data-feature="Autoentropia">
+                    <span>Autoentropia</span>
+                    <button class="remove-filter">X</button>
+                </div>
+                <!-- Autoentropia -->
+                <div class="content">
+                    <label for="gfEigenentropyKDTreeMethodRadius">Método de computação:</label>
+                    <input type="radio" id="gfEigenentropyKDTreeMethodRadius" name="gfEigenentropyKDTreeMethod" value="radius" checked>
+                    <label for="gfEigenentropyKDTreeMethodRadius">Raio</label>
+                    <input type="radio" id="gfEigenentropyKDTreeMethodK" name="gfEigenentropyKDTreeMethod" value="k">
+                    <label for="gfEigenentropyKDTreeMethodK">K Vizinhos</label>
+                    <br/>
+                    <label for="gfEigenentropyKDTreeValue">Valor usado para calcular a vizinhança:</label>
+                    <input type="number" id="gfEigenentropyKDTreeValue" name="gfEigenentropyKDTreeValue" value="13" style="width: 40px">
+                    <br/>
+                    <label for="gfEigenentropyMinThreshold">Threshold mínimo:</label>
+                    <input type="number" id="gfEigenentropyMinThreshold" name="gfEigenentropyMinThreshold" value="13" style="width: 80px">
+                    <br/>
+                    <label for="gfEigenentropyMaxThreshold">Threshold máximo:</label>
+                    <input type="number" id="gfEigenentropyMaxThreshold" name="gfEigenentropyMaxThreshold" value="13" style="width: 80px">
+                    <br/>
+                </div>
+            </div>
+
+            <div class="pipeline-filter" draggable="true">
+                <div class="collapsible" data-feature="Anisotropia">
+                    <span>Anisotropia</span>
+                    <button class="remove-filter">X</button>
+                </div>
+                <!-- Anisotropia -->
+                <div class="content">
+                    <label for="gfAnisotropyKDTreeMethodRadius">Método de computação:</label>
+                    <input type="radio" id="gfAnisotropyKDTreeMethodRadius" name="gfAnisotropyKDTreeMethod" value="radius" checked>
+                    <label for="gfAnisotropyKDTreeMethodRadius">Raio</label>
+                    <input type="radio" id="gfAnisotropyKDTreeMethodK" name="gfAnisotropyKDTreeMethod" value="k">
+                    <label for="gfAnisotropyKDTreeMethodK">K Vizinhos</label>
+                    <br/>
+                    <label for="gfAnisotropyKDTreeValue">Valor usado para calcular a vizinhança:</label>
+                    <input type="number" id="gfAnisotropyKDTreeValue" name="gfAnisotropyKDTreeValue" value="13" style="width: 40px">
+                    <br/>
+                    <label for="gfAnisotropyMinThreshold">Threshold mínimo:</label>
+                    <input type="number" id="gfAnisotropyMinThreshold" name="gfAnisotropyMinThreshold" value="13" style="width: 80px">
+                    <br/>
+                    <label for="gfAnisotropyMaxThreshold">Threshold máximo:</label>
+                    <input type="number" id="gfAnisotropyMaxThreshold" name="gfAnisotropyMaxThreshold" value="13" style="width: 80px">
+                    <br/>
+                </div>
+            </div>
+
+            <div class="pipeline-filter" draggable="true">
+                <div class="collapsible" data-feature="Planaridade">
+                    <span>Planaridade</span>
+                    <button class="remove-filter">X</button>
+                </div>
+                <!-- Planaridade -->
+                <div class="content">
+                    <label for="gfPlanarityKDTreeMethodRadius">Método de computação:</label>
+                    <input type="radio" id="gfPlanarityKDTreeMethodRadius" name="gfPlanarityKDTreeMethod" value="radius" checked>
+                    <label for="gfPlanarityKDTreeMethodRadius">Raio</label>
+                    <input type="radio" id="gfPlanarityKDTreeMethodK" name="gfPlanarityKDTreeMethod" value="k">
+                    <label for="gfPlanarityKDTreeMethodK">K Vizinhos</label>
+                    <br/>
+                    <label for="gfPlanarityKDTreeValue">Valor usado para calcular a vizinhança:</label>
+                    <input type="number" id="gfPlanarityKDTreeValue" name="gfPlanarityKDTreeValue" value="13" style="width: 40px">
+                    <br/>
+                    <label for="gfPlanarityMinThreshold">Threshold mínimo:</label>
+                    <input type="number" id="gfPlanarityMinThreshold" name="gfPlanarityMinThreshold" value="13" style="width: 80px">
+                    <br/>
+                    <label for="gfPlanarityMaxThreshold">Threshold máximo:</label>
+                    <input type="number" id="gfPlanarityMaxThreshold" name="gfPlanarityMaxThreshold" value="13" style="width: 80px">
+                    <br/>
+                </div>
+            </div>
+
+            <div class="pipeline-filter" draggable="true">
+                <div class="collapsible" data-feature="Linearidade">
+                    <span>Linearidade</span>
+                    <button class="remove-filter">X</button>
+                </div>
+                <!-- Linearidade -->
+                <div class="content">
+                    <label for="gfLinearityKDTreeMethodRadius">Método de computação:</label>
+                    <input type="radio" id="gfLinearityKDTreeMethodRadius" name="gfLinearityKDTreeMethod" value="radius" checked>
+                    <label for="gfLinearityKDTreeMethodRadius">Raio</label>
+                    <input type="radio" id="gfLinearityKDTreeMethodK" name="gfLinearityKDTreeMethod" value="k">
+                    <label for="gfLinearityKDTreeMethodK">K Vizinhos</label>
+                    <br/>
+                    <label for="gfLinearityKDTreeValue">Valor usado para calcular a vizinhança:</label>
+                    <input type="number" id="gfLinearityKDTreeValue" name="gfLinearityKDTreeValue" value="13" style="width: 40px">
+                    <br/>
+                    <label for="gfLinearityMinThreshold">Threshold mínimo:</label>
+                    <input type="number" id="gfLinearityMinThreshold" name="gfLinearityMinThreshold" value="13" style="width: 80px">
+                    <br/>
+                    <label for="gfLinearityMaxThreshold">Threshold máximo:</label>
+                    <input type="number" id="gfLinearityMaxThreshold" name="gfLinearityMaxThreshold" value="13" style="width: 80px">
+                    <br/>
+                </div>
+            </div>
+
+            <div class="pipeline-filter" draggable="true">
+                <div class="collapsible" data-feature="Esfericidade">
+                    <span>Esfericidade</span>
+                    <button class="remove-filter">X</button>
+                </div>
+                <!-- Esfericidade -->
+                <div class="content">
+                    <label for="gfSphericityKDTreeMethodRadius">Método de computação:</label>
+                    <input type="radio" id="gfSphericityKDTreeMethodRadius" name="gfSphericityKDTreeMethod" value="radius" checked>
+                    <label for="gfSphericityKDTreeMethodRadius">Raio</label>
+                    <input type="radio" id="gfSphericityKDTreeMethodK" name="gfSphericityKDTreeMethod" value="k">
+                    <label for="gfSphericityKDTreeMethodK">K Vizinhos</label>
+                    <br/>
+                    <label for="gfSphericityKDTreeValue">Valor usado para calcular a vizinhança:</label>
+                    <input type="number" id="gfSphericityKDTreeValue" name="gfSphericityKDTreeValue" value="13" style="width: 40px">
+                    <br/>
+                    <label for="gfSphericityMinThreshold">Threshold mínimo:</label>
+                    <input type="number" id="gfSphericityMinThreshold" name="gfSphericityMinThreshold" value="13" style="width: 80px">
+                    <br/>
+                    <label for="gfSphericityMaxThreshold">Threshold máximo:</label>
+                    <input type="number" id="gfSphericityMaxThreshold" name="gfSphericityMaxThreshold" value="13" style="width: 80px">
+                    <br/>
+                </div>
+            </div>
+
+            <div class="pipeline-filter" draggable="true">
+                <div class="collapsible" data-feature="Variação de Superfície">
+                    <span>Variação de Superfície</span>
+                    <button class="remove-filter">X</button>
+                </div>
+                <!-- Variação de Superfície -->
+                <div class="content">
+                    <label for="gfSurfaceVariationKDTreeMethodRadius">Método de computação:</label>
+                    <input type="radio" id="gfSurfaceVariationKDTreeMethodRadius" name="gfSurfaceVariationKDTreeMethod" value="radius" checked>
+                    <label for="gfSurfaceVariationKDTreeMethodRadius">Raio</label>
+                    <input type="radio" id="gfSurfaceVariationKDTreeMethodK" name="gfSurfaceVariationKDTreeMethod" value="k">
+                    <label for="gfSurfaceVariationKDTreeMethodK">K Vizinhos</label>
+                    <br/>
+                    <label for="gfSurfaceVariationKDTreeValue">Valor usado para calcular a vizinhança:</label>
+                    <input type="number" id="gfSurfaceVariationKDTreeValue" name="gfSurfaceVariationKDTreeValue" value="13" style="width: 40px">
+                    <br/>
+                    <label for="gfSurfaceVariationMinThreshold">Threshold mínimo:</label>
+                    <input type="number" id="gfSurfaceVariationMinThreshold" name="gfSurfaceVariationMinThreshold" value="13" style="width: 80px">
+                    <br/>
+                    <label for="gfSurfaceVariationMaxThreshold">Threshold máximo:</label>
+                    <input type="number" id="gfSurfaceVariationMaxThreshold" name="gfSurfaceVariationMaxThreshold" value="13" style="width: 80px">
+                    <br/>
+                </div>
+            </div>
+
+            <div class="pipeline-filter" draggable="true">
+                <div class="collapsible" data-feature="Verticalidade">
+                    <span>Verticalidade</span>
+                    <button class="remove-filter">X</button>
+                </div>
+                <!-- Verticalidade -->
+                <div class="content">
+                    <label for="gfVerticalityKDTreeMethodRadius">Método de computação:</label>
+                    <input type="radio" id="gfVerticalityKDTreeMethodRadius" name="gfVerticalityKDTreeMethod" value="radius" checked>
+                    <label for="gfVerticalityKDTreeMethodRadius">Raio</label>
+                    <input type="radio" id="gfVerticalityKDTreeMethodK" name="gfVerticalityKDTreeMethod" value="k">
+                    <label for="gfVerticalityKDTreeMethodK">K Vizinhos</label>
+                    <br/>
+                    <label for="gfVerticalityKDTreeValue">Valor usado para calcular a vizinhança:</label>
+                    <input type="number" id="gfVerticalityKDTreeValue" name="gfVerticalityKDTreeValue" value="13" style="width: 40px">
+                    <br/>
+                    <label for="gfVerticalityMinThreshold">Threshold mínimo:</label>
+                    <input type="number" id="gfVerticalityMinThreshold" name="gfVerticalityMinThreshold" value="13" style="width: 80px">
+                    <br/>
+                    <label for="gfVerticalityMaxThreshold">Threshold máximo:</label>
+                    <input type="number" id="gfVerticalityMaxThreshold" name="gfVerticalityMaxThreshold" value="13" style="width: 80px">
+                    <br/>
+                </div>
+            </div>
+        </div>
+
         <div class="finducial-points p1-all">
             <h4>Encontrar ponto fiducial</h4>
 
@@ -183,6 +483,20 @@
     const analysisPointButton = document.getElementById('analysisPointButton');
     const downloadButton = document.getElementById('downloadButton');
     const clearSceneButton = document.getElementById('clearScene');
+
+    // pipeline settings
+    const collapsibles = document.querySelectorAll('.collapsible');
+    const removeFilters = document.querySelectorAll('.remove-filter');
+    const filtersInput = document.getElementById('filters-input');
+    const addFilterButton = document.getElementById('add-filter');
+    const pipelineContainer = document.querySelector('.pipeline-container')
+    const avaliableFilters = [
+        'Shape Index', 'Curvatura Gaussiana', 'Soma', 'Omnivariância', 'Autoentropia', 'Anisotropia',
+        'Planaridade', 'Linearidade', 'Esfericidade', 'Variação de Superfície', 'Verticalidade'
+    ];
+    const currentFilters = [...avaliableFilters];
+    const items = document.querySelectorAll('.pipeline-filter');
+    let dragSrcEl = null;
 
     // checkboxes
     const clearSceneCheckbox = document.getElementById('clearSceneCheckbox');
@@ -399,6 +713,163 @@
                 toggleRaycaster();
             }
         }, false);
+
+        [...collapsibles].forEach(coll => coll.addEventListener('click', collapse));
+
+        [...removeFilters].forEach(filter => filter.addEventListener('click', removeFilter));
+
+        addFilterButton.addEventListener('click', () => {
+            const filterName = filtersInput.value;
+
+            if (!filterName) {
+                alert('Filtro não selecionado!');
+                return;
+            }
+
+            if (!avaliableFilters.includes(filterName)) {
+                alert('Filtro não existe! Por favor, escolha outro.');
+                return;
+            }
+
+            if (currentFilters.includes(filterName)) {
+                alert('Filtro já aplicado!');
+                return;
+            }
+
+            addFilter(filterName);
+        });
+
+        items.forEach(item => { dragAndDropHandlers(item) });
+    }
+
+    const filterMap = {
+        'Shape Index': 'shapeIndex',
+        'Curvatura Gaussiana': 'gaussianCurvature',
+        'Soma': 'gfSum',
+        'Omnivariância': 'gfOmnivariance',
+        'Autoentropia': 'gfEigenentropy',
+        'Anisotropia': 'gfAnisotropy',
+        'Planaridade': 'gfPlanarity',
+        'Linearidade': 'gfLinearity',
+        'Esfericidade': 'gfSphericity',
+        'Variação de superfície': 'gfSurfaceVariation',
+        'Verticalidade': 'gfVerticality'
+    };
+
+    function addFilter(filter) {
+        currentFilters.push(filter);
+
+        const pipelineFilterChild = document.createElement('div');
+        pipelineFilterChild.classList.add('pipeline-filter');
+        pipelineFilterChild.setAttribute('draggable', true);
+
+        pipelineFilterChild.innerHTML = `
+            <div class="collapsible" data-feature="${filter}">
+                <span>${filter}</span>
+                <button class="remove-filter">X</button>
+            </div>
+            <div class="content">
+                <label for="${filterMap[filter]}KDTreeMethodRadius">Método de computação:</label>
+                <input type="radio" id="${filterMap[filter]}KDTreeMethodRadius" name="${filterMap[filter]}KDTreeMethod" value="radius" checked>
+                <label for="${filterMap[filter]}KDTreeMethodRadius">Raio</label>
+                <input type="radio" id="${filterMap[filter]}KDTreeMethodK" name="${filterMap[filter]}KDTreeMethod" value="k">
+                <label for="${filterMap[filter]}KDTreeMethodK">K Vizinhos</label>
+                <br/>
+                <label for="${filterMap[filter]}KDTreeValue">Valor usado para calcular a vizinhança:</label>
+                <input type="number" id="${filterMap[filter]}KDTreeValue" name="${filterMap[filter]}KDTreeValue" value="13" style="width: 40px">
+                <br/>
+                <label for="${filterMap[filter]}MinThreshold">Threshold mínimo:</label>
+                <input type="number" id="${filterMap[filter]}MinThreshold" name="${filterMap[filter]}MinThreshold" value="13" style="width: 80px">
+                <br/>
+                <label for="${filterMap[filter]}MaxThreshold">Threshold máximo:</label>
+                <input type="number" id="${filterMap[filter]}MaxThreshold" name="${filterMap[filter]}MaxThreshold" value="13" style="width: 80px">
+                <br/>
+            </div>
+        `;
+
+        dragAndDropHandlers(pipelineFilterChild);
+        pipelineFilterChild.firstElementChild.addEventListener('click', collapse);
+        pipelineFilterChild.firstElementChild.lastElementChild.addEventListener('click', removeFilter);
+        pipelineContainer.appendChild(pipelineFilterChild);
+    }
+
+    function collapse() {
+        this.classList.toggle('active');
+
+        const content = this.nextElementSibling;
+
+        if (content.style.display === 'block') {
+            content.style.display = 'none';
+        } else {
+            content.style.display = 'block';
+        }
+    }
+
+    function removeFilter(e) {
+        e.stopPropagation();
+        currentFilters.splice(currentFilters.indexOf(this.previousElementSibling.innerHTML), 1);
+        document.querySelector(`div[data-feature="${this.parentNode.dataset.feature}"]`).parentNode.remove();
+    }
+
+    function handleDragStart(e) {
+        this.style.opacity = '0.4';
+
+        dragSrcEl = this;
+
+        e.dataTransfer.effectAllowed = 'move';
+        e.dataTransfer.setData('text/html', this.innerHTML);
+    }
+
+    function handleDragEnd(e) {
+        this.style.opacity = '1';
+
+        items.forEach(function (item) {
+            item.classList.remove('over');
+        });
+    }
+
+    function handleDragOver(e) {
+        if (e.preventDefault) {
+            e.preventDefault();
+        }
+
+        e.dataTransfer.dropEffect = 'move';
+
+        return false;
+    }
+
+    function handleDragEnter(e) {
+        this.classList.add('over');
+    }
+
+    function handleDragLeave(e) {
+        this.classList.remove('over');
+    }
+
+    function handleDrop(e) {
+        e.stopPropagation();
+
+        if (dragSrcEl !== this) {
+            dragSrcEl.innerHTML = this.innerHTML;
+            this.innerHTML = e.dataTransfer.getData('text/html');
+
+            this.firstElementChild.lastElementChild.addEventListener('click', removeFilter);
+            dragSrcEl.firstElementChild.lastElementChild.addEventListener('click', removeFilter);
+
+            this.firstElementChild.addEventListener('click', collapse);
+            dragSrcEl.firstElementChild.addEventListener('click', collapse);
+        }
+
+        return false;
+    }
+
+    function dragAndDropHandlers(item) {
+        item.addEventListener('dragstart', handleDragStart, false);
+        item.addEventListener('dragenter', handleDragEnter, false);
+        item.addEventListener('dragover', handleDragOver, false);
+        item.addEventListener('dragleave', handleDragLeave, false);
+        item.addEventListener('drop', handleDrop, false);
+        item.addEventListener('dragend', handleDragEnd, false);
     }
 
     // Event Lisntener Functions
