@@ -348,6 +348,10 @@
             </div>
         </div>
 
+        <div class="p1-all">
+            <button id="performFiltering" type="button">Realizar filtragem</button>
+        </div>
+
         <div class="finducial-points p1-all">
             <h4>Encontrar ponto fiducial</h4>
 
@@ -497,6 +501,7 @@
     const currentFilters = [...avaliableFilters];
     const items = document.querySelectorAll('.pipeline-filter');
     let dragSrcEl = null;
+    const performFilteringButton = document.getElementById('performFiltering');
 
     // checkboxes
     const clearSceneCheckbox = document.getElementById('clearSceneCheckbox');
@@ -740,6 +745,52 @@
         });
 
         items.forEach(item => { dragAndDropHandlers(item) });
+
+        performFilteringButton.addEventListener('click', () => {
+            // TODO: verificar se a nuvem foi selecionada
+
+            const filtersDivs = document.querySelectorAll('.pipeline-filter');
+            const filters = [];
+
+            filtersDivs.forEach(filter => {
+                const label = filter.firstElementChild.dataset.feature;
+                const filterName = filterMap[label];
+                const kdtreeMethod = getKDTreeMethod(filterName);
+                const kdtreeValue = getKDTreeValue(filterName);
+                const minThreshold = getMinThreshold(filterName);
+                const maxThreshold = getMaxThreshold(filterName);
+
+                // TODO: verificar campos nulos
+
+                filters.push({
+                    filterName,
+                    params: {
+                        kdtreeMethod,
+                        kdtreeValue,
+                        minThreshold,
+                        maxThreshold
+                    }
+                })
+            });
+
+            console.log(filters)
+        });
+    }
+
+    function getKDTreeMethod(filterName) {
+        return document.getElementById(`${filterName}KDTreeMethodRadius`).checked ? 'radius' : 'k';
+    }
+
+    function getKDTreeValue(filterName) {
+        return document.getElementById(`${filterName}KDTreeValue`).value;
+    }
+
+    function getMinThreshold(filterName) {
+        return document.getElementById(`${filterName}MinThreshold`).value;
+    }
+
+    function getMaxThreshold(filterName) {
+        return document.getElementById(`${filterName}MaxThreshold`).value;
     }
 
     const filterMap = {
@@ -752,7 +803,7 @@
         'Planaridade': 'gfPlanarity',
         'Linearidade': 'gfLinearity',
         'Esfericidade': 'gfSphericity',
-        'Variação de superfície': 'gfSurfaceVariation',
+        'Variação de Superfície': 'gfSurfaceVariation',
         'Verticalidade': 'gfVerticality'
     };
 
