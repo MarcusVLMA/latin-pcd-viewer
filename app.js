@@ -300,10 +300,11 @@ app.post('/filtering', (req, res) => {
         }
 
         const filename = file.file.path;
+        const outputFilename = fields.outputFilename ? path.join(__dirname, 'avaliable_clouds', 'filters', fields.outputFilename) : '';
         const filters = JSON.parse(fields.filters);
 
         try {
-            const response = pipeline.applyFilters(filename, filters);
+            const response = pipeline.applyFilters(filename, outputFilename, filters);
 
             fs.unlink(filename, error => {
                 if (error) {
