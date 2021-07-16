@@ -170,3 +170,12 @@ body {
 .trash-icon:hover {
     opacity: 0.8;
 }
+
+
+.custom-file-input:lang(en)~.custom-file-label::after {
+    content: "";
+}
+
+.custom-file-label::after {
+    right: -40px;
+}
