@@ -5,56 +5,76 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LATIN PCD Viewer</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-Piv4xVNRyMGpqkS2by6br4gNJ7DXjqk09RmUpJ8jgGtD7zP9yug3goQfGII0yAns" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
     <div class="sidemenu">
+        <h2 class="bg-info p-2 text-white w-100">Nuvens</h2>
+
         <div class="load-image p1-all">
-            <label for="pcdInputFile">Carregue uma nuvem:</label>
-            <input type="file" id="pcdInputFile" name="pcdInputFile" accept=".pcd">
-            <br/>
-            <br/>
+            <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                    <span class="input-group-text">Carregue uma nuvem:</span>
+                </div>
+                <div class="custom-file">
+                    <input type="file" class="custom-file-input" id="pcdInputFile" name="pcdInputFile" accept=".pcd">
+                    <label class="custom-file-label" for="pcdInputFile">Clique aqui</label>
+                </div>
+            </div>
 
             <input id="clearSceneCheckbox" type="checkbox" checked>
             <label for="clearSceneCheckbox">Limpar tela</label>
         </div>
 
-        <div class="separator"></div>
-
         <div class="avaliable-folders-container p1-all" id="avaliableFoldersContainer"></div>
         <div class="avaliable-clouds-container" id="avaliableCloudsContainer"></div>
 
-        <div class="separator"></div>
+        <div class="point-analysis mt-3">
+            <h2 class="bg-info p-2 text-white">Análise de ponto</h2>
 
-        <div class="point-analysis p1-all">
-            <h4>Análise de ponto</h4>
+            <div class="p1-all">
+                <div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" id="pointAnalysisRadiusMethod" name="pointAnalysisMethod" value="radius" checked>
+                        <label class="form-check-label" for="pointAnalysisRadiusMethod">
+                            Raio
+                        </label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" id="pointAnalysisKMethod" name="pointAnalysisMethod" value="k">
+                        <label class="form-check-label" for="pointAnalysisKMethod">
+                            K Vizinhos
+                        </label>
+                    </div>
+                </div>
 
-            <label for="pointAnalysisRadiusMethod">Método de computação:</label>
-            <input type="radio" id="pointAnalysisRadiusMethod" name="pointAnalysisMethod" value="radius" checked>
-            <label for="pointAnalysisRadiusMethod">Raio</label>
-            <input type="radio" id="pointAnalysisKMethod" name="pointAnalysisMethod" value="k">
-            <label for="pointAnalysisKMethod">K Vizinhos</label>
-            <br/>
+                <div class="input-group input-group-lg">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" id="inputGroup-sizing-lg">Valor usado para computar Normal e PC</span>
+                    </div>
+                    <input type="number" id="pointAnalysisComputationRadiusOrKSize" name="pointAnalysisComputationRadiusOrKSize" value="13" class="form-control" aria-label="Large" aria-describedby="inputGroup-sizing-sm">
+                </div>
 
-            <label for="pointAnalysisComputationRadiusOrKSize">Valor usado para computar Normal e PC:</label>
-            <input type="number" id="pointAnalysisComputationRadiusOrKSize" name="pointAnalysisComputationRadiusOrKSize" value="13" style="width: 80px">
-            <br/>
+                <div class="btn-group my-3" role="group" aria-label="Buttons">
+                    <button id="selectPointButton" class="btn btn-primary btn-lg" type="submit">Selecionar ponto</button>
+                    <button id="analysisPointButton" class="btn btn-primary btn-lg" type="submit">Analisar</button>
+                    <button id="downloadButton" class="btn btn-primary btn-lg" type="submit">Download</button>
+                    <button id="clearPointAnalysis" class="btn btn-danger btn-lg" type="submit">Limpar</button>
+                </div>
 
-            <input id="selectPointButton" style="margin-top: 10px;" type="submit" value="Selecionar ponto">
-            <input id="analysisPointButton" style="margin-top: 10px;" type="submit" value="Analisar">
-            <input id="downloadButton" style="margin-top: 10px;" type="submit" value="Download">
-            <div id="pointAnalysisResult"></div>
+                <ul class="list-group" id="pointAnalysisResult"></ul>
+            </div>
         </div>
 
-        <div class="separator"></div>
+        <div class="pipeline-container">
+            <h2 class="bg-info p-2 text-white">Filtros</h2>
 
-
-        <div class="pipeline-container p1-all">
-            <h4>Filtros</h2>
-
-            <div class="filters-container">
-                <div class="input-container">
-                    <input id="filters-input" class="filters" list="filters" placeholder="Escolha um filtro..." />
+            <div class="filters-container p1-all">
+                <div class="input-group input-group-lg">
+                    <input id="filters-input" type="text" class="form-control" list="filters" placeholder="Escolha um filtro.." aria-label="Escolha um filtro.." aria-describedby="basic-addon2">
                     <datalist id="filters">
                         <option value="Shape Index">
                         <option value="Curvatura Gaussiana">
@@ -68,404 +88,170 @@
                         <option value="Variação de Superfície">
                         <option value="Verticalidade">
                     </datalist>
-                </div>
-                <button id="add-filter" class="add-filter">Adicionar filtro</button>
-            </div>
-
-            <div class="pipeline-filter" draggable="true">
-                <div class="collapsible" data-feature="Shape Index">
-                    <span>Shape Index</span>
-                    <button class="remove-filter">X</button>
-                </div>
-                <!-- Shape Index -->
-                <div class="content">
-                    <label for="shapeIndexKDTreeMethodRadius">Método de computação:</label>
-                    <input type="radio" id="shapeIndexKDTreeMethodRadius" name="shapeIndexKDTreeMethod" value="radius" checked>
-                    <label for="shapeIndexKDTreeMethodRadius">Raio</label>
-                    <input type="radio" id="shapeIndexKDTreeMethodK" name="shapeIndexKDTreeMethod" value="k">
-                    <label for="shapeIndexKDTreeMethodK">K Vizinhos</label>
-                    <br/>
-                    <label for="shapeIndexKDTreeValue">Valor usado para computar Normal e PC:</label>
-                    <input type="number" id="shapeIndexKDTreeValue" name="shapeIndexKDTreeValue" value="10" style="width: 40px">
-                    <br/>
-                    <label for="shapeIndexMinThreshold">Threshold mínimo:</label>
-                    <input type="number" id="shapeIndexMinThreshold" name="shapeIndexMinThreshold" value="-1" style="width: 80px">
-                    <br/>
-                    <label for="shapeIndexMaxThreshold">Threshold máximo:</label>
-                    <input type="number" id="shapeIndexMaxThreshold" name="shapeIndexMaxThreshold" value="1" style="width: 80px">
-                    <br/>
-                </div>
-            </div>
-
-            <div class="pipeline-filter" draggable="true">
-                <div class="collapsible" data-feature="Curvatura Gaussiana">
-                    <span>Curvatura Gaussiana</span>
-                    <button class="remove-filter">X</button>
-                </div>
-                <!-- Curvatura Gaussiana -->
-                <div class="content">
-                    <label for="gaussianCurvatureKDTreeMethodRadius">Método de computação:</label>
-                    <input type="radio" id="gaussianCurvatureKDTreeMethodRadius" name="gaussianCurvatureKDTreeMethod" value="radius" checked>
-                    <label for="gaussianCurvatureKDTreeMethodRadius">Raio</label>
-                    <input type="radio" id="gaussianCurvatureKDTreeMethodK" name="gaussianCurvatureKDTreeMethod" value="k">
-                    <label for="gaussianCurvatureKDTreeMethodK">K Vizinhos</label>
-                    <br/>
-                    <label for="gaussianCurvatureKDTreeValue">Valor usado para computar Normal e PC:</label>
-                    <input type="number" id="gaussianCurvatureKDTreeValue" name="gaussianCurvatureKDTreeValue" value="10" style="width: 40px">
-                    <br/>
-                    <label for="gaussianCurvatureMinThreshold">Threshold mínimo:</label>
-                    <input type="number" id="gaussianCurvatureMinThreshold" name="gaussianCurvatureMinThreshold" value="0" style="width: 80px">
-                    <br/>
-                    <label for="gaussianCurvatureMaxThreshold">Threshold máximo:</label>
-                    <input type="number" id="gaussianCurvatureMaxThreshold" name="gaussianCurvatureMaxThreshold" value="0.02" style="width: 80px">
-                    <br/>
-                </div>
-            </div>
-
-            <div class="pipeline-filter" draggable="true">
-                <div class="collapsible" data-feature="Soma">
-                    <span>Soma</span>
-                    <button class="remove-filter">X</button>
-                </div>
-                <!-- Soma -->
-                <div class="content">
-                    <label for="sumKDTreeMethodRadius">Método de computação:</label>
-                    <input type="radio" id="sumKDTreeMethodRadius" name="sumKDTreeMethod" value="radius" checked>
-                    <label for="sumKDTreeMethodRadius">Raio</label>
-                    <input type="radio" id="sumKDTreeMethodK" name="sumKDTreeMethod" value="k">
-                    <label for="sumKDTreeMethodK">K Vizinhos</label>
-                    <br/>
-                    <label for="sumKDTreeValue">Valor usado para calcular a vizinhança:</label>
-                    <input type="number" id="sumKDTreeValue" name="sumKDTreeValue" value="10" style="width: 40px">
-                    <br/>
-                    <label for="sumMinThreshold">Threshold mínimo:</label>
-                    <input type="number" id="sumMinThreshold" name="sumMinThreshold" value="0" style="width: 80px">
-                    <br/>
-                    <label for="sumMaxThreshold">Threshold máximo:</label>
-                    <input type="number" id="sumMaxThreshold" name="sumMaxThreshold" value="100" style="width: 80px">
-                    <br/>
-                </div>
-            </div>
-
-            <div class="pipeline-filter" draggable="true">
-                <div class="collapsible" data-feature="Omnivariância">
-                    <span>Omnivariância</span>
-                    <button class="remove-filter">X</button>
-                </div>
-                <!-- Omnivariância -->
-                <div class="content">
-                    <label for="omnivarianceKDTreeMethodRadius">Método de computação:</label>
-                    <input type="radio" id="omnivarianceKDTreeMethodRadius" name="omnivarianceKDTreeMethod" value="radius" checked>
-                    <label for="omnivarianceKDTreeMethodRadius">Raio</label>
-                    <input type="radio" id="omnivarianceKDTreeMethodK" name="omnivarianceKDTreeMethod" value="k">
-                    <label for="omnivarianceKDTreeMethodK">K Vizinhos</label>
-                    <br/>
-                    <label for="omnivarianceKDTreeValue">Valor usado para calcular a vizinhança:</label>
-                    <input type="number" id="omnivarianceKDTreeValue" name="omnivarianceKDTreeValue" value="10" style="width: 40px">
-                    <br/>
-                    <label for="omnivarianceMinThreshold">Threshold mínimo:</label>
-                    <input type="number" id="omnivarianceMinThreshold" name="omnivarianceMinThreshold" value="1" style="width: 80px">
-                    <br/>
-                    <label for="omnivarianceMaxThreshold">Threshold máximo:</label>
-                    <input type="number" id="omnivarianceMaxThreshold" name="omnivarianceMaxThreshold" value="1" style="width: 80px">
-                    <br/>
-                </div>
-            </div>
-
-            <div class="pipeline-filter" draggable="true">
-                <div class="collapsible" data-feature="Autoentropia">
-                    <span>Autoentropia</span>
-                    <button class="remove-filter">X</button>
-                </div>
-                <!-- Autoentropia -->
-                <div class="content">
-                    <label for="eigenentropyKDTreeMethodRadius">Método de computação:</label>
-                    <input type="radio" id="eigenentropyKDTreeMethodRadius" name="eigenentropyKDTreeMethod" value="radius" checked>
-                    <label for="eigenentropyKDTreeMethodRadius">Raio</label>
-                    <input type="radio" id="eigenentropyKDTreeMethodK" name="eigenentropyKDTreeMethod" value="k">
-                    <label for="eigenentropyKDTreeMethodK">K Vizinhos</label>
-                    <br/>
-                    <label for="eigenentropyKDTreeValue">Valor usado para calcular a vizinhança:</label>
-                    <input type="number" id="eigenentropyKDTreeValue" name="eigenentropyKDTreeValue" value="10" style="width: 40px">
-                    <br/>
-                    <label for="eigenentropyMinThreshold">Threshold mínimo:</label>
-                    <input type="number" id="eigenentropyMinThreshold" name="eigenentropyMinThreshold" value="-200" style="width: 80px">
-                    <br/>
-                    <label for="eigenentropyMaxThreshold">Threshold máximo:</label>
-                    <input type="number" id="eigenentropyMaxThreshold" name="eigenentropyMaxThreshold" value="0" style="width: 80px">
-                    <br/>
-                </div>
-            </div>
-
-            <div class="pipeline-filter" draggable="true">
-                <div class="collapsible" data-feature="Anisotropia">
-                    <span>Anisotropia</span>
-                    <button class="remove-filter">X</button>
-                </div>
-                <!-- Anisotropia -->
-                <div class="content">
-                    <label for="anisotropyKDTreeMethodRadius">Método de computação:</label>
-                    <input type="radio" id="anisotropyKDTreeMethodRadius" name="anisotropyKDTreeMethod" value="radius" checked>
-                    <label for="anisotropyKDTreeMethodRadius">Raio</label>
-                    <input type="radio" id="anisotropyKDTreeMethodK" name="anisotropyKDTreeMethod" value="k">
-                    <label for="anisotropyKDTreeMethodK">K Vizinhos</label>
-                    <br/>
-                    <label for="anisotropyKDTreeValue">Valor usado para calcular a vizinhança:</label>
-                    <input type="number" id="anisotropyKDTreeValue" name="anisotropyKDTreeValue" value="10" style="width: 40px">
-                    <br/>
-                    <label for="anisotropyMinThreshold">Threshold mínimo:</label>
-                    <input type="number" id="anisotropyMinThreshold" name="anisotropyMinThreshold" value="0" style="width: 80px">
-                    <br/>
-                    <label for="anisotropyMaxThreshold">Threshold máximo:</label>
-                    <input type="number" id="anisotropyMaxThreshold" name="anisotropyMaxThreshold" value="1" style="width: 80px">
-                    <br/>
-                </div>
-            </div>
-
-            <div class="pipeline-filter" draggable="true">
-                <div class="collapsible" data-feature="Planaridade">
-                    <span>Planaridade</span>
-                    <button class="remove-filter">X</button>
-                </div>
-                <!-- Planaridade -->
-                <div class="content">
-                    <label for="planarityKDTreeMethodRadius">Método de computação:</label>
-                    <input type="radio" id="planarityKDTreeMethodRadius" name="planarityKDTreeMethod" value="radius" checked>
-                    <label for="planarityKDTreeMethodRadius">Raio</label>
-                    <input type="radio" id="planarityKDTreeMethodK" name="planarityKDTreeMethod" value="k">
-                    <label for="planarityKDTreeMethodK">K Vizinhos</label>
-                    <br/>
-                    <label for="planarityKDTreeValue">Valor usado para calcular a vizinhança:</label>
-                    <input type="number" id="planarityKDTreeValue" name="planarityKDTreeValue" value="10" style="width: 40px">
-                    <br/>
-                    <label for="planarityMinThreshold">Threshold mínimo:</label>
-                    <input type="number" id="planarityMinThreshold" name="planarityMinThreshold" value="0" style="width: 80px">
-                    <br/>
-                    <label for="planarityMaxThreshold">Threshold máximo:</label>
-                    <input type="number" id="planarityMaxThreshold" name="planarityMaxThreshold" value="1" style="width: 80px">
-                    <br/>
-                </div>
-            </div>
-
-            <div class="pipeline-filter" draggable="true">
-                <div class="collapsible" data-feature="Linearidade">
-                    <span>Linearidade</span>
-                    <button class="remove-filter">X</button>
-                </div>
-                <!-- Linearidade -->
-                <div class="content">
-                    <label for="linearityKDTreeMethodRadius">Método de computação:</label>
-                    <input type="radio" id="linearityKDTreeMethodRadius" name="linearityKDTreeMethod" value="radius" checked>
-                    <label for="linearityKDTreeMethodRadius">Raio</label>
-                    <input type="radio" id="linearityKDTreeMethodK" name="linearityKDTreeMethod" value="k">
-                    <label for="linearityKDTreeMethodK">K Vizinhos</label>
-                    <br/>
-                    <label for="linearityKDTreeValue">Valor usado para calcular a vizinhança:</label>
-                    <input type="number" id="linearityKDTreeValue" name="linearityKDTreeValue" value="10" style="width: 40px">
-                    <br/>
-                    <label for="linearityMinThreshold">Threshold mínimo:</label>
-                    <input type="number" id="linearityMinThreshold" name="linearityMinThreshold" value="0" style="width: 80px">
-                    <br/>
-                    <label for="linearityMaxThreshold">Threshold máximo:</label>
-                    <input type="number" id="linearityMaxThreshold" name="linearityMaxThreshold" value="1" style="width: 80px">
-                    <br/>
-                </div>
-            </div>
-
-            <div class="pipeline-filter" draggable="true">
-                <div class="collapsible" data-feature="Esfericidade">
-                    <span>Esfericidade</span>
-                    <button class="remove-filter">X</button>
-                </div>
-                <!-- Esfericidade -->
-                <div class="content">
-                    <label for="sphericityKDTreeMethodRadius">Método de computação:</label>
-                    <input type="radio" id="sphericityKDTreeMethodRadius" name="sphericityKDTreeMethod" value="radius" checked>
-                    <label for="sphericityKDTreeMethodRadius">Raio</label>
-                    <input type="radio" id="sphericityKDTreeMethodK" name="sphericityKDTreeMethod" value="k">
-                    <label for="sphericityKDTreeMethodK">K Vizinhos</label>
-                    <br/>
-                    <label for="sphericityKDTreeValue">Valor usado para calcular a vizinhança:</label>
-                    <input type="number" id="sphericityKDTreeValue" name="sphericityKDTreeValue" value="10" style="width: 40px">
-                    <br/>
-                    <label for="sphericityMinThreshold">Threshold mínimo:</label>
-                    <input type="number" id="sphericityMinThreshold" name="sphericityMinThreshold" value="0" style="width: 80px">
-                    <br/>
-                    <label for="sphericityMaxThreshold">Threshold máximo:</label>
-                    <input type="number" id="sphericityMaxThreshold" name="sphericityMaxThreshold" value="1" style="width: 80px">
-                    <br/>
-                </div>
-            </div>
-
-            <div class="pipeline-filter" draggable="true">
-                <div class="collapsible" data-feature="Variação de Superfície">
-                    <span>Variação de Superfície</span>
-                    <button class="remove-filter">X</button>
-                </div>
-                <!-- Variação de Superfície -->
-                <div class="content">
-                    <label for="surfaceVariationKDTreeMethodRadius">Método de computação:</label>
-                    <input type="radio" id="surfaceVariationKDTreeMethodRadius" name="surfaceVariationKDTreeMethod" value="radius" checked>
-                    <label for="surfaceVariationKDTreeMethodRadius">Raio</label>
-                    <input type="radio" id="surfaceVariationKDTreeMethodK" name="surfaceVariationKDTreeMethod" value="k">
-                    <label for="surfaceVariationKDTreeMethodK">K Vizinhos</label>
-                    <br/>
-                    <label for="surfaceVariationKDTreeValue">Valor usado para calcular a vizinhança:</label>
-                    <input type="number" id="surfaceVariationKDTreeValue" name="surfaceVariationKDTreeValue" value="10" style="width: 40px">
-                    <br/>
-                    <label for="surfaceVariationMinThreshold">Threshold mínimo:</label>
-                    <input type="number" id="surfaceVariationMinThreshold" name="surfaceVariationMinThreshold" value="0" style="width: 80px">
-                    <br/>
-                    <label for="surfaceVariationMaxThreshold">Threshold máximo:</label>
-                    <input type="number" id="surfaceVariationMaxThreshold" name="surfaceVariationMaxThreshold" value="1" style="width: 80px">
-                    <br/>
-                </div>
-            </div>
-
-            <div class="pipeline-filter" draggable="true">
-                <div class="collapsible" data-feature="Verticalidade">
-                    <span>Verticalidade</span>
-                    <button class="remove-filter">X</button>
-                </div>
-                <!-- Verticalidade -->
-                <div class="content">
-                    <label for="verticalityKDTreeMethodRadius">Método de computação:</label>
-                    <input type="radio" id="verticalityKDTreeMethodRadius" name="verticalityKDTreeMethod" value="radius" checked>
-                    <label for="verticalityKDTreeMethodRadius">Raio</label>
-                    <input type="radio" id="verticalityKDTreeMethodK" name="verticalityKDTreeMethod" value="k">
-                    <label for="verticalityKDTreeMethodK">K Vizinhos</label>
-                    <br/>
-                    <label for="verticalityKDTreeValue">Valor usado para calcular a vizinhança:</label>
-                    <input type="number" id="verticalityKDTreeValue" name="verticalityKDTreeValue" value="10" style="width: 40px">
-                    <br/>
-                    <label for="verticalityMinThreshold">Threshold mínimo:</label>
-                    <input type="number" id="verticalityMinThreshold" name="verticalityMinThreshold" value="0" style="width: 80px">
-                    <br/>
-                    <label for="verticalityMaxThreshold">Threshold máximo:</label>
-                    <input type="number" id="verticalityMaxThreshold" name="verticalityMaxThreshold" value="1" style="width: 80px">
-                    <br/>
+                    <div class="input-group-append">
+                        <button id="add-filter" class="btn btn-outline-secondary" type="button">Adicionar</button>
+                    </div>
                 </div>
             </div>
         </div>
 
         <div class="p1-all">
-            <button id="performFiltering" type="button">Realizar filtragem</button>
+            <button class="btn btn-primary btn-lg" id="performFiltering" type="button">
+                Realizar filtragem
+                <i class="fas fa-filter"></i>
+            </button>
         </div>
 
-        <div class="finducial-points p1-all">
-            <h4>Encontrar ponto fiducial</h4>
+        <div class="finducial-points">
+            <h2 class="bg-info p-2 text-white">Encontrar ponto fiducial</h2>
 
-            <input type="radio" id="nosetip-point" name="fiducial-point" checked>
-            <label for="nosetip-point">Ponta do nariz</label>
-            <br/>
+            <div class="p1-all">
+                <input type="radio" id="nosetip-point" name="fiducial-point" checked>
+                <label for="nosetip-point">Ponta do nariz</label>
+                <br/>
 
-            <input type="radio" id="left-right-eye-point" name="fiducial-point">
-            <label for="left-right-eye-point">Olho esquerdo/direito (IN PROGRESS)</label>
-            <br/>
-            <br/>
+                <!-- <input type="radio" id="left-right-eye-point" name="fiducial-point">
+                <label for="left-right-eye-point">Olho esquerdo/direito (IN PROGRESS)</label>
+                <br/>
+                <br/> -->
 
-            <input type="checkbox" id="flexibilizeThresholds" name="flexibilizeThresholds" checked>
-            <label for="flexibilizeThresholds">Flexibilizar Thresholds:</label>
-            <br/>
+                <input type="checkbox" id="flexibilizeThresholds" name="flexibilizeThresholds" checked>
+                <label for="flexibilizeThresholds">Flexibilizar Thresholds:</label>
+                <br/>
 
-            <input type="checkbox" id="flexibilizeCrop" name="flexibilizeCrop" checked>
-            <label for="flexibilizeCrop">Flexibilizar Crop:</label>
-            <br/>
-            <br/>
+                <input type="checkbox" id="flexibilizeCrop" name="flexibilizeCrop" checked>
+                <label for="flexibilizeCrop">Flexibilizar Crop:</label>
 
-            <label for="radiusMethod">Método de computação:</label>
-            <input type="radio" id="radiusMethod" name="computationMethod" value="radius" checked>
-            <label for="radiusMethod">Raio</label>
-            <input type="radio" id="kMethod" name="computationMethod" value="k">
-            <label for="kMethod">K Vizinhos</label>
-            <br/>
+                <div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" id="radiusMethod" name="computationMethod" value="radius" checked>
+                        <label class="form-check-label" for="radiusMethod">
+                            Raio
+                        </label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" id="kMethod" name="computationMethod" value="k">
+                        <label class="form-check-label" for="kMethod">
+                            K Vizinhos
+                        </label>
+                    </div>
+                </div>
 
-            <label for="computationRadiusOrKSize">Valor usado para computar Normal e PC:</label>
-            <input type="number" id="computationRadiusOrKSize" name="computationRadiusOrKSize" value="13" style="width: 80px">
-            <br/>
+                <div class="input-group input-group-lg">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" id="inputGroup-sizing-lg">Valor usado para computar Normal e PC</span>
+                    </div>
+                    <input type="number" id="computationRadiusOrKSize" name="computationRadiusOrKSize" value="13" class="form-control" aria-label="Large" aria-describedby="inputGroup-sizing-sm">
+                </div>
 
-            <label for="minGaussianCurvature">GC mínima</label>
-            <input type="number" id="minGaussianCurvature" name="minGaussianCurvature" value="0.0038" step="0.001">
-            <br/>
+                <div class="input-group input-group-lg">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" id="inputGroup-sizing-lg">GC mínima</span>
+                    </div>
+                    <input type="number" id="minGaussianCurvature" name="minGaussianCurvature" value="0.0038" step="0.001" class="form-control" aria-label="Large" aria-describedby="inputGroup-sizing-sm">
+                </div>
 
-            <label for="shapeIndexLimit">Limite de SI:</label>
-            <input type="number" id="shapeIndexLimit" name="shapeIndexLimit" value="-0.78" step="0.01" style="width: 80px">
-            <br/>
+                <div class="input-group input-group-lg">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" id="inputGroup-sizing-lg">Limite de SI</span>
+                    </div>
+                    <input type="number" id="shapeIndexLimit" name="shapeIndexLimit" value="-0.78" step="0.01" class="form-control" aria-label="Large" aria-describedby="inputGroup-sizing-sm">
+                </div>
 
-            <label for="minCropSize">Tamanho de Crop mínimo:</label>
-            <input type="number" id="minCropSize" name="minCropSize" value="100" style="width: 80px">
-            <br/>
+                <div class="input-group input-group-lg">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" id="inputGroup-sizing-lg">Tamanho de Crop mínimo</span>
+                    </div>
+                    <input type="number" id="minCropSize" name="minCropSize" value="100" class="form-control" aria-label="Large" aria-describedby="inputGroup-sizing-sm">
+                </div>
 
-            <label for="maxCropSize">Tamanho de Crop máximo:</label>
-            <input type="number" id="maxCropSize" name="maxCropSize" value="240" style="width: 80px">
-            <br/>
+                <div class="input-group input-group-lg">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" id="inputGroup-sizing-lg">Tamanho de Crop máximo</span>
+                    </div>
+                    <input type="number" id="maxCropSize" name="maxCropSize" value="240" class="form-control" aria-label="Large" aria-describedby="inputGroup-sizing-sm">
+                </div>
 
-            <label for="minPointsToContinue">Quantidade mínima de pontos após filtros:</label>
-            <input type="number" id="minPointsToContinue" name="minPointsToContinue" value="15" style="width: 80px">
-            <br/>
+                <div class="input-group input-group-lg">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" id="inputGroup-sizing-lg">Quantidade mínima de pontos após filtros</span>
+                    </div>
+                    <input type="number" id="minPointsToContinue" name="minPointsToContinue" value="15" class="form-control" aria-label="Large" aria-describedby="inputGroup-sizing-sm">
+                </div>
 
-            <label for="removeIsolatedPointsRadius">Raio de busca de pontos isolados:</label>
-            <input type="number" id="removeIsolatedPointsRadius" name="removeIsolatedPointsRadius" value="5" style="width: 80px">
-            <br/>
+                <div class="input-group input-group-lg">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" id="inputGroup-sizing-lg">Raio de busca de pontos isolados</span>
+                    </div>
+                    <input type="number" id="removeIsolatedPointsRadius" name="removeIsolatedPointsRadius" value="5" class="form-control" aria-label="Large" aria-describedby="inputGroup-sizing-sm">
+                </div>
 
-            <label for="removeIsolatedPointsThreshold">Threshold para pontos isolados:</label>
-            <input type="number" id="removeIsolatedPointsThreshold" name="removeIsolatedPointsThreshold" value="6" style="width: 80px">
-            <br/>
+                <div class="input-group input-group-lg">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" id="inputGroup-sizing-lg">Threshold para pontos isolados</span>
+                    </div>
+                    <input type="number" id="removeIsolatedPointsThreshold" name="removeIsolatedPointsThreshold" value="6" class="form-control" aria-label="Large" aria-describedby="inputGroup-sizing-sm">
+                </div>
 
-            <label for="nosetipSearchRadius">Raio para seleção da ponta do nariz:</label>
-            <input type="number" id="nosetipSearchRadius" name="nosetipSearchRadius" value="12" style="width: 80px">
-            <br/>
+                <div class="input-group input-group-lg">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" id="inputGroup-sizing-lg">Raio para seleção da ponta do nariz</span>
+                    </div>
+                    <input type="number" id="nosetipSearchRadius" name="nosetipSearchRadius" value="12" class="form-control" aria-label="Large" aria-describedby="inputGroup-sizing-sm">
+                </div>
 
-            <label for="sum">Features:</label>
-            <br/>
+                <!-- <label for="sum">Features:</label>
+                <br/>
 
-            <input type="checkbox" data-feature name="sum" id="sum" value="Somatório">
-            <label for="sum">Somatório</label>
-            <br/>
+                <input type="checkbox" data-feature name="sum" id="sum" value="Somatório">
+                <label for="sum">Somatório</label>
+                <br/>
 
-            <input type="checkbox" data-feature name="eigenentropy" id="eigenentropy" value="Autoentropia">
-            <label for="eigenentropy">Autoentropia</label>
-            <br/>
+                <input type="checkbox" data-feature name="eigenentropy" id="eigenentropy" value="Autoentropia">
+                <label for="eigenentropy">Autoentropia</label>
+                <br/>
 
-            <input type="checkbox" data-feature name="anisotropy" id="anisotropy" value="Anisotropia">
-            <label for="anisotropy">Anisotropia</label>
-            <br/>
+                <input type="checkbox" data-feature name="anisotropy" id="anisotropy" value="Anisotropia">
+                <label for="anisotropy">Anisotropia</label>
+                <br/>
 
-            <input type="checkbox" data-feature name="planarity" id="planarity" value="Planaridade">
-            <label for="planarity">Planaridade</label>
-            <br/>
+                <input type="checkbox" data-feature name="planarity" id="planarity" value="Planaridade">
+                <label for="planarity">Planaridade</label>
+                <br/>
 
-            <input type="checkbox" data-feature name="linearity" id="linearity" value="Linearidade">
-            <label for="linearity">Linearidade</label>
-            <br/>
+                <input type="checkbox" data-feature name="linearity" id="linearity" value="Linearidade">
+                <label for="linearity">Linearidade</label>
+                <br/>
 
-            <input type="checkbox" data-feature name="surface-variation" id="surface-variation" value="Variação de superfı́cie">
-            <label for="surface-variation">Variação de superfı́cie</label>
-            <br/>
+                <input type="checkbox" data-feature name="surface-variation" id="surface-variation" value="Variação de superfı́cie">
+                <label for="surface-variation">Variação de superfı́cie</label>
+                <br/>
 
-            <input type="checkbox" data-feature name="sphericity" id="sphericity" value="Esfericidade">
-            <label for="sphericity">Esfericidade</label>
-            <br/>
+                <input type="checkbox" data-feature name="sphericity" id="sphericity" value="Esfericidade">
+                <label for="sphericity">Esfericidade</label>
+                <br/>
 
-            <input type="checkbox" data-feature name="verticality" id="verticality" value="Verticalidade">
-            <label for="verticality">Verticalidade</label>
-            <br/>
+                <input type="checkbox" data-feature name="verticality" id="verticality" value="Verticalidade">
+                <label for="verticality">Verticalidade</label>
+                <br/>
 
-            <label for="gfSearchRadius">Raio para filtragem das features da MC:</label>
-            <input type="number" id="gfSearchRadius" name="gfSearchRadius" value="10" min="0" step="5" style="width: 80px">
-            <br/>
+                <label for="gfSearchRadius">Raio para filtragem das features da MC:</label>
+                <input type="number" id="gfSearchRadius" name="gfSearchRadius" value="10" min="0" step="5" style="width: 80px">
+                <br/>
 
-            <label for="featuresThreshold">Threshold para as features da MC:</label>
-            <br/>
-            <input type="text" id="featuresThreshold" name="featuresThreshold" style="width: 300px" placeholder="valores separados por vírgulas">
-            <br>
-            <small>*MC (Matriz de covariância)</small>
-            <br/>
-            <br/>
+                <label for="featuresThreshold">Threshold para as features da MC:</label>
+                <br/>
+                <input type="text" id="featuresThreshold" name="featuresThreshold" style="width: 300px" placeholder="valores separados por vírgulas">
+                <br>
+                <small>*MC (Matriz de covariância)</small>
+                <br/>
+                <br/> -->
 
-            <input id="findFiducialPointButton" type="submit" value="Encontrar ponto fiducial">
-            <input id="clearScene" type="submit" value="Limpar tela">
-            <br/>
+                <div class="mt-2">
+                    <button class="btn btn-primary btn-lg" id="findFiducialPointButton" type="submit">Encontrar ponto fiducial</button>
+                    <button class="btn btn-primary btn-lg" id="clearScene" type="submit">Limpar tela</button>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -489,19 +275,78 @@
     const clearSceneButton = document.getElementById('clearScene');
 
     // pipeline settings
-    const collapsibles = document.querySelectorAll('.collapsible');
+    const collapsibles = document.querySelectorAll('.custom-collapsible');
     const removeFilters = document.querySelectorAll('.remove-filter');
     const filtersInput = document.getElementById('filters-input');
     const addFilterButton = document.getElementById('add-filter');
     const pipelineContainer = document.querySelector('.pipeline-container')
-    const avaliableFilters = [
+    const allFilterss = [
         'Shape Index', 'Curvatura Gaussiana', 'Soma', 'Omnivariância', 'Autoentropia', 'Anisotropia',
         'Planaridade', 'Linearidade', 'Esfericidade', 'Variação de Superfície', 'Verticalidade'
     ];
+    const avaliableFilters = [];
     const currentFilters = [...avaliableFilters];
     const items = document.querySelectorAll('.pipeline-filter');
     let dragSrcEl = null;
     const performFilteringButton = document.getElementById('performFiltering');
+    const filterMap = {
+        'Shape Index': {
+            name: 'shapeIndex',
+            minThreshold: -1,
+            maxThreshold: 1
+        },
+        'Curvatura Gaussiana': {
+            name: 'gaussianCurvature',
+            minThreshold: 0,
+            maxThreshold: 0.02
+        },
+        'Soma': {
+            name: 'sum',
+            minThreshold: 0,
+            maxThreshold: 100
+        },
+        'Omnivariância': {
+            name: 'omnivariance',
+            minThreshold: 1,
+            maxThreshold: 1
+        },
+        'Autoentropia': {
+            name: 'eigenentropy',
+            minThreshold: -200,
+            maxThreshold: 0
+        },
+        'Anisotropia': {
+            name: 'anisotropy',
+            minThreshold: 0,
+            maxThreshold: 1
+        },
+        'Planaridade': {
+            name: 'planarity',
+            minThreshold: 0,
+            maxThreshold: 1
+
+        },
+        'Linearidade': {
+            name: 'linearity',
+            minThreshold: 0,
+            maxThreshold: 1
+        },
+        'Esfericidade': {
+            name: 'sphericity',
+            minThreshold: 0,
+            maxThreshold: 1
+        },
+        'Variação de Superfície': {
+            name: 'surfaceVariation',
+            minThreshold: 0,
+            maxThreshold: 1
+        },
+        'Verticalidade': {
+            name: 'verticality',
+            minThreshold: 0,
+            maxThreshold: 1
+        }
+    };
 
     // checkboxes
     const clearSceneCheckbox = document.getElementById('clearSceneCheckbox');
@@ -557,68 +402,6 @@
 
         // disable by default features selection
         document.getElementById('nosetip-point').click();
-
-        function loadAvaliableClouds() {
-            fetch('http://localhost:3000/avaliable-clouds', { method: 'GET' }).then((response) => {
-                response.json().then(res => {
-                    setAvaliableFoldersHTML(res);
-                })
-            });
-        }
-
-        function setAvaliableFoldersHTML(folders) {
-            const avaliableFoldersContainer = document.getElementById('avaliableFoldersContainer');
-
-            for (let folder in folders) {
-                const folderContainer = document.createElement('div');
-
-                folderContainer.classList.add('avaliable-folder');
-                folderContainer.id = 'folder-' + folder;
-                folderContainer.innerText = folder;
-
-                folderContainer.addEventListener('click', () => {
-                    setAvaliableCloudsHTML(folder, folders[folder]);
-                });
-
-                avaliableFoldersContainer.appendChild(folderContainer);
-            }
-
-            document.getElementById(`folder-${Object.keys(folders)[0]}`).click();
-        }
-
-        function setAvaliableCloudsHTML(folder, clouds) {
-            const avaliableCloudsContainer = document.getElementById('avaliableCloudsContainer');
-            avaliableCloudsContainer.innerHTML = '';
-
-            for (let cloud of clouds) {
-                const input = document.createElement('input');
-                input.type = 'submit';
-                input.id = 'load-input-' + cloud;
-                input.value = 'Carregar';
-
-                const label = document.createElement('label');
-                label.for = 'load-input-' + cloud;
-                label.id = 'label-' + cloud;
-                label.innerText = cloud;
-
-                input.addEventListener('click', () => {
-                    fetch(`http://localhost:3000/avaliable-clouds/${folder}/${cloud}`, { method: 'GET' }).then((response) => {
-                        response.blob().then((res) => {
-                            const pcdBlob = URL.createObjectURL(res);
-                            addPCDFile(pcdBlob, cloud);
-                        })
-                    });
-                });
-
-                const div = document.createElement('div');
-                div.classList.add('load-cloud-input-container');
-
-                div.appendChild(input);
-                div.append(label);
-
-                avaliableCloudsContainer.appendChild(div);
-            }
-        }
     }
 
     function animate() {
@@ -690,27 +473,27 @@
 
         clearSceneButton.addEventListener('click', cleanScene);
 
-        document.getElementById('nosetip-point').addEventListener('click', e => {
-            [...featuresCheckboxes].forEach(c => {
-                c.disabled = true;
-                c.classList.add('blocked');
-            });
-            featuresThresholdInput.classList.add('blocked');
-            featuresThresholdInput.disabled = true;
-            gfSearchRadius.classList.add('blocked');
-            gfSearchRadius.disabled = true;
-        });
+        // document.getElementById('nosetip-point').addEventListener('click', e => {
+        //     [...featuresCheckboxes].forEach(c => {
+        //         c.disabled = true;
+        //         c.classList.add('blocked');
+        //     });
+        //     featuresThresholdInput.classList.add('blocked');
+        //     featuresThresholdInput.disabled = true;
+        //     gfSearchRadius.classList.add('blocked');
+        //     gfSearchRadius.disabled = true;
+        // });
 
-        document.getElementById('left-right-eye-point').addEventListener('click', e => {
-            [...featuresCheckboxes].forEach(c => {
-                c.disabled = false;
-                c.classList.remove('blocked');
-            });
-            featuresThresholdInput.classList.remove('blocked');
-            featuresThresholdInput.disabled = false;
-            gfSearchRadius.classList.remove('blocked');
-            gfSearchRadius.disabled = false;
-        });
+        // document.getElementById('left-right-eye-point').addEventListener('click', e => {
+        //     [...featuresCheckboxes].forEach(c => {
+        //         c.disabled = false;
+        //         c.classList.remove('blocked');
+        //     });
+        //     featuresThresholdInput.classList.remove('blocked');
+        //     featuresThresholdInput.disabled = false;
+        //     gfSearchRadius.classList.remove('blocked');
+        //     gfSearchRadius.disabled = false;
+        // });
 
         // select point on keydown
         document.addEventListener('keydown', e => {
@@ -731,13 +514,13 @@
                 return;
             }
 
-            if (!avaliableFilters.includes(filterName)) {
-                alert('Filtro não existe! Por favor, escolha outro.');
+            if (currentFilters.includes(filterName)) {
+                alert('Filtro já aplicado!');
                 return;
             }
 
-            if (currentFilters.includes(filterName)) {
-                alert('Filtro já aplicado!');
+            if (!allFilterss.includes(filterName)) {
+                alert('Filtro não existe! Por favor, escolha outro.');
                 return;
             }
 
@@ -748,68 +531,225 @@
 
         items.forEach(item => { dragAndDropHandlers(item) });
 
-        performFilteringButton.addEventListener('click', async () => {
-            if (!pcdFile.cloud) {
-                alert('Selecione uma nuvem primeiro!!');
-                return;
-            }
-
-            const inputUrl = pcdFile.blobURL;
-            const sendBlob = await fetch(inputUrl).then(blob => blob.blob());
-            const randomFilename = Math.random().toString(36).substring(7) + '.pcd'
-            const sendFile = new File([sendBlob], randomFilename);
-
-            const filtersDivs = document.querySelectorAll('.pipeline-filter');
-            const filters = [];
-
-            filtersDivs.forEach(filter => {
-                const label = filter.firstElementChild.dataset.feature;
-                const filterName = filterMap[label].name;
-                const kdtreeMethod = getKDTreeMethod(document, filterName);
-                const kdtreeValue = getKDTreeValue(document, filterName);
-                const minThreshold = getMinThreshold(document, filterName);
-                const maxThreshold = getMaxThreshold(document, filterName);
-
-                // TODO: verificar campos nulos
-
-                // filters.push({
-                //     filterName,
-                //     params: {
-                //         kdtreeMethod,
-                //         kdtreeValue,
-                //         minThreshold,
-                //         maxThreshold
-                //     }
-                // })
-
-                filters.push({
-                    filterName,
-                    kdtreeMethod,
-                    kdtreeValue,
-                    minThreshold,
-                    maxThreshold
-                })
-            });
-
-            const formData = new FormData();
-
-            formData.append('file', sendFile);
-            formData.append('filters', JSON.stringify(filters));
-
-            fetch('http://localhost:3000/filtering', {
-                method: 'POST',
-                body: formData
-            });
-        });
+        performFilteringButton.addEventListener('click', applyFiltering);
 
         avaliableFilters.forEach(filter => {
             setChangeEvents(filter);
         });
     }
 
+    async function applyFilter(e) {
+        const filterName = filterMap[this.parentNode.parentNode.parentNode.previousElementSibling.dataset.feature].name;
+
+        const inputFile = document.getElementById(`${filterName}File`);
+        if (!inputFile.files[0]) {
+            alert('Selecione uma nuvem primeiro!!');
+            return;
+        }
+
+        let outputFilename = document.getElementById(`${filterName}Filename`).value;
+        if (outputFilename && !outputFilename.endsWith('.pcd')) {
+            outputFilename += '.pcd';
+        }
+        const inputUrl = URL.createObjectURL(inputFile.files[0]);
+        const sendBlob = await fetch(inputUrl).then(blob => blob.blob());
+        const randomFilename = Math.random().toString(36).substring(7) + '.pcd'
+        const sendFile = new File([sendBlob], randomFilename);
+
+        const kdtreeMethod = getKDTreeMethod(document, filterName);
+        const kdtreeValue = getKDTreeValue(document, filterName);
+        const minThreshold = getMinThreshold(document, filterName);
+        const maxThreshold = getMaxThreshold(document, filterName);
+
+        const filters = [{
+            filterName,
+            kdtreeMethod,
+            kdtreeValue,
+            minThreshold,
+            maxThreshold,
+        }];
+
+        const formData = new FormData();
+
+        formData.append('file', sendFile);
+        formData.append('filters', JSON.stringify(filters));
+        formData.append('outputFilename', outputFilename);
+
+        const response = await fetch('http://localhost:3000/filtering', {
+            method: 'POST',
+            body: formData
+        });
+        const data = await response.json();
+
+        if (!response.ok) {
+            alert('Algum erro aconteceu: ' + data.msg);
+            return;
+        }
+
+        loadAvaliableClouds();
+
+        const cloud = scene.getObjectByName(filterName);
+        scene.remove(cloud);
+
+        const color = document.getElementById(`${filterName}Color`).value;
+        const size = document.getElementById(`${filterName}Slider`).value;
+
+        data.intermediary_clouds.forEach(cloudLog => addPointCloudFromCloudLog2(cloudLog, filterName, 0, 150, 1, size, color));
+    }
+
+    function addPointCloudFromCloudLog2(cloudLog, label, minSize = 0, maxSize = 150, step = 1, initialPointSize = 2, color = undefined) {
+        let materialColor = color;
+
+        if (!color) {
+            materialColor = `#${Math.floor(Math.random()*16777215).toString(16)}`;
+        }
+
+        const material = new THREE.PointsMaterial({ size: initialPointSize, color: materialColor });
+        const points = [];
+
+        cloudLog.cloud.forEach(point => {
+            points.push(new THREE.Vector3(point.x, point.y, point.z));
+        });
+
+        const geometry = new THREE.BufferGeometry().setFromPoints(points);
+        const newCloud = new THREE.Points(geometry, material);
+        newCloud.userData.points = points;
+        newCloud.name = label;
+        // newCloud.userData.label = label;
+        scene.add(newCloud);
+
+        newCloud.geometry.computeBoundingSphere();
+        const inputCenter = newCloud.geometry.boundingSphere.center;
+        center.x = inputCenter.x;
+        center.y = inputCenter.y;
+        center.z = inputCenter.z;
+
+        controls.target.set(center.x, center.y, center.z);
+        camera.position.set(center.x, center.y, center.z + 200);
+        controls.update();
+
+        // const guiColor = gui.addColor(new ColorGUIHelper(newCloud.material, 'color'), 'value').name(cloudLog.cloud_label);
+        // const guiSize = gui.add(new SizeGUIHelper(newCloud.material, 'size'), 'value', minSize, maxSize, step).name(cloudLog.cloud_label);
+
+        // cloudLogFiles.push({
+        //     cloud: newCloud,
+        //     guiColor,
+        //     guiSize,
+        // })
+
+        // fileCounter += 1;
+    }
+
+    function colorHandler(e) {
+        const cloud = scene.getObjectByName(e.target.id.slice(0, -5), true);
+        if (cloud) {
+            cloud.material.color = new THREE.Color(e.target.value);
+        }
+    }
+
+    function sizeHandler(e) {
+        const cloud = scene.getObjectByName(e.target.id.slice(0, -6), true);
+        if (cloud) {
+            cloud.material.size = e.target.value*.5;
+        }
+    }
+
+    function toggleVisibilityHandler(e) {
+        const cloud = scene.getObjectByName(e.currentTarget.id.slice(0, -4), true);
+        if (!cloud) {
+            return;
+        }
+
+        if (cloud.material.size === 0) {
+            cloud.material.size = 2;
+            document.getElementById(e.currentTarget.id).firstElementChild.classList.remove('fa-eye-slash');
+            document.getElementById(e.currentTarget.id).firstElementChild.classList.add('fa-eye');
+            return;
+        }
+
+        cloud.material.size = 0;
+        document.getElementById(e.currentTarget.id).firstElementChild.classList.remove('fa-eye');
+        document.getElementById(e.currentTarget.id).firstElementChild.classList.add('fa-eye-slash');
+    }
+
+    function removeCloudFilter(e) {
+        const cloud = scene.getObjectByName(e.currentTarget.id.slice(0, -6), true);
+        scene.remove(cloud);
+    }
+
+    async function applyFiltering() {
+        if (!pcdFile.cloud) {
+            alert('Selecione uma nuvem primeiro!!');
+            return;
+        }
+
+        const filtersDivs = document.querySelectorAll('.pipeline-filter');
+        const filters = [];
+
+        if (!filtersDivs.length) {
+            alert('Nenhum filtro aplicado!!');
+            return;
+        }
+
+        const inputUrl = pcdFile.blobURL;
+        const sendBlob = await fetch(inputUrl).then(blob => blob.blob());
+        const randomFilename = Math.random().toString(36).substring(7) + '.pcd'
+        const sendFile = new File([sendBlob], randomFilename);
+
+        filtersDivs.forEach(filter => {
+            const label = filter.firstElementChild.dataset.feature;
+            const filterName = filterMap[label].name;
+            const kdtreeMethod = getKDTreeMethod(document, filterName);
+            const kdtreeValue = getKDTreeValue(document, filterName);
+            const minThreshold = getMinThreshold(document, filterName);
+            const maxThreshold = getMaxThreshold(document, filterName);
+
+            // TODO: verificar campos nulos
+
+            // filters.push({
+            //     filterName,
+            //     params: {
+            //         kdtreeMethod,
+            //         kdtreeValue,
+            //         minThreshold,
+            //         maxThreshold
+            //     }
+            // })
+
+            filters.push({
+                filterName,
+                kdtreeMethod,
+                kdtreeValue,
+                minThreshold,
+                maxThreshold
+            })
+        });
+
+        const formData = new FormData();
+
+        formData.append('file', sendFile);
+        formData.append('filters', JSON.stringify(filters));
+
+        const response = await fetch('http://localhost:3000/filtering', {
+            method: 'POST',
+            body: formData
+        });
+        const data = await response.json();
+
+        if (!response.ok) {
+            alert('Algum erro aconteceu: ' + data.msg);
+            return;
+        }
+
+        data.intermediary_clouds.forEach(cloudLog => addPointCloudFromCloudLog(cloudLog));
+    }
+
     function setChangeEvents(filter) {
         const filterName = filterMap[filter].name;
 
+        document.getElementById(`${filterName}Filename`).addEventListener('change', e => {
+            e.target.setAttribute('value', e.target.value);
+        });
         document.getElementById(`${filterName}KDTreeMethodRadius`).addEventListener('change', e => {
             e.target.setAttribute('checked', true);
             document.getElementById(`${filterName}KDTreeMethodK`).setAttribute('checked', false);
@@ -827,83 +767,29 @@
         document.getElementById(`${filterName}MaxThreshold`).addEventListener('change', e => {
             e.target.setAttribute('value', e.target.value);
         });
+        document.getElementById(`${filterName}Color`).addEventListener('change', e => {
+            e.target.setAttribute('value', e.target.value);
+        });
+        document.getElementById(`${filterName}Slider`).addEventListener('change', e => {
+            e.target.setAttribute('value', e.target.value);
+        });
     }
 
-    function getKDTreeMethod(filterName) {
+    function getKDTreeMethod(document, filterName) {
         return document.getElementById(`${filterName}KDTreeMethodRadius`).checked ? 'radius' : 'k';
     }
 
-    function getKDTreeValue(filterName) {
+    function getKDTreeValue(document, filterName) {
         return document.getElementById(`${filterName}KDTreeValue`).value;
     }
 
-    function getMinThreshold(filterName) {
+    function getMinThreshold(document, filterName) {
         return document.getElementById(`${filterName}MinThreshold`).value;
     }
 
-    function getMaxThreshold(filterName) {
+    function getMaxThreshold(document, filterName) {
         return document.getElementById(`${filterName}MaxThreshold`).value;
     }
-
-
-    const filterMap = {
-        'Shape Index': {
-            name: 'shapeIndex',
-            minThreshold: -1,
-            maxThreshold: 1
-        },
-        'Curvatura Gaussiana': {
-            name: 'gaussianCurvature',
-            minThreshold: 0,
-            maxThreshold: 0.02
-        },
-        'Soma': {
-            name: 'sum',
-            minThreshold: 0,
-            maxThreshold: 100
-        },
-        'Omnivariância': {
-            name: 'omnivariance',
-            minThreshold: 1,
-            maxThreshold: 1
-        },
-        'Autoentropia': {
-            name: 'eigenentropy',
-            minThreshold: -200,
-            maxThreshold: 0
-        },
-        'Anisotropia': {
-            name: 'anisotropy',
-            minThreshold: 0,
-            maxThreshold: 1
-        },
-        'Planaridade': {
-            name: 'planarity',
-            minThreshold: 0,
-            maxThreshold: 1
-
-        },
-        'Linearidade': {
-            name: 'linearity',
-            minThreshold: 0,
-            maxThreshold: 1
-        },
-        'Esfericidade': {
-            name: 'sphericity',
-            minThreshold: 0,
-            maxThreshold: 1
-        },
-        'Variação de Superfície': {
-            name: 'surfaceVariation',
-            minThreshold: 0,
-            maxThreshold: 1
-        },
-        'Verticalidade': {
-            name: 'verticality',
-            minThreshold: 0,
-            maxThreshold: 1
-        }
-    };
 
     function addFilter(filter) {
         currentFilters.push(filter);
@@ -911,32 +797,83 @@
         const pipelineFilterChild = document.createElement('div');
         pipelineFilterChild.classList.add('pipeline-filter');
         pipelineFilterChild.setAttribute('draggable', true);
+        pipelineFilterChild.setAttribute('id', 'draggable');
 
         const filterName = filterMap[filter].name;
         const minThreshold = filterMap[filter].minThreshold;
         const maxThreshold = filterMap[filter].maxThreshold;
 
         pipelineFilterChild.innerHTML = `
-            <div class="collapsible" data-feature="${filter}">
-                <span>${filter}</span>
-                <button class="remove-filter">X</button>
+            <div class="custom-collapsible active" data-feature="${filter}">
+                <h2>${filter}</h2>
+                <button class="remove-filter">
+                    <i class="fas fa-trash trash-icon"></i>
+                </button>
             </div>
-            <div class="content">
-                <label for="${filterName}KDTreeMethodRadius">Método de computação:</label>
-                <input type="radio" id="${filterName}KDTreeMethodRadius" name="${filterName}KDTreeMethod" value="radius" checked>
-                <label for="${filterName}KDTreeMethodRadius">Raio</label>
-                <input type="radio" id="${filterName}KDTreeMethodK" name="${filterName}KDTreeMethod" value="k">
-                <label for="${filterName}KDTreeMethodK">K Vizinhos</label>
-                <br/>
-                <label for="${filterName}KDTreeValue">Valor usado para calcular a vizinhança:</label>
-                <input type="number" id="${filterName}KDTreeValue" name="${filterName}KDTreeValue" value="10" style="width: 40px">
-                <br/>
-                <label for="${filterName}MinThreshold">Threshold mínimo:</label>
-                <input type="number" id="${filterName}MinThreshold" name="${filterName}MinThreshold" value="${minThreshold}" style="width: 80px">
-                <br/>
-                <label for="${filterName}MaxThreshold">Threshold máximo:</label>
-                <input type="number" id="${filterName}MaxThreshold" name="${filterName}MaxThreshold" value="${maxThreshold}" style="width: 80px">
-                <br/>
+            <div class="custom-collapsible-content" style="display:flex;">
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text">Carregue uma nuvem:</span>
+                    </div>
+                    <div class="custom-file">
+                        <input type="file" class="custom-file-input" id="${filterName}File" name="${filterName}File" accept=".pcd">
+                        <label class="custom-file-label" for="${filterName}File">Clique aqui</label>
+                    </div>
+                </div>
+                <div class="input-group input-group-lg">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" id="inputGroup-sizing-lg">Nome do arquivo</span>
+                    </div>
+                    <input type="text" id="${filterName}Filename" name="${filterName}Filename" class="form-control" aria-label="Large" aria-describedby="inputGroup-sizing-sm">
+                </div>
+                <h3 class="my-1">Método para calcular a vizinhança</h3>
+                <div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" id="${filterName}KDTreeMethodRadius" name="${filterName}KDTreeMethod" value="radius" checked>
+                        <label class="form-check-label" for="${filterName}KDTreeMethodRadius">Raio</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" id="${filterName}KDTreeMethodK" name="${filterName}KDTreeMethod" value="k">
+                        <label class="form-check-label" for="${filterName}KDTreeMethodK">K Vizinhos</label>
+                    </div>
+                </div>
+                <div class="input-group input-group-lg">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" id="inputGroup-sizing-lg">Valor para calcular a vizinhança</span>
+                    </div>
+                    <input type="number" id="${filterName}KDTreeValue" name="${filterName}KDTreeValue" value="10" class="form-control" aria-label="Large" aria-describedby="inputGroup-sizing-sm">
+                </div>
+                <div class="input-group input-group-lg">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" id="inputGroup-sizing-lg">Threshold mínimo</span>
+                    </div>
+                    <input type="number" id="${filterName}MinThreshold" name="${filterName}MinThreshold" value="${minThreshold}" class="form-control" aria-label="Large" aria-describedby="inputGroup-sizing-sm">
+                </div>
+                <div class="input-group input-group-lg">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" id="inputGroup-sizing-lg">Threshold mínimo</span>
+                    </div>
+                    <input type="number" id="${filterName}MaxThreshold" name="${filterName}MaxThreshold" value="${maxThreshold}" class="form-control" aria-label="Large" aria-describedby="inputGroup-sizing-sm">
+                </div>
+                <div class="d-flex mt-2 justify-content-between align-items-center w-100">
+                    <div class="d-flex align-items-center">
+                        <label for="${filterName}Color" class="form-label">Cor:</label>
+                        <input type="color" class="form-control form-control-color mx-2" role="button" id="${filterName}Color" value="#e66465" title="Escolhar a cor da nuvem">
+                        <label for="${filterName}Slider" class="form-label">Tamanho:</label>
+                        <input type="number" min="0" max="10" class="form-control form-control mx-2" id="${filterName}Slider" value="2" title="Escolhar o tamanho dos pontos da nuvem">
+                    </div>
+                    <div class="d-flex align-items-center">
+                        <button class="btn btn-success" id="${filterName}Filter" title="Filtrar">
+                            <i class="fas fa-play"></i>
+                        </button>
+                        <button class="btn btn-secondary mx-2" id="${filterName}Hide" title="Show/hide">
+                            <i class="far fa-eye"></i>
+                        </button>
+                        <button class="btn btn-danger" id="${filterName}Remove" title="Remover nuvem">
+                            <i class="fas fa-minus-circle"></i>
+                        </button>
+                    </div>
+                </div>
             </div>
         `;
 
@@ -945,6 +882,21 @@
         pipelineFilterChild.firstElementChild.lastElementChild.addEventListener('click', removeFilter);
         pipelineContainer.appendChild(pipelineFilterChild);
         setChangeEvents(filter);
+        setFilterCardEvents(filter);
+    }
+
+    document.getElementById('clearPointAnalysis').addEventListener('click', () => {
+        document.getElementById('pointAnalysisResult').innerHTML = '';
+    });
+
+    function setFilterCardEvents(filter) {
+        const filterName = filterMap[filter].name;
+
+        document.getElementById(`${filterName}Filter`).addEventListener('click', applyFilter);
+        document.getElementById(`${filterName}Color`).addEventListener('change', colorHandler);
+        document.getElementById(`${filterName}Slider`).addEventListener('change', sizeHandler);
+        document.getElementById(`${filterName}Remove`).addEventListener('click', removeCloudFilter);
+        document.getElementById(`${filterName}Hide`).addEventListener('click', toggleVisibilityHandler);
     }
 
     function collapse() {
@@ -952,10 +904,10 @@
 
         const content = this.nextElementSibling;
 
-        if (content.style.display === 'block') {
+        if (content.style.display === 'flex') {
             content.style.display = 'none';
         } else {
-            content.style.display = 'block';
+            content.style.display = 'flex';
         }
     }
 
@@ -963,6 +915,8 @@
         e.stopPropagation();
         currentFilters.splice(currentFilters.indexOf(this.previousElementSibling.innerHTML), 1);
         document.querySelector(`div[data-feature="${this.parentNode.dataset.feature}"]`).parentNode.remove();
+        const cloud = scene.getObjectByName(filterMap[this.parentNode.dataset.feature].name, true);
+        scene.remove(cloud);
     }
 
     function handleDragStart(e) {
@@ -1015,8 +969,13 @@
             this.firstElementChild.addEventListener('click', collapse);
             dragSrcEl.firstElementChild.addEventListener('click', collapse);
 
-            setChangeEvents(this.firstElementChild.dataset.feature);
-            setChangeEvents(dragSrcEl.firstElementChild.dataset.feature);
+            const thisFilterName = this.firstElementChild.dataset.feature;
+            const dragSrcElFilterName = dragSrcEl.firstElementChild.dataset.feature;
+
+            setChangeEvents(thisFilterName);
+            setChangeEvents(dragSrcElFilterName);
+            setFilterCardEvents(thisFilterName);
+            setFilterCardEvents(dragSrcElFilterName);
         }
 
         return false;
@@ -1096,12 +1055,12 @@
             return;
         }
 
-        const featuresThreshold = featuresThresholdInput.value.replace(/(^,)|(,$)/g, '');
+        // const featuresThreshold = featuresThresholdInput.value.replace(/(^,)|(,$)/g, '');
 
-        if (features.split(',').filter(Boolean).length !== featuresThreshold.split(',').filter(Boolean).length) {
-            alert('Número de features e thresholds devem ser iguais.');
-            return;
-        }
+        // if (features.split(',').filter(Boolean).length !== featuresThreshold.split(',').filter(Boolean).length) {
+        //     alert('Número de features e thresholds devem ser iguais.');
+        //     return;
+        // }
 
         cleanCloudLogEntries();
         cleanPointAnalysis();
@@ -1123,7 +1082,7 @@
         const removeIsolatedPointsRadius = document.getElementById('removeIsolatedPointsRadius');
         const removeIsolatedPointsThreshold = document.getElementById('removeIsolatedPointsThreshold');
         const nosetipSearchRadius = document.getElementById('nosetipSearchRadius');
-        const gfSearchRadius = document.getElementById('gfSearchRadius');
+        // const gfSearchRadius = document.getElementById('gfSearchRadius');
 
         const formData = new FormData();
 
@@ -1139,9 +1098,9 @@
         formData.append('removeIsolatedPointsRadius', removeIsolatedPointsRadius.value);
         formData.append('removeIsolatedPointsThreshold', removeIsolatedPointsThreshold.value);
         formData.append('nosetipSearchRadius', nosetipSearchRadius.value);
-        formData.append('gfSearchRadius', gfSearchRadius.value);
-        formData.append('features', features);
-        formData.append('featuresThreshold', featuresThreshold);
+        // formData.append('gfSearchRadius', gfSearchRadius.value);
+        // formData.append('features', features);
+        // formData.append('featuresThreshold', featuresThreshold);
         formData.append('fiducialPoint', fiducialPoint);
         formData.append('file', sendFile);
 
@@ -1288,21 +1247,21 @@
 
     function insertPointAnalysisOnHTML(pointAnalysis) {
         document.getElementById('pointAnalysisResult').innerHTML = `
-        <span><b>Point (x,y,z): </b>(${selectedNosetipCloud.point.x.toFixed(5)}, ${selectedNosetipCloud.point.y.toFixed(5)}, ${selectedNosetipCloud.point.z.toFixed(5)})</span><br/>
-        <span><b>Número de pontos: </b>${pointAnalysis.neighborhood.length}</span><br/>
-        <span><b>Gaussian Curvature: </b>${pointAnalysis.gaussian_curvature.toFixed(5)}</span><br/>
-        <span><b>Shape Index: </b>${pointAnalysis.shape_index.toFixed(5)}</span><br/>
-        <span><b>Normal (x,y,z): </b>(${pointAnalysis.normal.x.toFixed(5)}, ${pointAnalysis.normal.y.toFixed(5)}, ${pointAnalysis.normal.z.toFixed(5)})</span><br/>
-        <span><b>PCs (k1,k2): </b>(${pointAnalysis.principal_curvatures.k1.toFixed(5)}, ${pointAnalysis.principal_curvatures.k2.toFixed(5)})</span><br/>
-        <span><b>Soma: </b>${pointAnalysis.geometric_features.sum.toFixed(5)}</span><br/>
-        <span><b>Omnivariância: </b>${pointAnalysis.geometric_features.omnivariance.toFixed(5)}</span><br/>
-        <span><b>Autoentropia: </b>${pointAnalysis.geometric_features.eigenentropy.toFixed(5)}</span><br/>
-        <span><b>Anisotropia: </b>${pointAnalysis.geometric_features.anisotropy.toFixed(5)}</span><br/>
-        <span><b>Planaridade: </b>${pointAnalysis.geometric_features.planarity.toFixed(5)}</span><br/>
-        <span><b>Linearidade: </b>${pointAnalysis.geometric_features.linearity.toFixed(5)}</span><br/>
-        <span><b>Variação de superfície: </b>${pointAnalysis.geometric_features.surfaceVariation.toFixed(5)}</span><br/>
-        <span><b>Esfericidade: </b>${pointAnalysis.geometric_features.sphericity.toFixed(5)}</span><br/>
-        <span><b>Verticalidade: </b>${pointAnalysis.geometric_features.verticality.toFixed(5)}</span><br/>
+            <li class="list-group-item"><span class="font-weight-bold">Point (x, y, z):</span> (${selectedNosetipCloud.point.x.toFixed(5)}, ${selectedNosetipCloud.point.y.toFixed(5)}, ${selectedNosetipCloud.point.z.toFixed(5)})</li>
+            <li class="list-group-item"><span class="font-weight-bold">Número de pontos:</span> ${pointAnalysis.neighborhood.length}</li>
+            <li class="list-group-item"><span class="font-weight-bold">Gaussian Curvature:</span> ${pointAnalysis.gaussian_curvature.toFixed(5)}</li>
+            <li class="list-group-item"><span class="font-weight-bold">Shape Index:</span> ${pointAnalysis.shape_index.toFixed(5)}</li>
+            <li class="list-group-item"><span class="font-weight-bold">Normal (x, y, z):</span> (${pointAnalysis.normal.x.toFixed(5)}, ${pointAnalysis.normal.y.toFixed(5)}, ${pointAnalysis.normal.z.toFixed(5)})</li>
+            <li class="list-group-item"><span class="font-weight-bold">PCs (k1, k2):</span> (${pointAnalysis.principal_curvatures.k1.toFixed(5)}, ${pointAnalysis.principal_curvatures.k2.toFixed(5)})</li>
+            <li class="list-group-item"><span class="font-weight-bold">Soma:</span> ${pointAnalysis.geometric_features.sum.toFixed(5)}</li>
+            <li class="list-group-item"><span class="font-weight-bold">Omnivariância:</span> ${pointAnalysis.geometric_features.omnivariance.toFixed(5)}</li>
+            <li class="list-group-item"><span class="font-weight-bold">Autoentropia:</span> ${pointAnalysis.geometric_features.eigenentropy.toFixed(5)}</li>
+            <li class="list-group-item"><span class="font-weight-bold">Anisotropia:</span> ${pointAnalysis.geometric_features.anisotropy.toFixed(5)}</li>
+            <li class="list-group-item"><span class="font-weight-bold">Planaridade:</span> ${pointAnalysis.geometric_features.planarity.toFixed(5)}</li>
+            <li class="list-group-item"><span class="font-weight-bold">Linearidade:</span> ${pointAnalysis.geometric_features.linearity.toFixed(5)}</li>
+            <li class="list-group-item"><span class="font-weight-bold">Variação de superfície:</span> ${pointAnalysis.geometric_features.surfaceVariation.toFixed(5)}</li>
+            <li class="list-group-item"><span class="font-weight-bold">Esfericidade:</span> ${pointAnalysis.geometric_features.sphericity.toFixed(5)}</li>
+            <li class="list-group-item"><span class="font-weight-bold">Verticalidade:</span> ${pointAnalysis.geometric_features.verticality.toFixed(5)}</li>
         `;
     }
 
@@ -1333,7 +1292,7 @@
             center.y = inputCenter.y;
             center.z = inputCenter.z;
 
-            controls.target.set( center.x, center.y, center.z );
+            controls.target.set(center.x, center.y, center.z);
             controls.update();
         }
 
@@ -1464,7 +1423,77 @@
         }
     }
 
+    function loadAvaliableClouds() {
+        fetch('http://localhost:3000/avaliable-clouds', { method: 'GET' }).then((response) => {
+            response.json().then(res => {
+                setAvaliableFoldersHTML(res);
+            })
+        });
+    }
+
+    function setAvaliableFoldersHTML(folders) {
+        const avaliableFoldersContainer = document.getElementById('avaliableFoldersContainer');
+        avaliableFoldersContainer.innerHTML = '';
+
+        for (let folder in folders) {
+            const folderContainer = document.createElement('div');
+
+            folderContainer.classList.add('avaliable-folder', 'badge' ,'badge-secondary');
+            folderContainer.id = 'folder-' + folder;
+            folderContainer.innerText = folder;
+
+            folderContainer.addEventListener('click', () => {
+                setAvaliableCloudsHTML(folder, folders[folder]);
+            });
+
+            avaliableFoldersContainer.appendChild(folderContainer);
+        }
+
+        document.getElementById(`folder-${Object.keys(folders)[0]}`).click();
+    }
+
+    function setAvaliableCloudsHTML(folder, clouds) {
+        const avaliableCloudsContainer = document.getElementById('avaliableCloudsContainer');
+        avaliableCloudsContainer.innerHTML = '';
+
+        for (let cloud of clouds) {
+            const button = document.createElement('button');
+            button.type = 'submit';
+            button.id = 'load-button-' + cloud;
+            button.innerHTML = 'Carregar';
+            button.classList.add('btn', 'btn-secondary', 'btn-lg');
+
+            const label = document.createElement('label');
+            label.for = 'load-button-' + cloud;
+            label.id = 'label-' + cloud;
+            label.innerText = cloud;
+
+            button.addEventListener('click', () => {
+                fetch(`http://localhost:3000/avaliable-clouds/${folder}/${cloud}`, { method: 'GET' }).then((response) => {
+                    response.blob().then((res) => {
+                        const pcdBlob = URL.createObjectURL(res);
+                        addPCDFile(pcdBlob, cloud);
+                    })
+                });
+            });
+
+            const div = document.createElement('div');
+            div.classList.add('load-cloud-button-container');
+
+            div.appendChild(button);
+            div.append(label);
+
+            avaliableCloudsContainer.appendChild(div);
+        }
+    }
+
+    // jquery helpers
+    $(document).on('change', '.custom-file-input', function (event) {
+        $(this).next('.custom-file-label').html(event.target.files[0].name);
+    });
+
     init();
     animate();
 </script>
+<script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
 </html>

@@ -51,11 +51,13 @@ body {
 }
 
 .avaliable-folder {
+    padding: 1rem;
     transition: 0.2s all;
 }
 
 .avaliable-folder:hover {
     cursor: pointer;
+    opacity: 0.9;
 }
 
 .avaliable-clouds-container {
@@ -65,22 +67,22 @@ body {
     padding: 0.8rem 1rem 1rem;
 }
 
-.load-cloud-input-container {
+.load-cloud-button-container {
     display: flex;
     align-items: center;
     justify-content: flex-start;
     width: 100%;
 }
 
-.load-cloud-input-container:not(:last-child) {
+.load-cloud-button-container:not(:last-child) {
     margin-bottom: 1rem;
 }
 
-.load-cloud-input-container input {
+.load-cloud-button-container button {
     margin-right: 0.5rem;
 }
 
-.load-cloud-input {
+.load-cloud-button {
     margin: 1rem 2rem 0 1rem;
 }
 
@@ -101,11 +103,11 @@ body {
 
 .pipeline-filter {
     border: 3px solid #666;
-    margin-bottom: 5px;
+    margin: 0 1rem 0.5rem;
 }
 
 /* Style the button that is used to open and close the collapsible content */
-.collapsible {
+.custom-collapsible {
     background-color: #eee;
     color: #444;
     cursor: pointer;
@@ -121,35 +123,50 @@ body {
 }
 
 /* Add a background color to the button if it is clicked on (add the .active class with JS), and when you move the mouse over it (hover) */
-.active, .collapsible:hover {
+.active, .custom-collapsible:hover {
     background-color: #ccc;
 }
 
 /* Style the collapsible content. Note: hidden by default */
-.content {
-    padding: 0 18px;
-    display: none;
+.custom-collapsible-content {
+    padding: 6px 18px;
+    display: flex;
     overflow: hidden;
     background-color: #f1f1f1;
     margin-bottom: 2px;
+    flex-direction: column;
+    align-items: flex-start;
 }
 
-.use-filter, .remove-filter {
+.remove-filter {
     cursor: pointer;
-    z-index: 8;
+    border: none;
+    background: none;
 }
 
 .filters-container {
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    width: 100%;
 }
 
 .filters {
     margin: 1rem 0;
 }
 
-.add-filter {
-    width: 80%;
+.apply-filter {
+    padding: 0.5rem 1rem;
+    background-color: tomato;
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-weight: 500;
+}
+
+.trash-icon {
+    color: red;
+    z-index: 10;
+}
+
+.trash-icon:hover {
+    opacity: 0.8;
 }
