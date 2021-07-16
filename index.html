@@ -59,9 +59,9 @@
                 </div>
 
                 <div class="btn-group my-3" role="group" aria-label="Buttons">
-                    <button id="selectPointButton" class="btn btn-primary btn-lg" type="submit">Selecionar ponto</button>
-                    <button id="analysisPointButton" class="btn btn-primary btn-lg" type="submit">Analisar</button>
-                    <button id="downloadButton" class="btn btn-primary btn-lg" type="submit">Download</button>
+                    <button id="selectPointButton" class="btn btn-info btn-lg" type="submit">Selecionar ponto</button>
+                    <button id="analysisPointButton" class="btn btn-info btn-lg" type="submit">Analisar</button>
+                    <button id="downloadButton" class="btn btn-info btn-lg" type="submit">Download</button>
                     <button id="clearPointAnalysis" class="btn btn-danger btn-lg" type="submit">Limpar</button>
                 </div>
 
@@ -96,7 +96,7 @@
         </div>
 
         <div class="p1-all">
-            <button class="btn btn-primary btn-lg" id="performFiltering" type="button">
+            <button class="btn btn-info btn-lg" id="performFiltering" type="button">
                 Realizar filtragem
                 <i class="fas fa-filter"></i>
             </button>
@@ -137,63 +137,63 @@
                     </div>
                 </div>
 
-                <div class="input-group input-group-lg">
+                <div class="input-group input-group-lg mb-2">
                     <div class="input-group-prepend">
                         <span class="input-group-text" id="inputGroup-sizing-lg">Valor usado para computar Normal e PC</span>
                     </div>
                     <input type="number" id="computationRadiusOrKSize" name="computationRadiusOrKSize" value="13" class="form-control" aria-label="Large" aria-describedby="inputGroup-sizing-sm">
                 </div>
 
-                <div class="input-group input-group-lg">
+                <div class="input-group input-group-lg mb-2">
                     <div class="input-group-prepend">
                         <span class="input-group-text" id="inputGroup-sizing-lg">GC mínima</span>
                     </div>
                     <input type="number" id="minGaussianCurvature" name="minGaussianCurvature" value="0.0038" step="0.001" class="form-control" aria-label="Large" aria-describedby="inputGroup-sizing-sm">
                 </div>
 
-                <div class="input-group input-group-lg">
+                <div class="input-group input-group-lg mb-2">
                     <div class="input-group-prepend">
                         <span class="input-group-text" id="inputGroup-sizing-lg">Limite de SI</span>
                     </div>
                     <input type="number" id="shapeIndexLimit" name="shapeIndexLimit" value="-0.78" step="0.01" class="form-control" aria-label="Large" aria-describedby="inputGroup-sizing-sm">
                 </div>
 
-                <div class="input-group input-group-lg">
+                <div class="input-group input-group-lg mb-2">
                     <div class="input-group-prepend">
                         <span class="input-group-text" id="inputGroup-sizing-lg">Tamanho de Crop mínimo</span>
                     </div>
                     <input type="number" id="minCropSize" name="minCropSize" value="100" class="form-control" aria-label="Large" aria-describedby="inputGroup-sizing-sm">
                 </div>
 
-                <div class="input-group input-group-lg">
+                <div class="input-group input-group-lg mb-2">
                     <div class="input-group-prepend">
                         <span class="input-group-text" id="inputGroup-sizing-lg">Tamanho de Crop máximo</span>
                     </div>
                     <input type="number" id="maxCropSize" name="maxCropSize" value="240" class="form-control" aria-label="Large" aria-describedby="inputGroup-sizing-sm">
                 </div>
 
-                <div class="input-group input-group-lg">
+                <div class="input-group input-group-lg mb-2">
                     <div class="input-group-prepend">
                         <span class="input-group-text" id="inputGroup-sizing-lg">Quantidade mínima de pontos após filtros</span>
                     </div>
                     <input type="number" id="minPointsToContinue" name="minPointsToContinue" value="15" class="form-control" aria-label="Large" aria-describedby="inputGroup-sizing-sm">
                 </div>
 
-                <div class="input-group input-group-lg">
+                <div class="input-group input-group-lg mb-2">
                     <div class="input-group-prepend">
                         <span class="input-group-text" id="inputGroup-sizing-lg">Raio de busca de pontos isolados</span>
                     </div>
                     <input type="number" id="removeIsolatedPointsRadius" name="removeIsolatedPointsRadius" value="5" class="form-control" aria-label="Large" aria-describedby="inputGroup-sizing-sm">
                 </div>
 
-                <div class="input-group input-group-lg">
+                <div class="input-group input-group-lg mb-2">
                     <div class="input-group-prepend">
                         <span class="input-group-text" id="inputGroup-sizing-lg">Threshold para pontos isolados</span>
                     </div>
                     <input type="number" id="removeIsolatedPointsThreshold" name="removeIsolatedPointsThreshold" value="6" class="form-control" aria-label="Large" aria-describedby="inputGroup-sizing-sm">
                 </div>
 
-                <div class="input-group input-group-lg">
+                <div class="input-group input-group-lg mb-2">
                     <div class="input-group-prepend">
                         <span class="input-group-text" id="inputGroup-sizing-lg">Raio para seleção da ponta do nariz</span>
                     </div>
@@ -248,8 +248,8 @@
                 <br/> -->
 
                 <div class="mt-2">
-                    <button class="btn btn-primary btn-lg" id="findFiducialPointButton" type="submit">Encontrar ponto fiducial</button>
-                    <button class="btn btn-primary btn-lg" id="clearScene" type="submit">Limpar tela</button>
+                    <button class="btn btn-info btn-lg" id="findFiducialPointButton" type="submit">Encontrar ponto fiducial</button>
+                    <button class="btn btn-info btn-lg" id="clearScene" type="submit">Limpar tela</button>
                 </div>
             </div>
         </div>
@@ -806,12 +806,13 @@
         pipelineFilterChild.innerHTML = `
             <div class="custom-collapsible active" data-feature="${filter}">
                 <h2>${filter}</h2>
+                <div class="circle">
                 <button class="remove-filter">
                     <i class="fas fa-trash trash-icon"></i>
-                </button>
+                </button></div>
             </div>
             <div class="custom-collapsible-content" style="display:flex;">
-                <div class="input-group mb-3">
+                <div class="input-group mb-2">
                     <div class="input-group-prepend">
                         <span class="input-group-text">Carregue uma nuvem:</span>
                     </div>
@@ -820,7 +821,7 @@
                         <label class="custom-file-label" for="${filterName}File">Clique aqui</label>
                     </div>
                 </div>
-                <div class="input-group input-group-lg">
+                <div class="input-group input-group-lg mb-2">
                     <div class="input-group-prepend">
                         <span class="input-group-text" id="inputGroup-sizing-lg">Nome do arquivo</span>
                     </div>
@@ -837,13 +838,13 @@
                         <label class="form-check-label" for="${filterName}KDTreeMethodK">K Vizinhos</label>
                     </div>
                 </div>
-                <div class="input-group input-group-lg">
+                <div class="input-group input-group-lg mb-2">
                     <div class="input-group-prepend">
                         <span class="input-group-text" id="inputGroup-sizing-lg">Valor para calcular a vizinhança</span>
                     </div>
                     <input type="number" id="${filterName}KDTreeValue" name="${filterName}KDTreeValue" value="10" class="form-control" aria-label="Large" aria-describedby="inputGroup-sizing-sm">
                 </div>
-                <div class="input-group input-group-lg">
+                <div class="input-group input-group-lg mb-2">
                     <div class="input-group-prepend">
                         <span class="input-group-text" id="inputGroup-sizing-lg">Threshold mínimo</span>
                     </div>
@@ -885,8 +886,9 @@
         setFilterCardEvents(filter);
     }
 
-    document.getElementById('clearPointAnalysis').addEventListener('click', () => {
+    document.getElementById('clearPointAnalysis').addEventListener('click', e => {
         document.getElementById('pointAnalysisResult').innerHTML = '';
+        e.target.style.display = 'none';
     });
 
     function setFilterCardEvents(filter) {
@@ -1263,6 +1265,7 @@
             <li class="list-group-item"><span class="font-weight-bold">Esfericidade:</span> ${pointAnalysis.geometric_features.sphericity.toFixed(5)}</li>
             <li class="list-group-item"><span class="font-weight-bold">Verticalidade:</span> ${pointAnalysis.geometric_features.verticality.toFixed(5)}</li>
         `;
+        document.getElementById('clearPointAnalysis').style.display = 'inline-block';
     }
 
     function addPointCloudFromCloudLog(cloudLog, minSize = 0, maxSize = 150, step = 1, initialPointSize = 2, color = undefined) {

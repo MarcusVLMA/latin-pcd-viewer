@@ -102,8 +102,9 @@ body {
 }
 
 .pipeline-filter {
-    border: 3px solid #666;
+    border: 1.5px solid #666;
     margin: 0 1rem 0.5rem;
+    border-radius: 2px;
 }
 
 /* Style the button that is used to open and close the collapsible content */
@@ -178,4 +179,23 @@ body {
 
 .custom-file-label::after {
     right: -40px;
+}
+
+.circle {
+    background-color: white;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 0.2s ease-in-out;
+}
+
+.circle:hover {
+    opacity: 0.8;
+}
+
+#clearPointAnalysis {
+    display: none;
 }
