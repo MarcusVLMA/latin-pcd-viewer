@@ -76,7 +76,7 @@
                 <div class="input-group input-group-lg">
                     <input id="filters-input" type="text" class="form-control" list="filters" placeholder="Escolha um filtro.." aria-label="Escolha um filtro.." aria-describedby="basic-addon2">
                     <datalist id="filters">
-                        <option value="Shape Index">
+                        <!-- <option value="Shape Index">
                         <option value="Curvatura Gaussiana">
                         <option value="Soma">
                         <option value="Omnivariância">
@@ -86,7 +86,7 @@
                         <option value="Linearidade">
                         <option value="Esfericidade">
                         <option value="Variação de Superfície">
-                        <option value="Verticalidade">
+                        <option value="Verticalidade"> -->
                     </datalist>
                     <div class="input-group-append">
                         <button id="add-filter" class="btn btn-outline-secondary" type="button">Adicionar</button>
@@ -275,20 +275,6 @@
     const clearSceneButton = document.getElementById('clearScene');
 
     // pipeline settings
-    const collapsibles = document.querySelectorAll('.custom-collapsible');
-    const removeFilters = document.querySelectorAll('.remove-filter');
-    const filtersInput = document.getElementById('filters-input');
-    const addFilterButton = document.getElementById('add-filter');
-    const pipelineContainer = document.querySelector('.pipeline-container')
-    const allFilterss = [
-        'Shape Index', 'Curvatura Gaussiana', 'Soma', 'Omnivariância', 'Autoentropia', 'Anisotropia',
-        'Planaridade', 'Linearidade', 'Esfericidade', 'Variação de Superfície', 'Verticalidade'
-    ];
-    const avaliableFilters = [];
-    const currentFilters = [...avaliableFilters];
-    const items = document.querySelectorAll('.pipeline-filter');
-    let dragSrcEl = null;
-    const performFilteringButton = document.getElementById('performFiltering');
     const filterMap = {
         'Shape Index': {
             name: 'shapeIndex',
@@ -300,7 +286,22 @@
             minThreshold: 0,
             maxThreshold: 0.02
         },
-        'Soma': {
+        'Curvatura (Curvedness)': {
+            name: 'curvedness',
+            minThreshold: 0,
+            maxThreshold: 0.02
+        },
+        'Curvatura Média': {
+            name: 'meanCurvature',
+            minThreshold: 0,
+            maxThreshold: 0.02
+        },
+        'Razão das Curvaturas Principais': {
+            name: 'principalCurvatureRatio',
+            minThreshold: 1,
+            maxThreshold: 5
+        },
+        'Somatório': {
             name: 'sum',
             minThreshold: 0,
             maxThreshold: 100
@@ -348,6 +349,25 @@
         }
     };
 
+    const collapsibles = document.querySelectorAll('.custom-collapsible');
+    const removeFilters = document.querySelectorAll('.remove-filter');
+    const filtersInput = document.getElementById('filters-input');
+    const addFilterButton = document.getElementById('add-filter');
+    const pipelineContainer = document.querySelector('.pipeline-container')
+    const allFilters = Object.keys(filterMap).map(filter => filter);
+    const avaliableFilters = [];
+    const currentFilters = [...avaliableFilters];
+    const items = document.querySelectorAll('.pipeline-filter');
+    let dragSrcEl = null;
+    const performFilteringButton = document.getElementById('performFiltering');
+
+    const filtersDatalist = document.getElementById('filters');
+    let filtersDatalistOptions = '';
+    allFilters.forEach(filter => {
+        filtersDatalistOptions += '<option value="' + filter + '">';
+    });
+    filtersDatalist.innerHTML = filtersDatalistOptions;
+
     // checkboxes
     const clearSceneCheckbox = document.getElementById('clearSceneCheckbox');
     const featuresCheckboxes = document.querySelectorAll('input[type="checkbox"][data-feature]');
@@ -381,6 +401,7 @@
     let runningRaycaster = false;
     let runningFocusRaycaster = false;
     let selectedNosetipCloud = {};
+    let neighborhoodCloud = {};
     let pointAnalysis = {};
 
     function init() {
@@ -473,28 +494,6 @@
 
         clearSceneButton.addEventListener('click', cleanScene);
 
-        // document.getElementById('nosetip-point').addEventListener('click', e => {
-        //     [...featuresCheckboxes].forEach(c => {
-        //         c.disabled = true;
-        //         c.classList.add('blocked');
-        //     });
-        //     featuresThresholdInput.classList.add('blocked');
-        //     featuresThresholdInput.disabled = true;
-        //     gfSearchRadius.classList.add('blocked');
-        //     gfSearchRadius.disabled = true;
-        // });
-
-        // document.getElementById('left-right-eye-point').addEventListener('click', e => {
-        //     [...featuresCheckboxes].forEach(c => {
-        //         c.disabled = false;
-        //         c.classList.remove('blocked');
-        //     });
-        //     featuresThresholdInput.classList.remove('blocked');
-        //     featuresThresholdInput.disabled = false;
-        //     gfSearchRadius.classList.remove('blocked');
-        //     gfSearchRadius.disabled = false;
-        // });
-
         // select point on keydown
         document.addEventListener('keydown', e => {
             if (e.key === 's' || e.key === 'S') {
@@ -519,7 +518,7 @@
                 return;
             }
 
-            if (!allFilterss.includes(filterName)) {
+            if (!allFilters.includes(filterName)) {
                 alert('Filtro não existe! Por favor, escolha outro.');
                 return;
             }
@@ -615,7 +614,6 @@
         const newCloud = new THREE.Points(geometry, material);
         newCloud.userData.points = points;
         newCloud.name = label;
-        // newCloud.userData.label = label;
         scene.add(newCloud);
 
         newCloud.geometry.computeBoundingSphere();
@@ -852,7 +850,7 @@
                 </div>
                 <div class="input-group input-group-lg">
                     <div class="input-group-prepend">
-                        <span class="input-group-text" id="inputGroup-sizing-lg">Threshold mínimo</span>
+                        <span class="input-group-text" id="inputGroup-sizing-lg">Threshold máximo</span>
                     </div>
                     <input type="number" id="${filterName}MaxThreshold" name="${filterName}MaxThreshold" value="${maxThreshold}" class="form-control" aria-label="Large" aria-describedby="inputGroup-sizing-sm">
                 </div>
@@ -889,6 +887,8 @@
     document.getElementById('clearPointAnalysis').addEventListener('click', e => {
         document.getElementById('pointAnalysisResult').innerHTML = '';
         e.target.style.display = 'none';
+        cleanSelectedNosetipCloud();
+        cleanNeighborhoodCloud();
     });
 
     function setFilterCardEvents(filter) {
@@ -1024,8 +1024,8 @@
                 camera.position.set(center.x, center.y, center.z + 200);
                 controls.update();
 
-                const guiColor = gui.addColor(new ColorGUIHelper(pointCloud.material, 'color'), 'value').name(`Color ${fileCounter}`);
-                const guiSize = gui.add(new SizeGUIHelper(pointCloud.material, 'size'), 'value', 0, 150, 1).name(`Size ${fileCounter}`);
+                const guiColor = gui.addColor(new ColorGUIHelper(pointCloud.material, 'color'), 'value').name(`Cloud (Color)`);
+                const guiSize = gui.add(new SizeGUIHelper(pointCloud.material, 'size'), 'value', 0, 150, 1).name(`Cloud (Size)`);
 
                 fileCounter += 1;
                 pcdFile = {
@@ -1121,7 +1121,7 @@
         data.intermediary_clouds.forEach(cloudLog => addPointCloudFromCloudLog(cloudLog));
 
         const fiducialPointCloudLog = {
-            cloud_label: 'Fiducial Point',
+            cloud_label: 'Ponto fiducial',
             cloud: [{ x: data.point.x, y: data.point.y, z: data.point.z }]
         };
 
@@ -1164,7 +1164,7 @@
         insertPointAnalysisOnHTML(data.point_analysis);
 
         const cloudLog = {
-            cloud_label: 'Neighborhood',
+            cloud_label: 'Vizinhança',
             cloud: data.point_analysis.neighborhood
         };
 
@@ -1249,12 +1249,15 @@
 
     function insertPointAnalysisOnHTML(pointAnalysis) {
         document.getElementById('pointAnalysisResult').innerHTML = `
-            <li class="list-group-item"><span class="font-weight-bold">Point (x, y, z):</span> (${selectedNosetipCloud.point.x.toFixed(5)}, ${selectedNosetipCloud.point.y.toFixed(5)}, ${selectedNosetipCloud.point.z.toFixed(5)})</li>
+            <li class="list-group-item"><span class="font-weight-bold">Ponto (x, y, z):</span> (${selectedNosetipCloud.point.x.toFixed(5)}, ${selectedNosetipCloud.point.y.toFixed(5)}, ${selectedNosetipCloud.point.z.toFixed(5)})</li>
             <li class="list-group-item"><span class="font-weight-bold">Número de pontos:</span> ${pointAnalysis.neighborhood.length}</li>
-            <li class="list-group-item"><span class="font-weight-bold">Gaussian Curvature:</span> ${pointAnalysis.gaussian_curvature.toFixed(5)}</li>
+            <li class="list-group-item"><span class="font-weight-bold">Curvatura Gaussiana:</span> ${pointAnalysis.gaussian_curvature.toFixed(5)}</li>
             <li class="list-group-item"><span class="font-weight-bold">Shape Index:</span> ${pointAnalysis.shape_index.toFixed(5)}</li>
             <li class="list-group-item"><span class="font-weight-bold">Normal (x, y, z):</span> (${pointAnalysis.normal.x.toFixed(5)}, ${pointAnalysis.normal.y.toFixed(5)}, ${pointAnalysis.normal.z.toFixed(5)})</li>
             <li class="list-group-item"><span class="font-weight-bold">PCs (k1, k2):</span> (${pointAnalysis.principal_curvatures.k1.toFixed(5)}, ${pointAnalysis.principal_curvatures.k2.toFixed(5)})</li>
+            <li class="list-group-item"><span class="font-weight-bold">Curvatura Média:</span> ${pointAnalysis.mean_curvature.toFixed(5)}</li>
+            <li class="list-group-item"><span class="font-weight-bold">Curvatura (Curvedness):</span> ${pointAnalysis.curvedness.toFixed(5)}</li>
+            <li class="list-group-item"><span class="font-weight-bold">Razão das Curvaturas Principais:</span> ${pointAnalysis.principal_curvature_ratio.toFixed(5)}</li>
             <li class="list-group-item"><span class="font-weight-bold">Soma:</span> ${pointAnalysis.geometric_features.sum.toFixed(5)}</li>
             <li class="list-group-item"><span class="font-weight-bold">Omnivariância:</span> ${pointAnalysis.geometric_features.omnivariance.toFixed(5)}</li>
             <li class="list-group-item"><span class="font-weight-bold">Autoentropia:</span> ${pointAnalysis.geometric_features.eigenentropy.toFixed(5)}</li>
@@ -1306,7 +1309,13 @@
             cloud: newCloud,
             guiColor,
             guiSize,
-        })
+        });
+
+        neighborhoodCloud = {
+            cloud: newCloud,
+            guiColor,
+            guiSize
+        };
 
         fileCounter += 1;
     }
@@ -1365,6 +1374,26 @@
 
         selectedNosetipCloud = {};
         cleanPointAnalysis();
+    }
+
+    function cleanNeighborhoodCloud(cloud) {
+        if ('cloud' in neighborhoodCloud && neighborhoodCloud.cloud) {
+            scene.remove(neighborhoodCloud.cloud);
+            delete neighborhoodCloud.cloud;
+        }
+
+        if ('guiColor' in neighborhoodCloud && neighborhoodCloud.guiColor) {
+            gui.remove(neighborhoodCloud.guiColor);
+            delete neighborhoodCloud.guiColor;
+        }
+
+        if ('guiSize' in neighborhoodCloud && neighborhoodCloud.guiSize) {
+            gui.remove(neighborhoodCloud.guiSize);
+            delete neighborhoodCloud.guiSize;
+        }
+
+        neighborhoodCloud = {};
+        // cleanPointAnalysis();
     }
 
     function cleanCloudLogEntries() {
