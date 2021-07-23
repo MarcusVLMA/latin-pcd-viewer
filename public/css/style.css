@@ -199,3 +199,8 @@ body {
 #clearPointAnalysis {
     display: none;
 }
+
+.tooltip {
+    font-family: Georgia;
+    font-size: 1.6rem;
+}
