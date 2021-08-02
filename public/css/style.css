@@ -227,7 +227,7 @@ body {
 }
 
 .upload-cloud-e {
-    width: 10px;
+    width: 120px !important;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;

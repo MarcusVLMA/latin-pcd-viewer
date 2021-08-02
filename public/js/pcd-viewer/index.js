@@ -362,9 +362,6 @@ async function joinClouds() {
     }
 
     insertJoinedClouds(data, outputFilename);
-
-    loadAvaliableClouds();
-    // addPointCloudFromCloudLog(data);
 }
 
 function insertJoinedClouds(clouds, filename) {
@@ -502,8 +499,6 @@ async function applyFilter(e) {
         return;
     }
 
-    loadAvaliableClouds();
-
     const cloud = scene.getObjectByName(filterName);
     scene.remove(cloud);
 
@@ -630,7 +625,6 @@ function sizeHandler(e, cloudName) {
 
 function toggleVisibilityHandler(e, cloudName) {
     const cloud = scene.getObjectByName(cloudName, true);
-    console.log(cloudName, cloud)
     if (!cloud) {
         return;
     }
@@ -1436,6 +1430,14 @@ function cleanScene() {
     // removeAllSceneChildren();
     removeAllSceneChildren();
     gui.domElement.remove();
+    [...document.getElementsByClassName('upload-cloud-button')].forEach(btn => {
+        if (btn.disabled) btn.disabled = false;
+    });
+    const uploadDivs = [...document.getElementsByClassName('load-image-block')];
+    for (let i = 0; i < uploadDivs.length-1; i++) {
+        uploadDivs[i].remove();
+    }
+    document.getElementsByClassName('joined-clouds')[0].innerHTML = '';
 }
 
 function focusOnNewPoint(e) {
@@ -1523,7 +1525,7 @@ function setAvaliableFoldersHTML(folders) {
             headDiv.classList.add('upload-cloud', 'w-40', 'd-flex', 'align-items-center');
             
             const headDivBtn = document.createElement('button');
-            headDivBtn.classList.add('bg-transparent');
+            headDivBtn.classList.add('bg-transparent', 'upload-cloud-button');
             headDivBtn.id = `pcdFile${avaliableCloudsCounter}`;
             headDivBtn.innerHTML = '<i class="fas fa-upload"></i>';
             
