@@ -99,6 +99,10 @@ export function createFilterDiv(label, name, min, max, checked) {
                     <button class="btn btn-success" id="${name}Filter" title="Filtrar">
                         <i class="fas fa-play"></i>
                     </button>
+                    <button class="btn btn-primary d-none" id="${name}Loading" type="button" disabled>
+                        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                        <span class="sr-only">Loading...</span>
+                    </button>
                     <button class="btn btn-secondary mx-2" id="${name}Hide" title="Show/hide">
                         <i class="far fa-eye"></i>
                     </button>

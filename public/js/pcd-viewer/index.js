@@ -488,6 +488,11 @@ async function applyFilter(e) {
     formData.append('filters', JSON.stringify(filters));
     formData.append('outputFilename', outputFilename);
 
+    const filterBtn = document.getElementById(`${filterName}Filter`);
+    const loadingBtn = document.getElementById(`${filterName}Loading`);
+
+    showLoading(filterBtn, loadingBtn);
+
     const response = await fetch('http://localhost:3000/filtering', {
         method: 'POST',
         body: formData
@@ -496,8 +501,11 @@ async function applyFilter(e) {
 
     if (!response.ok) {
         alert('Algum erro aconteceu: ' + data.msg);
+        hideLoading(filterBtn, loadingBtn);
         return;
     }
+
+    hideLoading(filterBtn, loadingBtn);
 
     const cloud = scene.getObjectByName(filterName);
     scene.remove(cloud);
@@ -509,6 +517,17 @@ async function applyFilter(e) {
 }
 
 pointXYZSelectButton.addEventListener('click', selectPointFromInput);
+
+function showLoading(source, target) {
+    source.style.display = 'none';
+    target.classList.remove('d-none');
+    target.style.display = 'block';
+}
+
+function hideLoading(source, target) {
+    source.style.display = 'block';
+    target.style.display = 'none';
+}
 
 function selectPointFromInput() {
     if (!pcdFile.cloud) {
@@ -699,6 +718,11 @@ async function applyFiltering() {
     formData.append('file', sendFile);
     formData.append('filters', JSON.stringify(filters));
 
+    const filterBtn = document.getElementById('performFiltering');
+    const loadingBtn = document.getElementById('performFilteringLoading');
+
+    showLoading(filterBtn, loadingBtn);
+
     const response = await fetch('http://localhost:3000/filtering', {
         method: 'POST',
         body: formData
@@ -707,8 +731,11 @@ async function applyFiltering() {
 
     if (!response.ok) {
         alert('Algum erro aconteceu: ' + data.msg);
+        hideLoading(filterBtn, loadingBtn);
         return;
     }
+
+    hideLoading(filterBtn, loadingBtn);
 
     cleanCloudLogEntries();
 
