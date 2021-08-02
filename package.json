@@ -4,7 +4,7 @@
   "description": "",
   "main": "app.js",
   "scripts": {
-    "dev": "nodemon app.js",
+    "dev": "nodemon app.js --ext js",
     "install": "npm install && cd public/js/pcd-viewer && npm install",
     "test": "echo \"Error: no test specified\" && exit 1"
   },

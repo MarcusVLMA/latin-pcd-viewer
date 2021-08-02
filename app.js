@@ -285,6 +285,23 @@ app.post('/geometric-feature', (req, res) => {
     });
 });
 
+const savePipelineConfig = (file, outputFilename, filters, error) => {
+    const timestamp = new Date();
+    const data = {
+        file,
+        outputFilename,
+        filters,
+        timestamp,
+        error
+    };
+
+    fs.writeFile(path.join('log', `pipeline_${Date.now()}.json`), JSON.stringify(data, null, 4), 'utf8', err => {
+        if (err) {
+            console.error(err);
+        }
+    });
+};
+
 app.post('/filtering', (req, res) => {
     const form = formidable({ multiples: true });
 
@@ -299,6 +316,7 @@ app.post('/filtering', (req, res) => {
             return;
         }
 
+        let error = null;
         const filename = file.file.path;
         const outputFilename = fields.outputFilename ? path.join(__dirname, 'avaliable_clouds', 'filters', fields.outputFilename) : '';
         const filters = JSON.parse(fields.filters);
@@ -314,6 +332,45 @@ app.post('/filtering', (req, res) => {
 
                 res.status(200).json(response);
             });
+        } catch (e) {
+            console.error(e);
+            error = e.message;
+            res.status(500).json({ 'msg': e.message });
+        }
+
+        savePipelineConfig(filename, outputFilename, filters, error);
+    });
+    
+});
+
+app.post('/join-clouds', (req, res) => {
+    const form = formidable({ multiples: true });
+
+    form.on('fileBegin', (name, file) => {
+        file.path = `./uploaded_files/${file.name}`;
+    });
+
+    form.parse(req, (err, fields, file) => {
+        if (err) {
+            console.error(err);
+            next(err);
+            return;
+        }
+        
+        const files = file.file.length ? file.file.map(f => f.path) : [file.file.path];
+        const outputFilename = path.join(__dirname, 'avaliable_clouds', 'filters', fields.outputFilename);
+
+        try {
+            const response = pipeline.joinClouds(files, outputFilename);
+
+            files.forEach(f => fs.unlink(f, error => {
+                if (error) {
+                    console.error(error);
+                    return res.status(500).json({ 'msg': error.message });
+                }
+            }));
+
+            res.status(200).json(response);
         } catch (error) {
             console.error(error);
             res.status(500).json({ 'msg': error.message });

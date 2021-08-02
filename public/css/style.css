@@ -204,3 +204,60 @@ body {
     font-family: Georgia;
     font-size: 1.6rem;
 }
+
+.upload-cloud > input {
+    display: none;
+}
+
+.upload-cloud > button {
+    border: 0;
+}
+
+.upload-cloud > label {
+    cursor: pointer;
+}
+
+.upload-cloud span {
+    width: 90px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    display: block;
+    margin-left: 2px;
+}
+
+.upload-cloud-e {
+    width: 10px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    display: block;
+    margin-left: 4px;
+}
+
+.ellipsis {
+    width: 80px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    display: block;
+}
+
+
+.active, .custom-collapsible:hover {
+    background: none;
+}
+
+/* .nav-tabs {
+    overflow-x: auto;
+    overflow-y: hidden;
+    display: -webkit-box;
+    display: -moz-box;
+  }
+  .nav-tabs>li {
+    float: none;
+  } */
+
+#stats > div {
+    left: 40rem !important;
+}
