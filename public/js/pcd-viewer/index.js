@@ -176,7 +176,7 @@ function addEventListeners() {
         }
     });
 
-    inputFile.addEventListener('change', uploadCloud);
+    inputFile.addEventListener('change', uploadCloudWrapper);
 
     btn.clearSceneButton.addEventListener('click', cleanScene);
 
@@ -225,19 +225,31 @@ function addEventListeners() {
     document.getElementById('config').addEventListener('change', loadConfiguration);
 }
 
-function uploadCloud(e) {
-    const color = document.getElementById(`pcdInputFile${fileCounter}Color`).value;
-    const size = document.getElementById(`pcdInputFile${fileCounter}Slider`).value;
+function uploadCloudWrapper(e) {
+    this.removeEventListener('change', uploadCloudWrapper);
+    this.addEventListener('change', e => {
+        const counter = this.id.replace(/^\D+/g, '');
+        removeCloudFilter(e, `file-${counter}`);
+        uploadCloud(e, counter, false);
+    });
+    uploadCloud(e);
+}
+
+function uploadCloud(e, counter = fileCounter, insertNext = true) {
+    const color = document.getElementById(`pcdInputFile${counter}Color`).value;
+    const size = document.getElementById(`pcdInputFile${counter}Slider`).value;
     const pcdBlob = URL.createObjectURL(e.currentTarget.files[0]);
     const filename = e.currentTarget.files[0].name;
-    const cloudName = `file-${fileCounter}`;
+    const cloudName = `file-${counter}`;
 
     uploadPCDFile(pcdBlob, filename, cloudName, color, size);
 
-    document.getElementById(`pcdInputFile${fileCounter}Filename`).innerHTML = filename;
-    document.getElementById(`pcdInputFile${fileCounter}Filename`).setAttribute('title', filename);
+    document.getElementById(`pcdInputFile${counter}Filename`).innerHTML = filename;
+    document.getElementById(`pcdInputFile${counter}Filename`).setAttribute('title', filename);
 
-    insertNextChild();
+    if (insertNext) {
+        insertNextChild();
+    }
 }
 
 function insertNextChild() {
@@ -290,7 +302,7 @@ function insertNextChild() {
             child.innerHTML = '';
         }
     });
-    document.getElementById(`pcdInputFile${fileCounter}`).addEventListener('change', uploadCloud);
+    document.getElementById(`pcdInputFile${fileCounter}`).addEventListener('change', uploadCloudWrapper);
 }
 
 function loadConfiguration(e) {
