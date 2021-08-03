@@ -120,6 +120,10 @@
         </div>
 
         <div class="p1-all">
+            <div class="form-check">
+                <input type="checkbox" class="form-check-input" id="saveResultsFilters">
+                <label class="form-check-label ml-1" for="saveResultsFilters">Salvar resultados intermediários</label>
+            </div>
             <button class="btn btn-info btn-lg" id="performFiltering" type="button">
                 Realizar filtragem
                 <i class="fas fa-filter"></i>
@@ -150,6 +154,10 @@
             <h2 class="bg-info p-2 text-white">Agrupar nuvens filtradas</h2>
 
             <div class="p1-all">
+                <div class="form-check">
+                    <input type="checkbox" class="form-check-input" id="saveResultsJoinedClouds">
+                    <label class="form-check-label ml-1" for="saveResultsJoinedClouds">Salvar nuvem</label>
+                </div>
                 <div class="input-group mt-2 mb-1">
                     <div class="input-group-prepend">
                         <span class="input-group-text">Carregar imagens</span>
@@ -159,13 +167,13 @@
                         <label class="custom-file-label" for="joinClouds">Clique aqui</label>
                     </div>
                     <div class="input-group-append">
-                        <button class="btn btn-outline-secondary" id="merge" type="button">Merge</button>
+                        <button class="btn btn-outline-secondary" id="merge" type="button">Agrupar</button>
                     </div>
                 </div>
 
                 <div class="input-group input-group-lg mb-2">
                     <div class="input-group-prepend">
-                        <span class="input-group-text" id="inputGroup-sizing-lg">Nome do arquivo de saída</span>
+                        <span class="input-group-text" id="inputGroup-sizing-lg">Nome do arquivo final</span>
                     </div>
                     <input type="text" id="outputFilenameMerge" name="outputFilenameMerge" class="form-control" aria-label="Large" aria-describedby="inputGroup-sizing-sm">
                 </div>

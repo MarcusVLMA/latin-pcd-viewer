@@ -5,3 +5,6 @@ avaliable_clouds/*
 !uploaded_files/.gitkeep
 modules
 log/*
+output_clouds/*
+!output_clouds/.gitkeep
+

@@ -8,6 +8,7 @@ const pipeline = require('./modules/pipeline');
 const app = express();
 
 const AVALIABLE_CLOUDS_DIRECTORY = './avaliable_clouds';
+const OUTPUT_CLOUDS_DIRECTORY = './output_clouds';
 
 app.use(express.static('public'));
 
@@ -324,9 +325,15 @@ app.post('/filtering', (req, res) => {
         const outputFilename = fields.outputFilename ? path.join(__dirname, 'avaliable_clouds', 'filters', fields.outputFilename) : '';
         const filters = JSON.parse(fields.filters);
         const description = fields.description;
+        const saveResults = fields.saveResults;
+
+        const dir = path.join(OUTPUT_CLOUDS_DIRECTORY, filename.split('.')[0]);
+        if (!fs.existsSync(dir)){
+            fs.mkdirSync(dir);
+        }
 
         try {
-            const response = pipeline.applyFilters(filepath, outputFilename, filters);
+            const response = pipeline.applyFilters(filename, filepath, outputFilename, filters, saveResults);
 
             fs.unlink(filepath, error => {
                 if (error) {
@@ -361,11 +368,19 @@ app.post('/join-clouds', (req, res) => {
             return;
         }
 
+        const filename = fields.filename;
         const files = file.file.length ? file.file.map(f => f.path) : [file.file.path];
-        const outputFilename = path.join(__dirname, 'avaliable_clouds', 'filters', fields.outputFilename);
+        const saveResults = fields.saveResults;
+
+        const dir = path.join(OUTPUT_CLOUDS_DIRECTORY, filename.split('.')[0]);
+        if (!fs.existsSync(dir)){
+            fs.mkdirSync(dir);
+        }
+
+        const outputFilename = path.join(dir, fields.outputFilename);
 
         try {
-            const response = pipeline.joinClouds(files, outputFilename);
+            const response = pipeline.joinClouds(files, outputFilename, saveResults);
 
             files.forEach(f => fs.unlink(f, error => {
                 if (error) {

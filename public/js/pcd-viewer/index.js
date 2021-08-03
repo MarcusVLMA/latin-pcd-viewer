@@ -26,6 +26,9 @@ const items = document.querySelectorAll('.pipeline-filter');
 let dragSrcEl = null;
 const performFilteringButton = document.getElementById('performFiltering');
 const descriptionTextArea = document.getElementById('filterDescription');
+const saveResultsFilters = document.getElementById('saveResultsFilters');
+const saveResultsJoinedClouds = document.getElementById('saveResultsJoinedClouds');
+const outputJoinedCloudFilename = document.getElementById('outputFilenameMerge')
 
 const filtersDatalist = document.getElementById('filters');
 let filtersDatalistOptions = '';
@@ -320,6 +323,10 @@ function loadConfiguration(e) {
 }
 
 document.getElementById('merge').addEventListener('click', joinClouds);
+document.getElementById('joinClouds').addEventListener('change', e => {
+    const filename = e.target.files[0].name.split('.')[0];
+    outputJoinedCloudFilename.value = `merged_${filename}_${Date.now()}.pcd`;
+});
 
 async function joinClouds() {
     const files = [...document.getElementById('joinClouds').files];
@@ -327,7 +334,7 @@ async function joinClouds() {
         return;
     }
 
-    let outputFilename = document.getElementById('outputFilenameMerge').value;
+    let outputFilename = outputJoinedCloudFilename.value;
     if (!outputFilename) {
         alert('Nome do arquivo obrigatório!');
         return
@@ -349,13 +356,14 @@ async function joinClouds() {
     }
 
     formData.append('outputFilename', outputFilename);
+    formData.append('filename', files[0].name);
+    formData.append('saveResults', saveResultsJoinedClouds.checked);
 
     const response = await fetch('http://localhost:3000/join-clouds', {
         method: 'POST',
         body: formData
     });
     const data = await response.json();
-    console.log(data);
 
     if (!response.ok) {
         alert('Algum erro aconteceu: ' + data.msg);
@@ -490,6 +498,7 @@ async function applyFilter(e) {
     formData.append('filters', JSON.stringify(filters));
     formData.append('outputFilename', outputFilename);
     formData.append('description', descriptionTextArea.value);
+    formData.append('saveResults', saveResultsFilters.checked);
 
     const filterBtn = document.getElementById(`${filterName}Filter`);
     const loadingBtn = document.getElementById(`${filterName}Loading`);
@@ -722,6 +731,7 @@ async function applyFiltering() {
     formData.append('file', sendFile);
     formData.append('filters', JSON.stringify(filters));
     formData.append('description', descriptionTextArea.value);
+    formData.append('saveResults', saveResultsFilters.checked);
 
     const filterBtn = document.getElementById('performFiltering');
     const loadingBtn = document.getElementById('performFilteringLoading');
@@ -1555,12 +1565,12 @@ function setAvaliableFoldersHTML(folders) {
 
             const headDiv = document.createElement('div');
             headDiv.classList.add('upload-cloud', 'w-40', 'd-flex', 'align-items-center');
-            
+
             const headDivBtn = document.createElement('button');
             headDivBtn.classList.add('bg-transparent', 'upload-cloud-button');
             headDivBtn.id = `pcdFile${avaliableCloudsCounter}`;
             headDivBtn.innerHTML = '<i class="fas fa-upload"></i>';
-            
+
             const headDivSpan = document.createElement('span');
             headDivSpan.classList.add('upload-cloud-e');
             headDivSpan.id = `pcdFile${avaliableCloudsCounter}Filename`;
@@ -1574,10 +1584,10 @@ function setAvaliableFoldersHTML(folders) {
 
             const tailDiv = document.createElement('div');
             tailDiv.classList.add('d-flex', 'mt-2', 'justify-content-end', 'align-items-center', 'w-100');
-            
+
             const tailDivFirst = document.createElement('div');
             tailDivFirst.classList.add('d-flex', 'align-items-center');
-            
+
             const labelColor = document.createElement('label');
             labelColor.setAttribute('for', `pcdFile${avaliableCloudsCounter}Color`);
             labelColor.classList.add('form-label');
@@ -1591,7 +1601,7 @@ function setAvaliableFoldersHTML(folders) {
             inputColor.id = `pcdFile${avaliableCloudsCounter}Color`;
             inputColor.title = '"Escolha a cor da nuvem';
             inputColor.value = '#1105ad';
-            
+
             const labelSize = document.createElement('label');
             labelColor.setAttribute('for', `pcdFile${avaliableCloudsCounter}Slider`);
             labelColor.classList.add('form-label');
@@ -1605,7 +1615,7 @@ function setAvaliableFoldersHTML(folders) {
             inputSize.title = 'Escolha o tamanho dos pontos da nuvem';
             inputSize.value = '0.8';
             inputSize.step = '0.1';
-            
+
             tailDivFirst.appendChild(labelColor);
             tailDivFirst.appendChild(inputColor);
             tailDivFirst.appendChild(labelSize);
