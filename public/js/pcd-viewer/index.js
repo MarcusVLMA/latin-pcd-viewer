@@ -261,14 +261,14 @@ function insertNextChild() {
     const child = document.createElement('div');
     child.classList.add('load-image-block', 'w-100', 'd-flex', 'align-items-center');
     child.innerHTML = `
-        <div class="upload-cloud w-40 d-flex align-items-center">
-            <label for="pcdInputFile${fileCounter}" class="d-flex align-items-center">
+        <div class="upload-cloud d-flex align-items-center">
+            <label for="pcdInputFile${fileCounter}" class="d-flex align-items-center upload-label">
                 <i class="fas fa-upload"></i>
-                <span id="pcdInputFile${fileCounter}Filename">Upload</span>
             </label>
+            <span id="pcdInputFile${fileCounter}Filename">Upload</span>
             <input id="pcdInputFile${fileCounter}" type="file" name="pcdInputFile${fileCounter}" accept=".pcd">
         </div>
-        <div class="d-flex mt-2 justify-content-end align-items-center w-100">
+        <div class="d-flex mt-2 right-buttons justify-content-end align-items-center">
             <div class="d-flex align-items-center">
                 <label for="pcdInputFile${fileCounter}Color" class="form-label font-weight-bold">Color:</label>
                 <input type="color" class="form-control form-control-color mx-2" role="button" id="pcdInputFile${fileCounter}Color" value="#1105ad" title="Escolhar a cor da nuvem">
