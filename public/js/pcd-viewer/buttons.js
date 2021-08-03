@@ -6,6 +6,8 @@ const analysisPointButton = document.getElementById('analysisPointButton');
 const downloadButton = document.getElementById('downloadButton');
 const clearSceneButton = document.getElementById('clearScene');
 const findFiducialPointButtonLoading = document.getElementById('findFiducialPointButtonLoading');
+const mergeButton = document.getElementById('merge');
+const mergeButtonLoading = document.getElementById('mergeLoading');
 
 export {
     findFiducialPointButton,
@@ -15,5 +17,7 @@ export {
     analysisPointButton,
     downloadButton,
     clearSceneButton,
-    findFiducialPointButtonLoading
+    findFiducialPointButtonLoading,
+    mergeButton,
+    mergeButtonLoading
 };

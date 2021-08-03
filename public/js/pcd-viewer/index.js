@@ -321,7 +321,7 @@ function loadConfiguration(e) {
     reader.readAsText(event.target.files[0]);
 }
 
-document.getElementById('merge').addEventListener('click', joinClouds);
+btn.mergeButton.addEventListener('click', joinClouds);
 document.getElementById('joinClouds').addEventListener('change', e => {
     const filename = e.target.files[0].name.split('.')[0];
     outputJoinedCloudFilename.value = `merged_${filename}_${Date.now()}.pcd`;
@@ -358,11 +358,15 @@ async function joinClouds() {
     formData.append('filename', files[0].name);
     formData.append('saveResults', saveResultsJoinedClouds.checked);
 
+    showLoading(btn.mergeButton, btn.mergeButtonLoading);
+
     const response = await fetch('http://localhost:3000/join-clouds', {
         method: 'POST',
         body: formData
     });
     const data = await response.json();
+
+    hideLoading(btn.mergeButton, btn.mergeButtonLoading);
 
     if (!response.ok) {
         alert('Algum erro aconteceu: ' + data.msg);
