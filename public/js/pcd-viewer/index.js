@@ -526,7 +526,7 @@ async function applyFilter(e) {
     data.intermediary_clouds.forEach(cloudLog => addPointCloudFromCloudLog2(cloudLog, filterName, 0, 150, 1, size, color));
 }
 
-pointXYZSelectButton.addEventListener('click', selectPointFromInput);
+// pointXYZSelectButton.addEventListener('click', selectPointFromInput);
 
 function showLoading(source, target) {
     source.style.display = 'none';
@@ -539,73 +539,73 @@ function hideLoading(source, target) {
     target.style.display = 'none';
 }
 
-function selectPointFromInput() {
-    if (!pcdFile.cloud) {
-        alert('Selecione uma nuvem primeiro!');
-        return;
-    }
+// function selectPointFromInput() {
+//     if (!pcdFile.cloud) {
+//         alert('Selecione uma nuvem primeiro!');
+//         return;
+//     }
 
-    if  (!pointXYZInput.value) {
-        alert('Escreva um ponto válido!');
-        return;
-    }
+//     if  (!pointXYZInput.value) {
+//         alert('Escreva um ponto válido!');
+//         return;
+//     }
 
-    let pointArray;
-    if (pointXYZInput.value.includes(',')) {
-        pointArray = pointXYZInput.value.split(',').map(p => parseFloat(p));
-    } else {
-        pointArray = pointXYZInput.value.split(' ').map(p => parseFloat(p));
-    }
+//     let pointArray;
+//     if (pointXYZInput.value.includes(',')) {
+//         pointArray = pointXYZInput.value.split(',').map(p => parseFloat(p));
+//     } else {
+//         pointArray = pointXYZInput.value.split(' ').map(p => parseFloat(p));
+//     }
 
-    if (pointArray.length !== 3) {
-        alert('Escreva um ponto válido!');
-        return;
-    }
+//     if (pointArray.length !== 3) {
+//         alert('Escreva um ponto válido!');
+//         return;
+//     }
 
-    // refactor later
-    const point = {
-        x: pointArray[0],
-        y: pointArray[1],
-        z: pointArray[2]
-    }
+//     // refactor later
+//     const point = {
+//         x: pointArray[0],
+//         y: pointArray[1],
+//         z: pointArray[2]
+//     }
 
-    let geometry = new THREE.BufferGeometry().setFromPoints(
-        [new THREE.Vector3(point.x, point.y, point.z)]
-    );
+//     let geometry = new THREE.BufferGeometry().setFromPoints(
+//         [new THREE.Vector3(point.x, point.y, point.z)]
+//     );
 
-    let index = -1;
-    const points = pcdFile.cloud.geometry.attributes.position.array;
-    const fixed = 2;
+//     let index = -1;
+//     const points = pcdFile.cloud.geometry.attributes.position.array;
+//     const fixed = 2;
 
-    for (let i = 0; i < points.length; i+=3) {
-        if (points[i].toFixed(fixed) === point.x.toFixed(fixed) && points[i+1].toFixed(fixed) === point.y.toFixed(fixed) && points[i+2].toFixed(fixed) === point.z.toFixed(fixed)) {
-            index = i;
-            break;
-        }
-    }
+//     for (let i = 0; i < points.length; i+=3) {
+//         if (points[i].toFixed(fixed) === point.x.toFixed(fixed) && points[i+1].toFixed(fixed) === point.y.toFixed(fixed) && points[i+2].toFixed(fixed) === point.z.toFixed(fixed)) {
+//             index = i;
+//             break;
+//         }
+//     }
 
-    if (index === -1) {
-        alert('Esse ponto não existe!!');
-        return;
-    }
+//     if (index === -1) {
+//         alert('Esse ponto não existe!!');
+//         return;
+//     }
 
-    var material = new THREE.PointsMaterial({ size: 1.5, color: '#FFFFFF' });
-    var newCloud = new THREE.Points(geometry, material);
-    scene.add(newCloud)
+//     var material = new THREE.PointsMaterial({ size: 1.5, color: '#FFFFFF' });
+//     var newCloud = new THREE.Points(geometry, material);
+//     scene.add(newCloud)
 
-    const guiColor = gui.addColor(new ColorGUIHelper(newCloud.material, 'color'), 'value').name(`Selected point ${fileCounter}`);
-    const guiSize = gui.add(new SizeGUIHelper(newCloud.material, 'size'), 'value', 150, 400, 1).name(`Selected point ${fileCounter}`);
+//     const guiColor = gui.addColor(new ColorGUIHelper(newCloud.material, 'color'), 'value').name(`Selected point ${fileCounter}`);
+//     const guiSize = gui.add(new SizeGUIHelper(newCloud.material, 'size'), 'value', 150, 400, 1).name(`Selected point ${fileCounter}`);
 
-    selectedNosetipCloud = {
-        cloud: newCloud,
-        point,
-        index,
-        guiColor,
-        guiSize
-    }
+//     selectedNosetipCloud = {
+//         cloud: newCloud,
+//         point,
+//         index,
+//         guiColor,
+//         guiSize
+//     }
 
-    fileCounter += 1;
-}
+//     fileCounter += 1;
+// }
 
 function addPointCloudFromCloudLog2(cloudLog, label, minSize = 0, maxSize = 150, step = 1, initialPointSize = 2, color = undefined) {
     let materialColor = color;
