@@ -286,7 +286,6 @@ function insertNextChild() {
     });
     document.getElementById(`pcdInputFile${fileCounter}Remove`).addEventListener('click', e => {
         removeCloudFilter(e, cloudName);
-        // TODO: remover somente se algum arquivo estiver selecionado.
         if (document.getElementsByClassName('load-image-block').length >= 2) {
             child.innerHTML = '';
         }
@@ -681,6 +680,7 @@ function toggleVisibilityHandler(e, cloudName) {
 function removeCloudFilter(e, cloudName) {
     const cloud = scene.getObjectByName(cloudName, true);
     scene.remove(cloud);
+    pcdFile = {};
 }
 
 async function applyFiltering() {
@@ -1451,13 +1451,14 @@ function removeAllSceneChildren() {
 }
 
 function cleanScene() {
+    pcdFile = {};
     // cleanPCDFile();
     // cleanSelectedNosetipCloud();
     // cleanCloudLogEntries();
     // multiplesPoints.forEach(point => scene.remove(point.cloud));
     // removeAllSceneChildren();
     removeAllSceneChildren();
-    gui.domElement.remove();
+    cleanCloudLogEntries();
     [...document.getElementsByClassName('upload-cloud-button')].forEach(btn => {
         if (btn.disabled) btn.disabled = false;
     });
