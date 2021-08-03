@@ -31,11 +31,6 @@ export function createFilterDiv(label, name, min, max, checked) {
                     <input type="file" class="custom-file-input" id="${name}File" name="${name}File" accept=".pcd">
                     <label class="custom-file-label" for="${name}File">Clique aqui</label>
                 </div>
-                <div class="input-group-append">
-                    <div class="input-group-text">
-                        <input type="checkbox">
-                    </div>
-                </div>
             </div>
             <div class="d-flex mt-2 justify-content-between align-items-center w-100">
                 <div class="d-flex align-items-center">

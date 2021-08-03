@@ -8,7 +8,7 @@ import { ColorGUIHelper, SizeGUIHelper } from './helpers/index.js';
 import * as btn from './buttons.js';
 import { filterMap, inverseFilterMap} from './maps.js';
 import { createFilterDiv } from './filters.js';
-import Stats from './node_modules/three/examples/jsm/libs/stats.module.js';
+// import Stats from './node_modules/three/examples/jsm/libs/stats.module.js';
 
 let fileCounter = 0;
 
@@ -54,9 +54,9 @@ const camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
 const mouse = new THREE.Vector2();
 const controls = new TrackballControls(camera, renderer.domElement);
 const scene = new THREE.Scene();
-const stats = new Stats();
+// const stats = new Stats();
 
-document.getElementById('stats').appendChild(stats.dom);
+// document.getElementById('stats').appendChild(stats.dom);
 
 let intersection = null;
 const pointer = new THREE.Vector2();
@@ -100,7 +100,7 @@ function init() {
 
 function animate() {
     requestAnimationFrame(animate);
-    stats.update();
+    // stats.update();
     render();
 }
 
@@ -258,9 +258,9 @@ function insertNextChild() {
         </div>
         <div class="d-flex mt-2 justify-content-end align-items-center w-100">
             <div class="d-flex align-items-center">
-                <label for="pcdInputFile${fileCounter}Color" class="form-label">Color:</label>
+                <label for="pcdInputFile${fileCounter}Color" class="form-label font-weight-bold">Color:</label>
                 <input type="color" class="form-control form-control-color mx-2" role="button" id="pcdInputFile${fileCounter}Color" value="#1105ad" title="Escolhar a cor da nuvem">
-                <label for="pcdInputFile${fileCounter}Slider" class="form-label">Size:</label>
+                <label for="pcdInputFile${fileCounter}Slider" class="form-label font-weight-bold">Size:</label>
                 <input type="number" min="0" max="10" class="form-control form-control mx-2" id="pcdInputFile${fileCounter}Slider" value="0.8" step="0.1" min="0" title="Escolhar o tamanho dos pontos da nuvem">
             </div>
             <div class="d-flex align-items-center">
@@ -396,20 +396,24 @@ function insertJoinedClouds(clouds, filename) {
         const cloudInfo = document.createElement('div');
         cloudInfo.innerHTML = `
             <div class="d-flex mt-2 justify-content-between align-items-center w-100">
-                <span class="ellipsis" title="${cloud_label}">${cloud_label}</span>
-                <div class="d-flex align-items-center">
-                    <label for="${cloud_label}Color" class="form-label">Cor:</label>
-                    <input type="color" class="form-control form-control-color mx-2" role="button" id="${cloud_label}Color" value="#1105ad" title="Escolhar a cor da nuvem">
-                    <label for=${cloud_label}Slider" class="form-label">Tamanho:</label>
-                    <input type="number" min="0" max="10" class="form-control form-control mx-2" id="${cloud_label}Slider" value="${size}" step="0.1" title="Escolhar o tamanho dos pontos da nuvem">
+                <div class="upload-cloud d-flex">
+                    <span title="${cloud_label}">${cloud_label}</span>
                 </div>
-                <div class="d-flex align-items-center">
-                    <button class="btn btn-secondary mx-2" id="${cloud_label}Hide" title="Show/hide">
-                        <i class="far fa-eye"></i>
-                    </button>
-                    <button class="btn btn-danger" id="${cloud_label}Remove" title="Remover nuvem">
-                        <i class="fas fa-minus-circle"></i>
-                    </button>
+                <div class="d-flex right-buttons">
+                    <div class="d-flex align-items-center">
+                        <label for="${cloud_label}Color" class="form-label font-weight-bold">Color:</label>
+                        <input type="color" class="form-control form-control-color mx-2" role="button" id="${cloud_label}Color" value="#1105ad" title="Escolhar a cor da nuvem">
+                        <label for=${cloud_label}Slider" class="form-label font-weight-bold">Size:</label>
+                        <input type="number" min="0" max="10" class="form-control form-control mx-2" id="${cloud_label}Slider" value="${size}" step="0.1" title="Escolhar o tamanho dos pontos da nuvem">
+                    </div>
+                    <div class="d-flex align-items-center">
+                        <button class="btn btn-secondary mx-2" id="${cloud_label}Hide" title="Show/hide">
+                            <i class="far fa-eye"></i>
+                        </button>
+                        <button class="btn btn-danger" id="${cloud_label}Remove" title="Remover nuvem">
+                            <i class="fas fa-minus-circle"></i>
+                        </button>
+                    </div>
                 </div>
             </div>
         `;
@@ -965,8 +969,8 @@ function addPCDFile1(inputUrl, name, color, size) {
         center.y = inputCenter.y;
         center.z = inputCenter.z;
 
-        controls.target.set(center.x, center.y, center.z);
-        camera.position.set(center.x, center.y, center.z + 200);
+        controls.target.set(center.x - 30, center.y, center.z);
+        camera.position.set(center.x, center.y, center.z + 220);
         controls.update();
     });
 }
@@ -983,8 +987,8 @@ function uploadPCDFile(blobURL, filename, cloudName, color, size) {
         center.y = inputCenter.y;
         center.z = inputCenter.z;
 
-        controls.target.set(center.x, center.y, center.z);
-        camera.position.set(center.x, center.y, center.z + 200);
+        controls.target.set(center.x - 30, center.y, center.z);
+        camera.position.set(center.x, center.y, center.z + 220);
         controls.update();
 
         pcdFile = {
@@ -1542,7 +1546,7 @@ function setAvaliableFoldersHTML(folders) {
             mainDiv.classList.add('d-flex');
 
             const headDiv = document.createElement('div');
-            headDiv.classList.add('upload-cloud', 'w-40', 'd-flex', 'align-items-center');
+            headDiv.classList.add('upload-cloud', 'd-flex', 'align-items-center');
 
             const headDivBtn = document.createElement('button');
             headDivBtn.classList.add('bg-transparent', 'upload-cloud-button');
@@ -1550,7 +1554,6 @@ function setAvaliableFoldersHTML(folders) {
             headDivBtn.innerHTML = '<i class="fas fa-upload"></i>';
 
             const headDivSpan = document.createElement('span');
-            headDivSpan.classList.add('upload-cloud-e');
             headDivSpan.id = `pcdFile${avaliableCloudsCounter}Filename`;
             headDivSpan.title = cloud;
             headDivSpan.innerHTML = cloud;
@@ -1561,14 +1564,14 @@ function setAvaliableFoldersHTML(folders) {
             mainDiv.appendChild(headDiv);
 
             const tailDiv = document.createElement('div');
-            tailDiv.classList.add('d-flex', 'mt-2', 'justify-content-end', 'align-items-center', 'w-100');
+            tailDiv.classList.add('d-flex', 'right-buttons', 'mt-2', 'justify-content-end', 'align-items-center');
 
             const tailDivFirst = document.createElement('div');
             tailDivFirst.classList.add('d-flex', 'align-items-center');
 
             const labelColor = document.createElement('label');
             labelColor.setAttribute('for', `pcdFile${avaliableCloudsCounter}Color`);
-            labelColor.classList.add('form-label');
+            labelColor.classList.add('form-label', 'font-weight-bold');
             labelColor.innerHTML = 'Color:';
             const inputColor = document.createElement('input');
             inputColor.setAttribute('type', 'color');
@@ -1581,9 +1584,9 @@ function setAvaliableFoldersHTML(folders) {
             inputColor.value = '#1105ad';
 
             const labelSize = document.createElement('label');
-            labelColor.setAttribute('for', `pcdFile${avaliableCloudsCounter}Slider`);
-            labelColor.classList.add('form-label');
-            labelColor.innerHTML = 'Size:';
+            labelSize.setAttribute('for', `pcdFile${avaliableCloudsCounter}Slider`);
+            labelSize.classList.add('form-label', 'font-weight-bold');
+            labelSize.innerHTML = 'Size:';
             const inputSize = document.createElement('input');
             inputSize.setAttribute('type', 'number');
             inputSize.setAttribute('min', 0);

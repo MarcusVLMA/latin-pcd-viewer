@@ -26,10 +26,12 @@ body {
     height: 100%;
     overflow-y: auto;
     width: 40rem;
+    min-width: 33rem;
     background-color: white;
     display: flex;
     flex-direction: column;
     align-items: flex-start;
+    resize: horizontal;
 }
 
 .p1-all {
@@ -102,7 +104,7 @@ body {
 
 /* Style the button that is used to open and close the collapsible content */
 .custom-collapsible {
-    background-color: #eee;
+    background-color: #eee !important;
     color: #444;
     cursor: pointer;
     padding: 18px;
@@ -198,6 +200,17 @@ body {
     font-size: 1.6rem;
 }
 
+.upload-cloud {
+    flex-shrink: 1;
+    flex-grow: 1;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.right-buttons {
+    flex-shrink: 0
+}
+
 .upload-cloud > input {
     display: none;
 }
@@ -208,34 +221,14 @@ body {
 
 .upload-cloud > label {
     cursor: pointer;
+    text-overflow: ellipsis;
 }
 
 .upload-cloud span {
-    width: 90px;
     overflow: hidden;
     text-overflow: ellipsis;
-    white-space: nowrap;
-    display: block;
-    margin-left: 2px;
+    margin-left: 5px;
 }
-
-.upload-cloud-e {
-    width: 120px !important;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    display: block;
-    margin-left: 4px;
-}
-
-.ellipsis {
-    width: 80px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    display: block;
-}
-
 
 .active, .custom-collapsible:hover {
     background: none;
@@ -250,10 +243,6 @@ body {
   .nav-tabs>li {
     float: none;
   } */
-
-#stats > div {
-    left: 40rem !important;
-}
 
 textarea {
     font-size: 1.6rem !important;
