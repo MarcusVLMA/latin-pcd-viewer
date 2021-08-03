@@ -121,7 +121,6 @@ body {
     background-color: #ccc;
 }
 
-/* Style the collapsible content. Note: hidden by default */
 .custom-collapsible-content {
     padding: 6px 18px;
     display: flex;
@@ -258,4 +257,8 @@ body {
 
 textarea {
     font-size: 1.6rem !important;
+}
+
+.fiducial-point-title {
+    font-size: 1.6rem !important;    
 }

@@ -5,6 +5,7 @@ const downloadMultiplePointsButton = document.getElementById('downloadMultiplePo
 const analysisPointButton = document.getElementById('analysisPointButton');
 const downloadButton = document.getElementById('downloadButton');
 const clearSceneButton = document.getElementById('clearScene');
+const findFiducialPointButtonLoading = document.getElementById('findFiducialPointButtonLoading');
 
 export {
     findFiducialPointButton,
@@ -13,5 +14,6 @@ export {
     downloadMultiplePointsButton,
     analysisPointButton,
     downloadButton,
-    clearSceneButton
+    clearSceneButton,
+    findFiducialPointButtonLoading
 };

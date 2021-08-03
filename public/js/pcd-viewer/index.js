@@ -96,9 +96,6 @@ function init() {
 
     raycaster.params.Points.threshold = 0.5;
     focusRaycaster.params.Points.threshold = 10;
-
-    // disable by default features selection
-    document.getElementById('nosetip-point').click();
 }
 
 function animate() {
@@ -151,7 +148,7 @@ function addEventListeners() {
     // raycaster selected point
     document.addEventListener('pointermove', onPointerMove);
 
-    btn.findFiducialPointButton.addEventListener('click', () => findFiducialPoint());
+    btn.findFiducialPointButton.addEventListener('click', findFiducialPoint);
     btn.selectPointButton.addEventListener('click', toggleRaycaster);
     btn.selectMultiplePointsButton.addEventListener('click', multiplePointsRaycaster);
     btn.analysisPointButton.addEventListener('click', getPointAnalysis)
@@ -511,13 +508,12 @@ async function applyFilter(e) {
     });
     const data = await response.json();
 
+    hideLoading(filterBtn, loadingBtn);
+
     if (!response.ok) {
         alert('Algum erro aconteceu: ' + data.msg);
-        hideLoading(filterBtn, loadingBtn);
         return;
     }
-
-    hideLoading(filterBtn, loadingBtn);
 
     const cloud = scene.getObjectByName(filterName);
     scene.remove(cloud);
@@ -744,13 +740,12 @@ async function applyFiltering() {
     });
     const data = await response.json();
 
+    hideLoading(filterBtn, loadingBtn);
+
     if (!response.ok) {
         alert('Algum erro aconteceu: ' + data.msg);
-        hideLoading(filterBtn, loadingBtn);
         return;
     }
-
-    hideLoading(filterBtn, loadingBtn);
 
     cleanCloudLogEntries();
 
@@ -1003,25 +998,6 @@ async function findFiducialPoint() {
         return;
     }
 
-    const fiducialPoint = document.getElementById('nosetip-point').checked ? 'nosetip' : 'eye';
-
-    const features = [...featuresCheckboxes]
-        .filter(c => c.checked)
-        .sort((a, b) => a.timeval - b.timeval)
-        .map(f => f.value).join(',');
-
-    if (fiducialPoint === 'eye' && !features) {
-        alert('Selecione alguma feature!');
-        return;
-    }
-
-    // const featuresThreshold = featuresThresholdInput.value.replace(/(^,)|(,$)/g, '');
-
-    // if (features.split(',').filter(Boolean).length !== featuresThreshold.split(',').filter(Boolean).length) {
-    //     alert('Número de features e thresholds devem ser iguais.');
-    //     return;
-    // }
-
     cleanCloudLogEntries();
     cleanPointAnalysis();
 
@@ -1042,7 +1018,6 @@ async function findFiducialPoint() {
     const removeIsolatedPointsRadius = document.getElementById('removeIsolatedPointsRadius');
     const removeIsolatedPointsThreshold = document.getElementById('removeIsolatedPointsThreshold');
     const nosetipSearchRadius = document.getElementById('nosetipSearchRadius');
-    // const gfSearchRadius = document.getElementById('gfSearchRadius');
 
     const formData = new FormData();
 
@@ -1058,11 +1033,10 @@ async function findFiducialPoint() {
     formData.append('removeIsolatedPointsRadius', removeIsolatedPointsRadius.value);
     formData.append('removeIsolatedPointsThreshold', removeIsolatedPointsThreshold.value);
     formData.append('nosetipSearchRadius', nosetipSearchRadius.value);
-    // formData.append('gfSearchRadius', gfSearchRadius.value);
-    // formData.append('features', features);
-    // formData.append('featuresThreshold', featuresThreshold);
-    formData.append('fiducialPoint', fiducialPoint);
+    formData.append('fiducialPoint', 'nosetip');
     formData.append('file', sendFile);
+
+    showLoading(btn.findFiducialPointButton, btn.findFiducialPointButtonLoading);
 
     const response = await fetch('http://localhost:3000/find-fiducial-point', {
         method: 'POST',
@@ -1070,9 +1044,10 @@ async function findFiducialPoint() {
     });
     const data = await response.json();
 
+    hideLoading(btn.findFiducialPointButton, btn.findFiducialPointButtonLoading);
+
     if (!response.ok) {
         alert('Algum erro ocorreu: ' + data.msg);
-
         return;
     }
 

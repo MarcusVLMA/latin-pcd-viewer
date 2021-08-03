@@ -14,7 +14,7 @@
 <body>
     <div class="sidemenu">
         <h2 class="bg-info p-2 text-white w-100">Nuvens</h2>
-
+        
         <div class="load-image w-100 p1-all">
             <div id="upload-cloud-0" class="load-image-block w-100 d-flex align-items-center">
                 <div class="upload-cloud w-40 d-flex align-items-center">
@@ -42,20 +42,20 @@
                 </div>
             </div>
         </div>
-
+        
         <ul class="nav nav-tabs mb-3" id="pills-tab" role="tablist"></ul>
         <div class="tab-content avaliable-clouds-container" id="pills-tabContent"></div>
-
+        
         <div class="point-analysis mt-3">
             <h2 class="bg-info p-2 text-white">Análise de ponto</h2>
-
+            
             <div class="input-group input-group-lg p1-all">
                 <input id="pointXYZ" type="text" class="form-control" placeholder="X,Y,Z" aria-describedby="basic-addon2">
                 <div class="input-group-append">
                     <button id="pointXYZSelect" class="btn btn-outline-secondary" type="button">Selecionar ponto</button>
                 </div>
             </div>
-
+            
             <div class="p1-all">
                 <div>
                     <div class="form-check form-check-inline">
@@ -71,28 +71,28 @@
                         </label>
                     </div>
                 </div>
-
+                
                 <div class="input-group input-group-lg">
                     <div class="input-group-prepend">
                         <span class="input-group-text" id="inputGroup-sizing-lg">Valor usado para computar Normal e PC</span>
                     </div>
                     <input type="number" id="pointAnalysisComputationRadiusOrKSize" name="pointAnalysisComputationRadiusOrKSize" value="10" class="form-control" aria-label="Large" aria-describedby="inputGroup-sizing-sm">
                 </div>
-
+                
                 <div class="btn-group my-3" role="group" aria-label="Buttons">
                     <button id="selectPointButton" class="btn btn-info btn-lg" type="submit">Selecionar ponto</button>
                     <button id="analysisPointButton" class="btn btn-info btn-lg" type="submit">Analisar</button>
                     <button id="downloadButton" class="btn btn-info btn-lg" type="submit">Download</button>
                     <button id="clearPointAnalysis" class="btn btn-danger btn-lg" type="submit">Limpar</button>
                 </div>
-
+                
                 <ul class="list-group" id="pointAnalysisResult"></ul>
             </div>
         </div>
-
+        
         <div class="my-3 w-100">
             <h2 class="bg-info p-2 text-white">Selecionar múltiplos pontos</h2>
-
+            
             <div class="p1-all">
                 <div class="btn-group my-3" role="group" aria-label="Buttons">
                     <button id="selectMultiplePoints" class="btn btn-info btn-lg" data-toggle="tooltip" data-placement="top" title="Tecle ESC quando não desejar selecionar mais pontos." type="submit">Selecionar pontos</button>
@@ -101,10 +101,10 @@
                 <p><small>Tecle ESC quando não desejar selecionar mais pontos.</small></p>
             </div>
         </div>
-
+        
         <div class="pipeline-container">
             <h2 class="bg-info p-2 text-white">Filtros</h2>
-
+            
             <div class="filters-container p1-all">
                 <div class="input-group input-group-lg">
                     <input id="filters-input" type="text" class="form-control" list="filters" placeholder="Escolha um filtro.." aria-label="Escolha um filtro.." aria-describedby="basic-addon2">
@@ -113,12 +113,12 @@
                         <button id="add-filter" class="btn btn-outline-secondary" type="button">Adicionar</button>
                     </div>
                 </div>
-
+                
                 <label for="filterDescription" class="align-self-start mt-2">Descrição</label>
-                <textarea class="form-control" id="filterDescription" rows="3" cols="50"></textarea>
+                <textarea class="form-control" id="filterDescription" rows="2" cols="50"></textarea>
             </div>
         </div>
-
+        
         <div class="p1-all">
             <div class="form-check">
                 <input type="checkbox" class="form-check-input" id="saveResultsFilters">
@@ -133,10 +133,10 @@
                 <span class="spinner-border spinner-border-" role="status" aria-hidden="true"></span>
             </button>
         </div>
-
+        
         <div class="load-previous-configuration">
             <h2 class="bg-info p-2 text-white">Carregar configuração</h2>
-
+            
             <div class="p1-all">
                 <div class="input-group m-1">
                     <div class="input-group-prepend">
@@ -149,10 +149,10 @@
                 </div>
             </div>
         </div>
-
+        
         <div class="group-clouds">
             <h2 class="bg-info p-2 text-white">Agrupar nuvens filtradas</h2>
-
+            
             <div class="p1-all">
                 <div class="form-check">
                     <input type="checkbox" class="form-check-input" id="saveResultsJoinedClouds">
@@ -170,119 +170,134 @@
                         <button class="btn btn-outline-secondary" id="merge" type="button">Agrupar</button>
                     </div>
                 </div>
-
+                
                 <div class="input-group input-group-lg mb-2">
                     <div class="input-group-prepend">
                         <span class="input-group-text" id="inputGroup-sizing-lg">Nome do arquivo final</span>
                     </div>
                     <input type="text" id="outputFilenameMerge" name="outputFilenameMerge" class="form-control" aria-label="Large" aria-describedby="inputGroup-sizing-sm">
                 </div>
-
+                
                 <div class="joined-clouds"></div>
             </div>
         </div>
-
-        <div class="finducial-points">
+        
+        <div class="finducial-points w-100">
             <h2 class="bg-info p-2 text-white">Encontrar ponto fiducial</h2>
-
+            
             <div class="p1-all">
-                <input type="radio" id="nosetip-point" name="fiducial-point" checked>
-                <label for="nosetip-point">Ponta do nariz</label>
-                <br/>
-
-                <input type="checkbox" id="flexibilizeThresholds" name="flexibilizeThresholds" checked>
-                <label for="flexibilizeThresholds">Flexibilizar Thresholds:</label>
-                <br/>
-
-                <input type="checkbox" id="flexibilizeCrop" name="flexibilizeCrop" checked>
-                <label for="flexibilizeCrop">Flexibilizar Crop:</label>
-
-                <div>
-                    <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="radio" id="radiusMethod" name="computationMethod" value="radius" checked>
-                        <label class="form-check-label" for="radiusMethod">
-                            Raio
-                        </label>
-                    </div>
-                    <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="radio" id="kMethod" name="computationMethod" value="k">
-                        <label class="form-check-label" for="kMethod">
-                            K Vizinhos
-                        </label>
+                <div id="accordion">
+                    <div class="card">
+                        <div class="card-header" id="headingOne">
+                            <h5 class="mb-0">
+                                <button class="btn btn-link fiducial-point-title" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                                    Ponta do Nariz
+                                </button>
+                            </h5>
+                        </div>
+                        
+                        <div id="collapseOne" class="collapse" aria-labelledby="headingOne" data-parent="#accordion">
+                            <div class="card-body">
+                                <input type="checkbox" id="flexibilizeThresholds" name="flexibilizeThresholds" checked>
+                                <label for="flexibilizeThresholds">Flexibilizar Thresholds:</label>
+                                
+                                <input type="checkbox" id="flexibilizeCrop" name="flexibilizeCrop" checked>
+                                <label for="flexibilizeCrop">Flexibilizar Crop:</label>
+                                
+                                <div>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" id="radiusMethod" name="computationMethod" value="radius" checked>
+                                        <label class="form-check-label" for="radiusMethod">
+                                            Raio
+                                        </label>
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" id="kMethod" name="computationMethod" value="k">
+                                        <label class="form-check-label" for="kMethod">
+                                            K Vizinhos
+                                        </label>
+                                    </div>
+                                </div>
+                                
+                                <div class="input-group input-group-lg mb-2">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text" id="inputGroup-sizing-lg">Valor usado para computar Normal e PC</span>
+                                    </div>
+                                    <input type="number" id="computationRadiusOrKSize" name="computationRadiusOrKSize" value="13" class="form-control" aria-label="Large" aria-describedby="inputGroup-sizing-sm">
+                                </div>
+                                
+                                <div class="input-group input-group-lg mb-2">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text" id="inputGroup-sizing-lg">GC mínima</span>
+                                    </div>
+                                    <input type="number" id="minGaussianCurvature" name="minGaussianCurvature" value="0.015" step="0.001" class="form-control" aria-label="Large" aria-describedby="inputGroup-sizing-sm">
+                                </div>
+                                
+                                <div class="input-group input-group-lg mb-2">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text" id="inputGroup-sizing-lg">Limite de SI</span>
+                                    </div>
+                                    <input type="number" id="shapeIndexLimit" name="shapeIndexLimit" value="-0.85" step="0.01" class="form-control" aria-label="Large" aria-describedby="inputGroup-sizing-sm">
+                                </div>
+                                
+                                <div class="input-group input-group-lg mb-2">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text" id="inputGroup-sizing-lg">Tamanho de Crop mínimo</span>
+                                    </div>
+                                    <input type="number" id="minCropSize" name="minCropSize" value="100" class="form-control" aria-label="Large" aria-describedby="inputGroup-sizing-sm">
+                                </div>
+                                
+                                <div class="input-group input-group-lg mb-2">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text" id="inputGroup-sizing-lg">Tamanho de Crop máximo</span>
+                                    </div>
+                                    <input type="number" id="maxCropSize" name="maxCropSize" value="240" class="form-control" aria-label="Large" aria-describedby="inputGroup-sizing-sm">
+                                </div>
+                                
+                                <div class="input-group input-group-lg mb-2">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text" id="inputGroup-sizing-lg">Quantidade mínima de pontos após filtros</span>
+                                    </div>
+                                    <input type="number" id="minPointsToContinue" name="minPointsToContinue" value="15" class="form-control" aria-label="Large" aria-describedby="inputGroup-sizing-sm">
+                                </div>
+                                
+                                <div class="input-group input-group-lg mb-2">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text" id="inputGroup-sizing-lg">Raio de busca de pontos isolados</span>
+                                    </div>
+                                    <input type="number" id="removeIsolatedPointsRadius" name="removeIsolatedPointsRadius" value="5" class="form-control" aria-label="Large" aria-describedby="inputGroup-sizing-sm">
+                                </div>
+                                
+                                <div class="input-group input-group-lg mb-2">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text" id="inputGroup-sizing-lg">Threshold para pontos isolados</span>
+                                    </div>
+                                    <input type="number" id="removeIsolatedPointsThreshold" name="removeIsolatedPointsThreshold" value="6" class="form-control" aria-label="Large" aria-describedby="inputGroup-sizing-sm">
+                                </div>
+                                
+                                <div class="input-group input-group-lg mb-2">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text" id="inputGroup-sizing-lg">Raio para seleção da ponta do nariz</span>
+                                    </div>
+                                    <input type="number" id="nosetipSearchRadius" name="nosetipSearchRadius" value="12" class="form-control" aria-label="Large" aria-describedby="inputGroup-sizing-sm">
+                                </div>
+                                
+                                <div class="mt-2">
+                                    <button class="btn btn-info btn-lg" id="findFiducialPointButton" type="submit">Encontrar ponto fiducial</button>
+                                    <button class="btn btn-info btn-lg d-none" id="findFiducialPointButtonLoading" type="button" disabled>
+                                        Procurando...
+                                        <span class="spinner-border spinner-border-" role="status" aria-hidden="true"></span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
-
-                <div class="input-group input-group-lg mb-2">
-                    <div class="input-group-prepend">
-                        <span class="input-group-text" id="inputGroup-sizing-lg">Valor usado para computar Normal e PC</span>
-                    </div>
-                    <input type="number" id="computationRadiusOrKSize" name="computationRadiusOrKSize" value="13" class="form-control" aria-label="Large" aria-describedby="inputGroup-sizing-sm">
-                </div>
-
-                <div class="input-group input-group-lg mb-2">
-                    <div class="input-group-prepend">
-                        <span class="input-group-text" id="inputGroup-sizing-lg">GC mínima</span>
-                    </div>
-                    <input type="number" id="minGaussianCurvature" name="minGaussianCurvature" value="0.0038" step="0.001" class="form-control" aria-label="Large" aria-describedby="inputGroup-sizing-sm">
-                </div>
-
-                <div class="input-group input-group-lg mb-2">
-                    <div class="input-group-prepend">
-                        <span class="input-group-text" id="inputGroup-sizing-lg">Limite de SI</span>
-                    </div>
-                    <input type="number" id="shapeIndexLimit" name="shapeIndexLimit" value="-0.78" step="0.01" class="form-control" aria-label="Large" aria-describedby="inputGroup-sizing-sm">
-                </div>
-
-                <div class="input-group input-group-lg mb-2">
-                    <div class="input-group-prepend">
-                        <span class="input-group-text" id="inputGroup-sizing-lg">Tamanho de Crop mínimo</span>
-                    </div>
-                    <input type="number" id="minCropSize" name="minCropSize" value="100" class="form-control" aria-label="Large" aria-describedby="inputGroup-sizing-sm">
-                </div>
-
-                <div class="input-group input-group-lg mb-2">
-                    <div class="input-group-prepend">
-                        <span class="input-group-text" id="inputGroup-sizing-lg">Tamanho de Crop máximo</span>
-                    </div>
-                    <input type="number" id="maxCropSize" name="maxCropSize" value="240" class="form-control" aria-label="Large" aria-describedby="inputGroup-sizing-sm">
-                </div>
-
-                <div class="input-group input-group-lg mb-2">
-                    <div class="input-group-prepend">
-                        <span class="input-group-text" id="inputGroup-sizing-lg">Quantidade mínima de pontos após filtros</span>
-                    </div>
-                    <input type="number" id="minPointsToContinue" name="minPointsToContinue" value="15" class="form-control" aria-label="Large" aria-describedby="inputGroup-sizing-sm">
-                </div>
-
-                <div class="input-group input-group-lg mb-2">
-                    <div class="input-group-prepend">
-                        <span class="input-group-text" id="inputGroup-sizing-lg">Raio de busca de pontos isolados</span>
-                    </div>
-                    <input type="number" id="removeIsolatedPointsRadius" name="removeIsolatedPointsRadius" value="5" class="form-control" aria-label="Large" aria-describedby="inputGroup-sizing-sm">
-                </div>
-
-                <div class="input-group input-group-lg mb-2">
-                    <div class="input-group-prepend">
-                        <span class="input-group-text" id="inputGroup-sizing-lg">Threshold para pontos isolados</span>
-                    </div>
-                    <input type="number" id="removeIsolatedPointsThreshold" name="removeIsolatedPointsThreshold" value="6" class="form-control" aria-label="Large" aria-describedby="inputGroup-sizing-sm">
-                </div>
-
-                <div class="input-group input-group-lg mb-2">
-                    <div class="input-group-prepend">
-                        <span class="input-group-text" id="inputGroup-sizing-lg">Raio para seleção da ponta do nariz</span>
-                    </div>
-                    <input type="number" id="nosetipSearchRadius" name="nosetipSearchRadius" value="12" class="form-control" aria-label="Large" aria-describedby="inputGroup-sizing-sm">
-                </div>
-
-                <div class="mt-2">
-                    <button class="btn btn-info btn-lg" id="findFiducialPointButton" type="submit">Encontrar ponto fiducial</button>
-                    <button class="btn btn-info btn-lg" id="clearScene" type="submit">Limpar tela</button>
-                </div>
+                <button class="btn btn-info btn-lg mt-4" id="clearScene" type="submit">Limpar tela</button>
             </div>
         </div>
     </div>
-
+    
     <div id="stats"></div>
     <canvas id="canvas"></canvas>
 </body>
