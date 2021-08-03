@@ -46,59 +46,72 @@
         <ul class="nav nav-tabs mb-3" id="pills-tab" role="tablist"></ul>
         <div class="tab-content avaliable-clouds-container" id="pills-tabContent"></div>
         
-        <div class="point-analysis mt-3">
-            <h2 class="bg-info p-2 text-white">Análise de ponto</h2>
+        <div class="mt-4 w-100">
+            <h2 class="bg-info p-2 text-white">Análise de um ponto / Selecionar pontos</h2>
             
-            <div class="input-group input-group-lg p1-all">
-                <input id="pointXYZ" type="text" class="form-control" placeholder="X,Y,Z" aria-describedby="basic-addon2">
-                <div class="input-group-append">
-                    <button id="pointXYZSelect" class="btn btn-outline-secondary" type="button">Selecionar ponto</button>
-                </div>
-            </div>
-            
-            <div class="p1-all">
-                <div>
-                    <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="radio" id="pointAnalysisRadiusMethod" name="pointAnalysisMethod" value="radius" checked>
-                        <label class="form-check-label" for="pointAnalysisRadiusMethod">
-                            Raio
-                        </label>
+            <ul class="nav nav-tabs" id="pointAnalysisTab" role="tablist">
+                <li class="nav-item">
+                    <a class="nav-link active" id="analysis-tab" data-toggle="tab" href="#analysis" role="tab" aria-controls="analysis" aria-selected="true">
+                        Analisar
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="select-tab" data-toggle="tab" href="#select" role="tab" aria-controls="select" aria-selected="false">
+                        Selecionar múltiplos pontos
+                    </a>
+                </li>
+            </ul>
+            <div class="tab-content" id="pointAnalysisTabContent">
+                <div class="tab-pane fade show active" id="analysis" role="tabpanel" aria-labelledby="analysis-tab">
+                    <div class="input-group input-group-lg p1-all">
+                        <input id="pointXYZ" type="text" class="form-control" placeholder="X,Y,Z" aria-describedby="basic-addon2">
+                        <div class="input-group-append">
+                            <button id="pointXYZSelect" class="btn btn-outline-secondary" type="button">Selecionar ponto</button>
+                        </div>
                     </div>
-                    <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="radio" id="pointAnalysisKMethod" name="pointAnalysisMethod" value="k">
-                        <label class="form-check-label" for="pointAnalysisKMethod">
-                            K Vizinhos
-                        </label>
+                    
+                    <div class="p1-all">
+                        <div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" id="pointAnalysisRadiusMethod" name="pointAnalysisMethod" value="radius" checked>
+                                <label class="form-check-label" for="pointAnalysisRadiusMethod">
+                                    Raio
+                                </label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" id="pointAnalysisKMethod" name="pointAnalysisMethod" value="k">
+                                <label class="form-check-label" for="pointAnalysisKMethod">
+                                    K Vizinhos
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="input-group input-group-lg">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text" id="inputGroup-sizing-lg">Valor usado para computar Normal e PC</span>
+                            </div>
+                            <input type="number" id="pointAnalysisComputationRadiusOrKSize" name="pointAnalysisComputationRadiusOrKSize" value="10" class="form-control" aria-label="Large" aria-describedby="inputGroup-sizing-sm">
+                        </div>
+                        
+                        <div class="btn-group my-3" role="group" aria-label="Buttons">
+                            <button id="selectPointButton" class="btn btn-info btn-lg" type="submit">Selecionar ponto</button>
+                            <button id="analysisPointButton" class="btn btn-info btn-lg" type="submit">Analisar</button>
+                            <button id="downloadButton" class="btn btn-info btn-lg" type="submit">Download</button>
+                            <button id="clearPointAnalysis" class="btn btn-danger btn-lg" type="submit">Limpar</button>
+                        </div>
+                        
+                        <ul class="list-group" id="pointAnalysisResult"></ul>
                     </div>
                 </div>
-                
-                <div class="input-group input-group-lg">
-                    <div class="input-group-prepend">
-                        <span class="input-group-text" id="inputGroup-sizing-lg">Valor usado para computar Normal e PC</span>
+                <div class="tab-pane fade" id="select" role="tabpanel" aria-labelledby="select-tab">
+                    <div class="p1-all">
+                        <div class="btn-group my-3" role="group" aria-label="Buttons">
+                            <button id="selectMultiplePoints" class="btn btn-info btn-lg" data-toggle="tooltip" data-placement="top" title="Tecle ESC quando não desejar selecionar mais pontos." type="submit">Selecionar pontos</button>
+                            <button id="downloadMultiplePoints" class="btn btn-info btn-lg" type="submit">Download</button>
+                        </div>
+                        <p><small>Tecle ESC quando não desejar selecionar mais pontos.</small></p>
                     </div>
-                    <input type="number" id="pointAnalysisComputationRadiusOrKSize" name="pointAnalysisComputationRadiusOrKSize" value="10" class="form-control" aria-label="Large" aria-describedby="inputGroup-sizing-sm">
                 </div>
-                
-                <div class="btn-group my-3" role="group" aria-label="Buttons">
-                    <button id="selectPointButton" class="btn btn-info btn-lg" type="submit">Selecionar ponto</button>
-                    <button id="analysisPointButton" class="btn btn-info btn-lg" type="submit">Analisar</button>
-                    <button id="downloadButton" class="btn btn-info btn-lg" type="submit">Download</button>
-                    <button id="clearPointAnalysis" class="btn btn-danger btn-lg" type="submit">Limpar</button>
-                </div>
-                
-                <ul class="list-group" id="pointAnalysisResult"></ul>
-            </div>
-        </div>
-        
-        <div class="my-3 w-100">
-            <h2 class="bg-info p-2 text-white">Selecionar múltiplos pontos</h2>
-            
-            <div class="p1-all">
-                <div class="btn-group my-3" role="group" aria-label="Buttons">
-                    <button id="selectMultiplePoints" class="btn btn-info btn-lg" data-toggle="tooltip" data-placement="top" title="Tecle ESC quando não desejar selecionar mais pontos." type="submit">Selecionar pontos</button>
-                    <button id="downloadMultiplePoints" class="btn btn-info btn-lg" type="submit">Download</button>
-                </div>
-                <p><small>Tecle ESC quando não desejar selecionar mais pontos.</small></p>
             </div>
         </div>
         
@@ -134,51 +147,64 @@
             </button>
         </div>
         
-        <div class="load-previous-configuration">
-            <h2 class="bg-info p-2 text-white">Carregar configuração</h2>
+        <div class="w-100">
+            <h2 class="bg-info p-2 text-white">Carregar configuração / Agrupar nuvens</h2>
             
-            <div class="p1-all">
-                <div class="input-group m-1">
-                    <div class="input-group-prepend">
-                        <span class="input-group-text">Carregar configuração</span>
-                    </div>
-                    <div class="custom-file">
-                        <input type="file" class="custom-file-input" id="config" name="config" accept=".json">
-                        <label class="custom-file-label" for="config">Clique aqui</label>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="group-clouds">
-            <h2 class="bg-info p-2 text-white">Agrupar nuvens filtradas</h2>
-            
-            <div class="p1-all">
-                <div class="form-check">
-                    <input type="checkbox" class="form-check-input" id="saveResultsJoinedClouds">
-                    <label class="form-check-label ml-1" for="saveResultsJoinedClouds">Salvar nuvem</label>
-                </div>
-                <div class="input-group mt-2 mb-1">
-                    <div class="input-group-prepend">
-                        <span class="input-group-text">Carregar imagens</span>
-                    </div>
-                    <div class="custom-file">
-                        <input type="file" class="custom-file-input" id="joinClouds" name="joinClouds" accept=".pcd" multiple>
-                        <label class="custom-file-label" for="joinClouds">Clique aqui</label>
-                    </div>
-                    <div class="input-group-append">
-                        <button class="btn btn-outline-secondary" id="merge" type="button">Agrupar</button>
+            <ul class="nav nav-tabs" id="myTab" role="tablist">
+                <li class="nav-item">
+                    <a class="nav-link active" id="load-configuration-tab" data-toggle="tab" href="#load-configuration" role="tab" aria-controls="load-configuration" aria-selected="true">
+                        Carregar configuração
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="group-clouds-tab" data-toggle="tab" href="#group-clouds" role="tab" aria-controls="group-clouds" aria-selected="false">
+                        Agrupar nuvens
+                    </a>
+                </li>
+            </ul>
+            <div class="tab-content" id="myTabContent">
+                <div class="tab-pane fade show active" id="load-configuration" role="tabpanel" aria-labelledby="load-configuration-tab">
+                    <div class="p1-all">
+                        <div class="input-group m-1">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text">Carregar configuração</span>
+                            </div>
+                            <div class="custom-file">
+                                <input type="file" class="custom-file-input" id="config" name="config" accept=".json">
+                                <label class="custom-file-label" for="config">Clique aqui</label>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                
-                <div class="input-group input-group-lg mb-2">
-                    <div class="input-group-prepend">
-                        <span class="input-group-text" id="inputGroup-sizing-lg">Nome do arquivo final</span>
+                <div class="tab-pane fade" id="group-clouds" role="tabpanel" aria-labelledby="group-clouds-tab">
+                    <div class="p1-all">
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" id="saveResultsJoinedClouds">
+                            <label class="form-check-label ml-1" for="saveResultsJoinedClouds">Salvar nuvem</label>
+                        </div>
+                        <div class="input-group mt-2 mb-1">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text">Carregar imagens</span>
+                            </div>
+                            <div class="custom-file">
+                                <input type="file" class="custom-file-input" id="joinClouds" name="joinClouds" accept=".pcd" multiple>
+                                <label class="custom-file-label" for="joinClouds">Clique aqui</label>
+                            </div>
+                            <div class="input-group-append">
+                                <button class="btn btn-outline-secondary" id="merge" type="button">Agrupar</button>
+                            </div>
+                        </div>
+                        
+                        <div class="input-group input-group-lg mb-2">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text" id="inputGroup-sizing-lg">Nome do arquivo final</span>
+                            </div>
+                            <input type="text" id="outputFilenameMerge" name="outputFilenameMerge" class="form-control" aria-label="Large" aria-describedby="inputGroup-sizing-sm">
+                        </div>
+                        
+                        <div class="joined-clouds"></div>
                     </div>
-                    <input type="text" id="outputFilenameMerge" name="outputFilenameMerge" class="form-control" aria-label="Large" aria-describedby="inputGroup-sizing-sm">
                 </div>
-                
-                <div class="joined-clouds"></div>
             </div>
         </div>
         
