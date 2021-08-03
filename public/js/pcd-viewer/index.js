@@ -873,6 +873,7 @@ function collapse() {
 
 function removeFilter(e) {
     e.stopPropagation();
+    document.getElementById(`${filterMap[this.parentNode.dataset.feature].name}RemoveInput`).click();
     currentFilters.splice(currentFilters.indexOf(this.previousElementSibling.innerHTML), 1);
     document.querySelector(`div[data-feature="${this.parentNode.dataset.feature}"]`).parentNode.remove();
     const cloud = scene.getObjectByName(filterMap[this.parentNode.dataset.feature].name, true);
