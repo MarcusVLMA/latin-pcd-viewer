@@ -128,37 +128,49 @@
                 Filtrando...
                 <span class="spinner-border spinner-border-" role="status" aria-hidden="true"></span>
             </button>
+        </div>
 
-            <div class="input-group my-3">
-                <div class="input-group-prepend">
-                    <span class="input-group-text">Carregar imagens</span>
-                </div>
-                <div class="custom-file">
-                    <input type="file" class="custom-file-input" id="joinClouds" name="joinClouds" accept=".pcd" multiple>
-                    <label class="custom-file-label" for="joinClouds">Clique aqui</label>
-                </div>
-                <div class="input-group-append">
-                    <button class="btn btn-outline-secondary" id="merge" type="button">Merge</button>
+        <div class="load-previous-configuration">
+            <h2 class="bg-info p-2 text-white">Carregar configuração</h2>
+
+            <div class="p1-all">
+                <div class="input-group m-1">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text">Carregar configuração</span>
+                    </div>
+                    <div class="custom-file">
+                        <input type="file" class="custom-file-input" id="config" name="config" accept=".json">
+                        <label class="custom-file-label" for="config">Clique aqui</label>
+                    </div>
                 </div>
             </div>
+        </div>
 
-            <div class="input-group input-group-lg mb-2">
-                <div class="input-group-prepend">
-                    <span class="input-group-text" id="inputGroup-sizing-lg">Nome do arquivo</span>
-                </div>
-                <input type="text" id="outputFilenameMerge" name="outputFilenameMerge" class="form-control" aria-label="Large" aria-describedby="inputGroup-sizing-sm">
-            </div>
+        <div class="group-clouds">
+            <h2 class="bg-info p-2 text-white">Agrupar nuvens filtradas</h2>
 
-            <div class="joined-clouds"></div>
+            <div class="p1-all">
+                <div class="input-group mt-2 mb-1">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text">Carregar imagens</span>
+                    </div>
+                    <div class="custom-file">
+                        <input type="file" class="custom-file-input" id="joinClouds" name="joinClouds" accept=".pcd" multiple>
+                        <label class="custom-file-label" for="joinClouds">Clique aqui</label>
+                    </div>
+                    <div class="input-group-append">
+                        <button class="btn btn-outline-secondary" id="merge" type="button">Merge</button>
+                    </div>
+                </div>
 
-            <div class="input-group my-3">
-                <div class="input-group-prepend">
-                    <span class="input-group-text">Carregar configuração</span>
+                <div class="input-group input-group-lg mb-2">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" id="inputGroup-sizing-lg">Nome do arquivo de saída</span>
+                    </div>
+                    <input type="text" id="outputFilenameMerge" name="outputFilenameMerge" class="form-control" aria-label="Large" aria-describedby="inputGroup-sizing-sm">
                 </div>
-                <div class="custom-file">
-                    <input type="file" class="custom-file-input" id="config" name="config" accept=".json">
-                    <label class="custom-file-label" for="config">Clique aqui</label>
-                </div>
+
+                <div class="joined-clouds"></div>
             </div>
         </div>
 

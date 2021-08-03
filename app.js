@@ -344,7 +344,7 @@ app.post('/filtering', (req, res) => {
 
         savePipelineConfig(filename, filepath, outputFilename, filters, description, error);
     });
-    
+
 });
 
 app.post('/join-clouds', (req, res) => {
@@ -360,7 +360,7 @@ app.post('/join-clouds', (req, res) => {
             next(err);
             return;
         }
-        
+
         const files = file.file.length ? file.file.map(f => f.path) : [file.file.path];
         const outputFilename = path.join(__dirname, 'avaliable_clouds', 'filters', fields.outputFilename);
 
