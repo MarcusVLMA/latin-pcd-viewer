@@ -12,7 +12,7 @@
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-    <div class="sidemenu">
+    <aside id="resizable" class="sidebar-left movable-div position-fixed bottom-0 left-0 animated">
         <h2 class="bg-info p-2 text-white w-100">Nuvens</h2>
         
         <div class="load-image w-100 p1-all">
@@ -325,7 +325,8 @@
                 <button class="btn btn-info btn-lg mt-4" id="clearScene" type="submit">Limpar tela</button>
             </div>
         </div>
-    </div>
+        <div class="draghandle" style="width: 6px; height: 100vh;"></div>
+    </aside>
     
     <div id="stats"></div>
     <canvas id="canvas"></canvas>

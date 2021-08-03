@@ -19,19 +19,33 @@ body {
     height: 100%;
 }
 
-.sidemenu {
-    position: fixed;
-    left: 0;
-    right: 0;
-    height: 100%;
-    overflow-y: auto;
-    width: 40rem;
+aside.sidebar-left#resizable {
+    height: 100vh;
     min-width: 33rem;
     background-color: white;
+    overflow-y: auto;
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    resize: horizontal;
+}
+
+aside.sidebar-left {
+    width: 40rem;
+    top: 0;
+    float: left;
+    box-shadow: -5px 0 0 #f7f7f7 inset;
+    z-index: 1000;
+}
+
+aside.sidebar-left .draghandle {
+    position: absolute;
+    z-index: 100;
+    width: 8px;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    cursor: col-resize;
+    float: right;
 }
 
 .p1-all {

@@ -1771,5 +1771,32 @@ $(function () {
     });
 });
 
+$(document).ready(function() {
+    const element = document.getElementById('resizable');
+
+    if (element) {
+        const resizer = document.createElement('div');
+        resizer.className = 'draghandle';
+        resizer.style.width = '6px';
+        resizer.style.height = '100vh';
+        element.appendChild(resizer);
+        resizer.addEventListener('mousedown', initResize, false);
+    }
+
+    function initResize(e) {
+        window.addEventListener('mousemove', Resize, false);
+        window.addEventListener('mouseup', stopResize, false);
+    }
+
+    function Resize(e) {
+        element.style.width = (e.clientX - element.offsetLeft) + 'px';
+    }
+
+    function stopResize(e) {
+        window.removeEventListener('mousemove', Resize, false);
+        window.removeEventListener('mouseup', stopResize, false);
+    }
+});
+
 init();
 animate();
