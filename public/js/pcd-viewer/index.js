@@ -159,17 +159,17 @@ function addEventListeners() {
         e.currentTarget.timeval = new Date().getTime();
     }));
 
-    document.getElementById(`pcdInputFile0Color`).addEventListener('change', e => {
+    document.getElementById('pcdInputFile0Color').addEventListener('change', e => {
         colorHandler(e, 'file-0');
     });
-    document.getElementById(`pcdInputFile0Slider`).addEventListener('change', e => {
+    document.getElementById('pcdInputFile0Slider').addEventListener('change', e => {
         sizeHandler(e, 'file-0');
     });
-    document.getElementById(`pcdInputFile0Hide`).addEventListener('click', e => {
+    document.getElementById('pcdInputFile0Hide').addEventListener('click', e => {
         toggleVisibilityHandler(e, 'file-0');
     });
-    document.getElementById(`pcdInputFile0Remove`).addEventListener('click', e => {
-        if (document.getElementById(`pcdInputFile0Filename`).innerHTML === 'Upload') return;
+    document.getElementById('pcdInputFile0Remove').addEventListener('click', e => {
+        if (document.getElementById('pcdInputFile0Filename').innerHTML === 'Upload') return;
         removeCloudFilter(e, 'file-0');
         if (document.getElementsByClassName('load-image-block').length >= 2) {
             document.getElementById('upload-cloud-0').innerHTML = '';
@@ -256,30 +256,31 @@ function insertNextChild() {
     const div = document.getElementsByClassName('load-image')[0];
 
     fileCounter += 1;
-    const cloudName = `file-${fileCounter}`;
+    const currentCounter = fileCounter;
+    const cloudName = `file-${currentCounter}`;
 
     const child = document.createElement('div');
     child.classList.add('load-image-block', 'w-100', 'd-flex', 'align-items-center');
     child.innerHTML = `
         <div class="upload-cloud d-flex align-items-center">
-            <label for="pcdInputFile${fileCounter}" class="d-flex align-items-center upload-label">
+            <label for="pcdInputFile${currentCounter}" class="d-flex align-items-center upload-label">
                 <i class="fas fa-upload"></i>
             </label>
-            <span id="pcdInputFile${fileCounter}Filename">Upload</span>
-            <input id="pcdInputFile${fileCounter}" type="file" name="pcdInputFile${fileCounter}" accept=".pcd">
+            <span id="pcdInputFile${currentCounter}Filename">Upload</span>
+            <input id="pcdInputFile${currentCounter}" type="file" name="pcdInputFile${currentCounter}" accept=".pcd">
         </div>
         <div class="d-flex mt-2 right-buttons justify-content-end align-items-center">
             <div class="d-flex align-items-center">
-                <label for="pcdInputFile${fileCounter}Color" class="form-label font-weight-bold">Color:</label>
-                <input type="color" class="form-control form-control-color mx-2" role="button" id="pcdInputFile${fileCounter}Color" value="#1105ad" title="Escolhar a cor da nuvem">
-                <label for="pcdInputFile${fileCounter}Slider" class="form-label font-weight-bold">Size:</label>
-                <input type="number" min="0" max="10" class="form-control form-control mx-2" id="pcdInputFile${fileCounter}Slider" value="0.8" step="0.1" min="0" title="Escolhar o tamanho dos pontos da nuvem">
+                <label for="pcdInputFile${currentCounter}Color" class="form-label font-weight-bold">Color:</label>
+                <input type="color" class="form-control form-control-color mx-2" role="button" id="pcdInputFile${currentCounter}Color" value="#1105ad" title="Escolhar a cor da nuvem">
+                <label for="pcdInputFile${currentCounter}Slider" class="form-label font-weight-bold">Size:</label>
+                <input type="number" min="0" max="10" class="form-control form-control mx-2" id="pcdInputFile${currentCounter}Slider" value="0.8" step="0.1" min="0" title="Escolhar o tamanho dos pontos da nuvem">
             </div>
             <div class="d-flex align-items-center">
-                <button class="btn btn-secondary mx-2" id="pcdInputFile${fileCounter}Hide" title="Show/hide">
+                <button class="btn btn-secondary mx-2" id="pcdInputFile${currentCounter}Hide" title="Show/hide">
                     <i class="far fa-eye"></i>
                 </button>
-                <button class="btn btn-danger" id="pcdInputFile${fileCounter}Remove" title="Remover nuvem">
+                <button class="btn btn-danger" id="pcdInputFile${currentCounter}Remove" title="Remover nuvem">
                     <i class="fas fa-minus-circle"></i>
                 </button>
             </div>
@@ -287,22 +288,25 @@ function insertNextChild() {
     `;
     div.appendChild(child);
 
-    document.getElementById(`pcdInputFile${fileCounter}Color`).addEventListener('change', e => {
+    document.getElementById(`pcdInputFile${currentCounter}Color`).addEventListener('change', e => {
         colorHandler(e, cloudName);
     });
-    document.getElementById(`pcdInputFile${fileCounter}Slider`).addEventListener('change', e => {
+    document.getElementById(`pcdInputFile${currentCounter}Slider`).addEventListener('change', e => {
         sizeHandler(e, cloudName);
     });
-    document.getElementById(`pcdInputFile${fileCounter}Hide`).addEventListener('click', e => {
+    document.getElementById(`pcdInputFile${currentCounter}Hide`).addEventListener('click', e => {
         toggleVisibilityHandler(e, cloudName);
     });
-    document.getElementById(`pcdInputFile${fileCounter}Remove`).addEventListener('click', e => {
+    document.getElementById(`pcdInputFile${currentCounter}Remove`).addEventListener('click', e => {
         removeCloudFilter(e, cloudName);
+        if (document.getElementById(`pcdInputFile${currentCounter}Filename`).innerHTML === 'Upload') {
+            return;
+        }
         if (document.getElementsByClassName('load-image-block').length >= 2) {
             child.innerHTML = '';
         }
     });
-    document.getElementById(`pcdInputFile${fileCounter}`).addEventListener('change', uploadCloudWrapper);
+    document.getElementById(`pcdInputFile${currentCounter}`).addEventListener('change', uploadCloudWrapper);
 }
 
 function loadConfiguration(e) {
