@@ -285,12 +285,14 @@ app.post('/geometric-feature', (req, res) => {
     });
 });
 
-const savePipelineConfig = (file, outputFilename, filters, error) => {
+const savePipelineConfig = (filename, filepath, outputFilename, filters, description, error) => {
     const timestamp = new Date();
     const data = {
-        file,
+        filename,
+        filepath,
         outputFilename,
         filters,
+        description,
         timestamp,
         error
     };
@@ -317,14 +319,16 @@ app.post('/filtering', (req, res) => {
         }
 
         let error = null;
-        const filename = file.file.path;
+        const filename = fields.filename;
+        const filepath = file.file.path;
         const outputFilename = fields.outputFilename ? path.join(__dirname, 'avaliable_clouds', 'filters', fields.outputFilename) : '';
         const filters = JSON.parse(fields.filters);
+        const description = fields.description;
 
         try {
-            const response = pipeline.applyFilters(filename, outputFilename, filters);
+            const response = pipeline.applyFilters(filepath, outputFilename, filters);
 
-            fs.unlink(filename, error => {
+            fs.unlink(filepath, error => {
                 if (error) {
                     console.error(error);
                     return res.status(500).json({ 'msg': error.message });
@@ -338,7 +342,7 @@ app.post('/filtering', (req, res) => {
             res.status(500).json({ 'msg': e.message });
         }
 
-        savePipelineConfig(filename, outputFilename, filters, error);
+        savePipelineConfig(filename, filepath, outputFilename, filters, description, error);
     });
     
 });

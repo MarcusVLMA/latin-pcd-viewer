@@ -25,6 +25,7 @@ const currentFilters = [...avaliableFilters];
 const items = document.querySelectorAll('.pipeline-filter');
 let dragSrcEl = null;
 const performFilteringButton = document.getElementById('performFiltering');
+const descriptionTextArea = document.getElementById('filterDescription');
 
 const filtersDatalist = document.getElementById('filters');
 let filtersDatalistOptions = '';
@@ -484,9 +485,11 @@ async function applyFilter(e) {
 
     const formData = new FormData();
 
+    formData.append('filename', inputFile.files[0].name);
     formData.append('file', sendFile);
     formData.append('filters', JSON.stringify(filters));
     formData.append('outputFilename', outputFilename);
+    formData.append('description', descriptionTextArea.value);
 
     const filterBtn = document.getElementById(`${filterName}Filter`);
     const loadingBtn = document.getElementById(`${filterName}Loading`);
@@ -715,8 +718,10 @@ async function applyFiltering() {
 
     const formData = new FormData();
 
+    formData.append('filename', pcdFile.filename);
     formData.append('file', sendFile);
     formData.append('filters', JSON.stringify(filters));
+    formData.append('description', descriptionTextArea.value);
 
     const filterBtn = document.getElementById('performFiltering');
     const loadingBtn = document.getElementById('performFilteringLoading');

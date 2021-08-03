@@ -141,6 +141,7 @@ body {
 .filters-container {
     display: flex;
     align-items: center;
+    flex-direction: column;
 }
 
 .filters {
@@ -253,4 +254,8 @@ body {
 
 #stats > div {
     left: 40rem !important;
+}
+
+textarea {
+    font-size: 1.6rem !important;
 }
