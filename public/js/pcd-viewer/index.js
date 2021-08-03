@@ -308,6 +308,8 @@ function loadConfiguration(e) {
         $('.pipeline-filter').remove();
         currentFilters.length = 0;
 
+        descriptionTextArea.value = data.description;
+
         data.filters.forEach(filter => {
             const label = inverseFilterMap[filter.filterName].label;
             addFilter(label, filter.filterName, filter.minThreshold, filter.maxThreshold, filter.kdtreeMethod === 'radius');
