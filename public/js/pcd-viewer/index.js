@@ -394,7 +394,7 @@ function insertJoinedClouds(clouds, filename) {
         const cloudInfo = document.createElement('div');
         cloudInfo.innerHTML = `
             <div class="d-flex mt-2 justify-content-between align-items-center w-100">
-                <span class="ellipsis">${cloud_label}</span>
+                <span class="ellipsis" title="${cloud_label}">${cloud_label}</span>
                 <div class="d-flex align-items-center">
                     <label for="${cloud_label}Color" class="form-label">Cor:</label>
                     <input type="color" class="form-control form-control-color mx-2" role="button" id="${cloud_label}Color" value="#1105ad" title="Escolhar a cor da nuvem">
