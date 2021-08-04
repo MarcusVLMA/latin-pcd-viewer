@@ -12,6 +12,7 @@ html {
 body {
     font-size: 1.6rem;
     height: 100%;
+    overflow-y: hidden;
 }
 
 #canvas {
@@ -70,7 +71,7 @@ aside.sidebar-left .draghandle {
     opacity: 0.9;
 }
 
-.avaliable-clouds-container {
+#pills-tabContent {
     min-height: 20rem;
     overflow-y: auto;
     width: 100%;
@@ -117,9 +118,8 @@ aside.sidebar-left .draghandle {
     border-radius: 2px;
 }
 
-/* Style the button that is used to open and close the collapsible content */
 .custom-collapsible {
-    background-color: #eee !important;
+    background-color: #ccc;
     color: #444;
     cursor: pointer;
     padding: 18px;
@@ -131,11 +131,6 @@ aside.sidebar-left .draghandle {
     display: flex;
     align-items: center;
     justify-content: space-between;
-}
-
-/* Add a background color to the button if it is clicked on (add the .active class with JS), and when you move the mouse over it (hover) */
-.active, .custom-collapsible:hover {
-    background-color: #ccc;
 }
 
 .custom-collapsible-content {
@@ -245,9 +240,9 @@ aside.sidebar-left .draghandle {
     margin-left: 5px;
 }
 
-.active, .custom-collapsible:hover {
+/* .active, .custom-collapsible:hover {
     background: none;
-}
+} */
 
 /* .nav-tabs {
     overflow-x: auto;

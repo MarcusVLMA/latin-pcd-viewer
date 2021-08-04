@@ -22,7 +22,7 @@ export function createFilterDiv(label, name, min, max, checked) {
                 <i class="fas fa-trash trash-icon"></i>
             </button></div>
         </div>
-        <div class="custom-collapsible-content" style="display:flex;">
+        <div class="custom-collapsible-content">
             <div class="input-group mb-2">
                 <div class="input-group-prepend">
                     <span class="input-group-text">Carregue uma nuvem:</span>

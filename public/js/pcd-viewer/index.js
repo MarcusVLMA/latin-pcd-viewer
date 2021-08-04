@@ -888,7 +888,9 @@ function collapse() {
 
     const content = this.nextElementSibling;
 
-    if (content.style.display === 'flex') {
+    if (content.style.display === '') {
+        content.style.display = 'none';
+    } else if (content.style.display === 'flex') {
         content.style.display = 'none';
     } else {
         content.style.display = 'flex';
