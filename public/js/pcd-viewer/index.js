@@ -344,7 +344,7 @@ document.getElementById('joinClouds').addEventListener('change', e => {
 
 async function joinClouds() {
     const files = [...document.getElementById('joinClouds').files];
-    if (!files.length) {
+    if (files.length < 2) {
         return;
     }
 
