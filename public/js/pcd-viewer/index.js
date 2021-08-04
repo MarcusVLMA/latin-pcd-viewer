@@ -269,7 +269,7 @@ function insertNextChild() {
             <span id="pcdInputFile${currentCounter}Filename">Upload</span>
             <input id="pcdInputFile${currentCounter}" type="file" name="pcdInputFile${currentCounter}" accept=".pcd">
         </div>
-        <div class="d-flex mt-2 right-buttons justify-content-end align-items-center">
+        <div class="d-flex mt-2 right-buttons justify-content-end align-items-center" style="margin-right: 15px;">
             <div class="d-flex align-items-center">
                 <label for="pcdInputFile${currentCounter}Color" class="form-label font-weight-bold">Color:</label>
                 <input type="color" class="form-control form-control-color mx-2" role="button" id="pcdInputFile${currentCounter}Color" value="#1105ad" title="Escolhar a cor da nuvem">
