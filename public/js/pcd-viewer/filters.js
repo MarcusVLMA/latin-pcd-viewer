@@ -1,3 +1,5 @@
+import { getRandomColorAndSize } from './utils.js';
+
 export function createFilterDiv(label, name, min, max, checked) {
     const pipelineFilterChild = document.createElement('div');
 
@@ -13,6 +15,9 @@ export function createFilterDiv(label, name, min, max, checked) {
     } else {
         kChecked = 'checked';
     }
+
+    const [c1] = getRandomColorAndSize();
+    const [c2] = getRandomColorAndSize();
 
     pipelineFilterChild.innerHTML = `
         <div class="custom-collapsible active" data-feature="${label}">
@@ -35,9 +40,9 @@ export function createFilterDiv(label, name, min, max, checked) {
             <div class="d-flex mt-2 justify-content-between align-items-center w-100">
                 <div class="d-flex align-items-center">
                     <label for="${name}ColorInput" class="form-label">Cor:</label>
-                    <input type="color" class="form-control form-control-color mx-2" role="button" id="${name}ColorInput" value="#1105ad" title="Escolhar a cor da nuvem">
+                    <input type="color" class="form-control form-control-color mx-2" role="button" id="${name}ColorInput" value="${c1}" title="Escolhar a cor da nuvem">
                     <label for="${name}SliderInput" class="form-label">Tamanho:</label>
-                    <input type="number" min="0" max="10" class="form-control form-control mx-2" id="${name}SliderInput" value="0.8" step="0.1" min="0" title="Escolhar o tamanho dos pontos da nuvem">
+                    <input type="number" min="0" max="10" class="form-control form-control mx-2" id="${name}SliderInput" value="1" step="0.1" min="0" title="Escolhar o tamanho dos pontos da nuvem">
                 </div>
                 <div class="d-flex align-items-center">
                     <button class="btn btn-secondary mx-2" id="${name}HideInput" title="Show/hide">
@@ -86,9 +91,9 @@ export function createFilterDiv(label, name, min, max, checked) {
             <div class="d-flex mt-2 justify-content-between align-items-center w-100">
                 <div class="d-flex align-items-center">
                     <label for="${name}Color" class="form-label">Cor:</label>
-                    <input type="color" class="form-control form-control-color mx-2" role="button" id="${name}Color" value="#e66465" title="Escolhar a cor da nuvem">
+                    <input type="color" class="form-control form-control-color mx-2" role="button" id="${name}Color" value="${c2}" title="Escolhar a cor da nuvem">
                     <label for="${name}Slider" class="form-label">Tamanho:</label>
-                    <input type="number" min="0" max="10" class="form-control form-control mx-2" id="${name}Slider" value="2" step="0.1" title="Escolhar o tamanho dos pontos da nuvem">
+                    <input type="number" min="0" max="10" class="form-control form-control mx-2" id="${name}Slider" value="1" step="0.1" title="Escolhar o tamanho dos pontos da nuvem">
                 </div>
                 <div class="d-flex align-items-center">
                     <button class="btn btn-success" id="${name}Filter" title="Filtrar">

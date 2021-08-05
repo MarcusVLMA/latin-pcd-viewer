@@ -8,6 +8,7 @@ import { ColorGUIHelper, SizeGUIHelper } from './helpers/index.js';
 import * as btn from './buttons.js';
 import { filterMap, inverseFilterMap} from './maps.js';
 import { createFilterDiv } from './filters.js';
+import { getRandomColorAndSize } from './utils.js';
 // import Stats from './node_modules/three/examples/jsm/libs/stats.module.js';
 
 let fileCounter = 0;
@@ -174,6 +175,7 @@ function addEventListeners() {
         if (document.getElementsByClassName('load-image-block').length >= 2) {
             document.getElementById('upload-cloud-0').innerHTML = '';
         }
+        pcdFile = {};
     });
 
     inputFile.addEventListener('change', uploadCloudWrapper);
@@ -230,6 +232,7 @@ function uploadCloudWrapper(e) {
     this.addEventListener('change', e => {
         const counter = this.id.replace(/^\D+/g, '');
         removeCloudFilter(e, `file-${counter}`);
+        pcdFile = {};
         uploadCloud(e, counter, false);
     });
     uploadCloud(e);
@@ -299,6 +302,7 @@ function insertNextChild() {
     });
     document.getElementById(`pcdInputFile${currentCounter}Remove`).addEventListener('click', e => {
         removeCloudFilter(e, cloudName);
+        pcdFile = {};
         if (document.getElementById(`pcdInputFile${currentCounter}Filename`).innerHTML === 'Upload') {
             return;
         }
@@ -696,7 +700,6 @@ function toggleVisibilityHandler(e, cloudName) {
 function removeCloudFilter(e, cloudName) {
     const cloud = scene.getObjectByName(cloudName, true);
     scene.remove(cloud);
-    pcdFile = {};
 }
 
 async function applyFiltering() {
@@ -785,7 +788,7 @@ function setChangeEvents(filterName) {
         const size = document.getElementById(`${filterName}SliderInput`).value;
         const cloud = scene.getObjectByName(`${filterName}File`);
         scene.remove(cloud);
-        addPCDFile1(url, filterName + 'File', color, size);
+        addPCDFile(url, filterName + 'File', color, size);
     });
     document.getElementById(`${filterName}Filename`).addEventListener('change', e => {
         e.target.setAttribute('value', e.target.value);
@@ -858,10 +861,10 @@ document.getElementById('clearPointAnalysis').addEventListener('click', e => {
 function setFilterCardEvents(filterName) {
     document.getElementById(`${filterName}Filter`).addEventListener('click', applyFilter);
     document.getElementById(`${filterName}Color`).addEventListener('change', e => {
-        colorHandler(e, `${filterName}`);
+        colorHandler(e, filterName);
     });
     document.getElementById(`${filterName}Slider`).addEventListener('change', e => {
-        sizeHandler(e, `${filterName}`);
+        sizeHandler(e, filterName);
     });
     document.getElementById(`${filterName}ColorInput`).addEventListener('change', e => {
         colorHandler(e, `${filterName}File`);
@@ -870,12 +873,13 @@ function setFilterCardEvents(filterName) {
         sizeHandler(e, `${filterName}File`);
     });
     document.getElementById(`${filterName}Remove`).addEventListener('click', e => {
-        removeCloudFilter(e, `${filterName}`);
+        removeCloudFilter(e, filterName);
     });
     document.getElementById(`${filterName}Hide`).addEventListener('click', e => {
-        toggleVisibilityHandler(e, `${filterName}`);
+        toggleVisibilityHandler(e, filterName);
     });
     document.getElementById(`${filterName}RemoveInput`).addEventListener('click', e => {
+        document.getElementById(`${filterName}File`).nextElementSibling.innerHTML = 'Clique aqui';
         removeCloudFilter(e, `${filterName}File`);
     });
     document.getElementById(`${filterName}HideInput`).addEventListener('click', e => {
@@ -899,10 +903,11 @@ function collapse() {
 
 function removeFilter(e) {
     e.stopPropagation();
-    document.getElementById(`${filterMap[this.parentNode.dataset.feature].name}RemoveInput`).click();
+    const filterName = filterMap[this.parentNode.dataset.feature].name;
+    document.getElementById(`${filterName}RemoveInput`).click();
     currentFilters.splice(currentFilters.indexOf(this.previousElementSibling.innerHTML), 1);
     document.querySelector(`div[data-feature="${this.parentNode.dataset.feature}"]`).parentNode.remove();
-    const cloud = scene.getObjectByName(filterMap[this.parentNode.dataset.feature].name, true);
+    const cloud = scene.getObjectByName(filterName, true);
     scene.remove(cloud);
 }
 
@@ -979,7 +984,7 @@ function dragAndDropHandlers(item) {
 
 // Event Lisntener Functions
 
-function addPCDFile1(inputUrl, name, color, size) {
+function addPCDFile(inputUrl, name, color, size) {
     loader.load(inputUrl, pointCloud => {
         pointCloud.material.size = size;
         pointCloud.material.color = new THREE.Color(color);
@@ -1602,9 +1607,11 @@ function setAvaliableFoldersHTML(folders) {
             inputColor.setAttribute('min', 0);
             inputColor.setAttribute('max', 10);
             inputColor.classList.add('form-control', 'mx-2');
-            inputColor.id = `pcdFile${avaliableCloudsCounter}Color`;
-            inputColor.title = '"Escolha a cor da nuvem';
-            inputColor.value = '#1105ad';
+            const inputColorID = `pcdFile${avaliableCloudsCounter}Color`;
+            inputColor.id = inputColorID;
+            inputColor.title = 'Escolha a cor da nuvem';
+            const [color] = getRandomColorAndSize();
+            inputColor.value = color;
 
             const labelSize = document.createElement('label');
             labelSize.setAttribute('for', `pcdFile${avaliableCloudsCounter}Slider`);
@@ -1617,7 +1624,7 @@ function setAvaliableFoldersHTML(folders) {
             inputSize.classList.add('form-control', 'form-control-color', 'mx-2');
             inputSize.id = `pcdFile${avaliableCloudsCounter}Slider`;
             inputSize.title = 'Escolha o tamanho dos pontos da nuvem';
-            inputSize.value = '0.8';
+            inputSize.value = 1;
             inputSize.step = '0.1';
 
             tailDivFirst.appendChild(labelColor);
@@ -1656,9 +1663,8 @@ function setAvaliableFoldersHTML(folders) {
                     .then(response => {
                         response.blob().then(res => {
                             const pcdBlob = URL.createObjectURL(res);
-                            const randomColor = `#${Math.floor(Math.random()*16777215).toString(16)}`;
-                            const randomSize = Math.round(10 * (Math.random() * (1.6 - 0.8) + 0.8)) / 10;
-                            uploadPCDFile(pcdBlob, cloud, cloudName, randomColor, randomSize);
+                            const color = document.getElementById(inputColorID).value;
+                            uploadPCDFile(pcdBlob, cloud, cloudName, color, 1);
                             headDivBtn.disabled = true;
                         });
                     });
@@ -1675,6 +1681,7 @@ function setAvaliableFoldersHTML(folders) {
             tailDivSecondRemove.addEventListener('click', e => {
                 removeCloudFilter(e, cloudName);
                 headDivBtn.disabled = false;
+                pcdFile = {};
             });
             avaliableCloudsCounter += 1;
         });
