@@ -1116,11 +1116,15 @@ async function getPointAnalysis() {
     formData.append('computationSize', pointAnalysisComputationRadiusOrKSize.value);
     formData.append('pointIndexToAnalyze', selectedNosetipCloud.index);
 
+    showLoading(btn.analysisPointButton, btn.analysisPointButtonLoading);
+
     const response = await fetch('http://localhost:3000/point-analysis', {
         method: 'POST',
         body: formData
     });
     const data = await response.json();
+
+    hideLoading(btn.analysisPointButton, btn.analysisPointButtonLoading);
 
     if (!response.ok) {
         alert('Algum erro ocorreu: ' + data.msg);
