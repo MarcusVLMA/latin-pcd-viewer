@@ -1259,9 +1259,7 @@ function runRaycast() {
             index,
             guiColor,
             guiSize
-        }
-
-        fileCounter += 1;
+        };
     }
 }
 
@@ -1344,8 +1342,6 @@ function addPointCloudFromCloudLog(cloudLog, minSize = 0, maxSize = 150, step = 
         guiColor,
         guiSize
     };
-
-    fileCounter += 1;
 }
 
 function downloadMultiplePoints() {
