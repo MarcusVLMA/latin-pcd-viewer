@@ -4,14 +4,17 @@
     box-sizing: border-box;
 }
 
-html {
+html, body {
     height: 100%;
+}
+
+html {
     font-size: 62.5%;
 }
 
 body {
+    position: relative;
     font-size: 1.6rem;
-    height: 100%;
     overflow-y: hidden;
 }
 
@@ -22,9 +25,10 @@ body {
 }
 
 aside.sidebar-left#resizable {
-    height: 100vh;
+    position: relative;
     min-width: 33rem;
     background-color: white;
+    height: 100%;
     overflow-y: auto;
     display: flex;
     flex-direction: column;
@@ -42,12 +46,13 @@ aside.sidebar-left {
 aside.sidebar-left .draghandle {
     position: absolute;
     z-index: 100;
-    width: 8px;
+    width: 10px;
     top: 0;
     bottom: 0;
     right: 0;
     cursor: col-resize;
     float: right;
+    /* background-color: red; */
 }
 
 .p1-all {
@@ -131,6 +136,7 @@ aside.sidebar-left .draghandle {
     display: flex;
     align-items: center;
     justify-content: space-between;
+    transition: .2s opacity ease;
 }
 
 .custom-collapsible-content {
@@ -141,6 +147,10 @@ aside.sidebar-left .draghandle {
     margin-bottom: 2px;
     flex-direction: column;
     align-items: flex-start;
+}
+
+.custom-collapsible.active:hover {
+    opacity: 0.8;
 }
 
 .remove-filter {
@@ -210,11 +220,25 @@ aside.sidebar-left .draghandle {
     font-size: 1.6rem;
 }
 
-.upload-cloud {
+.upload-cloud,
+.left-buttons {
     flex-shrink: 1;
     flex-grow: 1;
     white-space: nowrap;
     overflow: hidden;
+}
+
+#pointAnalysisCloudButtons {
+    display: none;
+}
+
+#pointAnalysisCloudButtons.show {
+    display: flex;
+}
+
+#getPointAnalysisColor,
+#getPointAnalysisSize {
+    max-width: 45px !important;
 }
 
 .right-buttons {
@@ -239,20 +263,6 @@ aside.sidebar-left .draghandle {
     text-overflow: ellipsis;
     margin-left: 5px;
 }
-
-/* .active, .custom-collapsible:hover {
-    background: none;
-} */
-
-/* .nav-tabs {
-    overflow-x: auto;
-    overflow-y: hidden;
-    display: -webkit-box;
-    display: -moz-box;
-  }
-  .nav-tabs>li {
-    float: none;
-  } */
 
 textarea {
     font-size: 1.6rem !important;

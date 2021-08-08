@@ -97,11 +97,23 @@
                             <button id="selectPointButton" class="btn btn-info btn-lg" type="submit">Selecionar ponto</button>
                             <button id="analysisPointButton" class="btn btn-info btn-lg" type="submit">Analisar</button>
                             <button class="btn btn-info btn-lg d-none" id="analysisPointButtonLoading" type="button" disabled>
-                                Analisando...
                                 <span class="spinner-border spinner-border-" role="status" aria-hidden="true"></span>
                             </button>
                             <button id="downloadButton" class="btn btn-info btn-lg" type="submit">Download</button>
                             <button id="clearPointAnalysis" class="btn btn-danger btn-lg" type="submit">Limpar</button>
+                        </div>
+
+                        <div id="pointAnalysisCloudButtons" class="align-items-center w-100 mb-2">
+                            <label for="getPointAnalysisColor" class="form-label font-weight-bold">Color:</label>
+                            <input type="color" class="form-control form-control-color mx-2" role="button" id="getPointAnalysisColor" value="#1105ad" title="Escolhar a cor da nuvem">
+                            <label for="getPointAnalysisSize" class="form-label font-weight-bold">Size:</label>
+                            <input type="number" min="0" max="10" class="form-control form-control mx-2" id="getPointAnalysisSize" value="1" step="0.1" min="0" title="Escolhar o tamanho dos pontos da nuvem">
+                            <button class="btn btn-secondary mx-2" id="getPointAnalysisHide" title="Show/hide">
+                                <i class="far fa-eye"></i>
+                            </button>
+                            <!-- <button class="btn btn-danger" id="getPointAnalysisRemove" title="Remover nuvem">
+                                <i class="fas fa-minus-circle"></i>
+                            </button> -->
                         </div>
                         
                         <ul class="list-group" id="pointAnalysisResult"></ul>
@@ -325,13 +337,12 @@
                             </div>
                         </div>
                     </div>
+                    <div id="nosetipIntermediaryClouds"></div>
                 </div>
                 <button class="btn btn-info btn-lg mt-4" id="clearScene" type="submit">Limpar tela</button>
             </div>
         </div>
-        <div class="draghandle" style="width: 6px; height: 100vh;"></div>
     </aside>
-    
     <div id="stats"></div>
     <canvas id="canvas"></canvas>
 </body>

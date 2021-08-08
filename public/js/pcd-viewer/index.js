@@ -29,7 +29,8 @@ const performFilteringButton = document.getElementById('performFiltering');
 const descriptionTextArea = document.getElementById('filterDescription');
 const saveResultsFilters = document.getElementById('saveResultsFilters');
 const saveResultsJoinedClouds = document.getElementById('saveResultsJoinedClouds');
-const outputJoinedCloudFilename = document.getElementById('outputFilenameMerge')
+const outputJoinedCloudFilename = document.getElementById('outputFilenameMerge');
+const pointAnalysisCloudContainer = document.getElementById('pointAnalysisCloudButtons');
 
 const filtersDatalist = document.getElementById('filters');
 let filtersDatalistOptions = '';
@@ -392,30 +393,35 @@ async function joinClouds() {
         return;
     }
 
-    insertJoinedClouds(data, outputFilename);
+    const div = document.getElementsByClassName('joined-clouds')[0];
+    clearIntermediaryClouds(div);
+    insertJoinedClouds(div, data, outputFilename);
 }
 
-function insertJoinedClouds(clouds, filename) {
-    const div = document.getElementsByClassName('joined-clouds')[0];
+function insertJoinedClouds(div, clouds, filename) {
     div.innerHTML = '';
 
     const files = [...document.getElementById('joinClouds').files];
+
     clouds.intermediary_clouds = clouds.intermediary_clouds.map((cloud, i) => {
+        const [color] = getRandomColorAndSize();
         return {
             cloud: cloud.cloud,
-            cloud_label: files[i].name
+            cloud_label: files[i].name,
+            color,
+            size: 1
         };
     });
 
-    const _clouds = [{ cloud: clouds.cloud, cloud_label: filename }, ...clouds.intermediary_clouds];
+    const [color] = getRandomColorAndSize();
+    const _clouds = [{
+        cloud: clouds.cloud,
+        cloud_label: filename,
+        color,
+        size: 1
+    }, ...clouds.intermediary_clouds];
 
-    _clouds.forEach(({ cloud, cloud_label }, i) => {
-        let size = 2;
-        let color = '#e66465';
-        if (i === 0) {
-            size = 0.8;
-            color = '#1105ad';
-        }
+    _clouds.forEach(({ cloud, cloud_label, color, size }) => {
         const cloudInfo = document.createElement('div');
         cloudInfo.innerHTML = `
             <div class="d-flex mt-2 justify-content-between align-items-center w-100">
@@ -425,7 +431,7 @@ function insertJoinedClouds(clouds, filename) {
                 <div class="d-flex right-buttons">
                     <div class="d-flex align-items-center">
                         <label for="${cloud_label}Color" class="form-label font-weight-bold">Color:</label>
-                        <input type="color" class="form-control form-control-color mx-2" role="button" id="${cloud_label}Color" value="#1105ad" title="Escolhar a cor da nuvem">
+                        <input type="color" class="form-control form-control-color mx-2" role="button" id="${cloud_label}Color" value="${color}" title="Escolhar a cor da nuvem">
                         <label for=${cloud_label}Slider" class="form-label font-weight-bold">Size:</label>
                         <input type="number" min="0" max="10" class="form-control form-control mx-2" id="${cloud_label}Slider" value="${size}" step="0.1" title="Escolhar o tamanho dos pontos da nuvem">
                     </div>
@@ -443,7 +449,7 @@ function insertJoinedClouds(clouds, filename) {
 
         div.appendChild(cloudInfo);
 
-        convertCloudToPoints(cloud, cloud_label);
+        convertCloudToPoints(cloud, cloud_label, color, size);
 
         document.getElementById(`${cloud_label}Color`).addEventListener('change', e => {
             colorHandler(e, cloud_label);
@@ -459,31 +465,6 @@ function insertJoinedClouds(clouds, filename) {
             cloudInfo.innerHTML = '';
         });
     });
-}
-
-function convertCloudToPoints(cloud, label) {
-    const materialColor = `#${Math.floor(Math.random()*16777215).toString(16)}`;
-    const material = new THREE.PointsMaterial({ size: 0.8, color: materialColor });
-    const points = [];
-
-    cloud.forEach(point => {
-        points.push(new THREE.Vector3(point.x, point.y, point.z));
-    });
-
-    const geometry = new THREE.BufferGeometry().setFromPoints(points);
-    const newCloud = new THREE.Points(geometry, material);
-    newCloud.name = label;
-    scene.add(newCloud);
-
-    newCloud.geometry.computeBoundingSphere();
-    const inputCenter = newCloud.geometry.boundingSphere.center;
-    center.x = inputCenter.x;
-    center.y = inputCenter.y;
-    center.z = inputCenter.z;
-
-    controls.target.set(center.x, center.y, center.z);
-    camera.position.set(center.x, center.y, center.z + 200);
-    controls.update();
 }
 
 async function applyFilter(e) {
@@ -550,7 +531,7 @@ async function applyFilter(e) {
     const color = document.getElementById(`${filterName}Color`).value;
     const size = document.getElementById(`${filterName}Slider`).value;
 
-    data.intermediary_clouds.forEach(cloudLog => addPointCloudFromCloudLog2(cloudLog, filterName, 0, 150, 1, size, color));
+    data.intermediary_clouds.forEach(cloudLog => addPointCloudFromCloudLog2(cloudLog, filterName, size, color));
 }
 
 // pointXYZSelectButton.addEventListener('click', selectPointFromInput);
@@ -634,35 +615,43 @@ function hideLoading(source, target) {
 //     fileCounter += 1;
 // }
 
-function addPointCloudFromCloudLog2(cloudLog, label, minSize = 0, maxSize = 150, step = 1, initialPointSize = 2, color = undefined) {
+function addPointCloudFromCloudLog2(cloudLog, label = undefined, initialPointSize = 1, color = undefined, addGUI = false) {
     let materialColor = color;
 
     if (!color) {
-        materialColor = `#${Math.floor(Math.random()*16777215).toString(16)}`;
+        const [color] = getRandomColorAndSize();
+        materialColor = color;
     }
 
     const material = new THREE.PointsMaterial({ size: initialPointSize, color: materialColor });
-    const points = [];
-
-    cloudLog.cloud.forEach(point => {
-        points.push(new THREE.Vector3(point.x, point.y, point.z));
-    });
-
+    const points = cloudLog.cloud.map(point => new THREE.Vector3(point.x, point.y, point.z));
     const geometry = new THREE.BufferGeometry().setFromPoints(points);
     const newCloud = new THREE.Points(geometry, material);
     newCloud.userData.points = points;
-    newCloud.name = label;
+    newCloud.name = label ? label : cloudLog.cloud_label;
     scene.add(newCloud);
 
-    newCloud.geometry.computeBoundingSphere();
-    const inputCenter = newCloud.geometry.boundingSphere.center;
-    center.x = inputCenter.x;
-    center.y = inputCenter.y;
-    center.z = inputCenter.z;
+    if (!pcdFile || (Object.keys(pcdFile).length === 0 && pcdFile.constructor === Object)) {
+        newCloud.geometry.computeBoundingSphere();
+        const inputCenter = newCloud.geometry.boundingSphere.center;
+        center.x = inputCenter.x;
+        center.y = inputCenter.y;
+        center.z = inputCenter.z;
 
-    controls.target.set(center.x, center.y, center.z);
-    camera.position.set(center.x, center.y, center.z + 200);
-    controls.update();
+        controls.target.set(center.x, center.y, center.z);
+        controls.update();
+    }
+
+    if (addGUI) {
+    //     const guiColor = gui.addColor(new ColorGUIHelper(newCloud.material, 'color'), 'value').name(cloudLog.cloud_label);
+    //     const guiSize = gui.add(new SizeGUIHelper(newCloud.material, 'size'), 'value', 0, 200, 1).name(cloudLog.cloud_label);
+
+        cloudLogFiles.push({
+            cloud: newCloud,
+            // guiColor,
+            // guiSize,
+        });
+    }
 }
 
 function colorHandler(e, cloudName) {
@@ -778,7 +767,10 @@ async function applyFiltering() {
 
     cleanCloudLogEntries();
 
-    data.intermediary_clouds.forEach(cloudLog => addPointCloudFromCloudLog(cloudLog));
+    data.intermediary_clouds.forEach(cloudLog => {
+        const color = document.getElementById(`${cloudLog.cloud_label}Color`).value;
+        addPointCloudFromCloudLog2(cloudLog, undefined, 1, color, true);
+    });
 }
 
 function setChangeEvents(filterName) {
@@ -854,6 +846,9 @@ function addFilter(label, name, min, max, checked = true) {
 document.getElementById('clearPointAnalysis').addEventListener('click', e => {
     document.getElementById('pointAnalysisResult').innerHTML = '';
     e.target.style.display = 'none';
+    pointAnalysisCloudContainer.classList.remove('show');
+    const cloud = scene.getObjectByName('pointAnalysis');
+    scene.remove(cloud);
     cleanSelectedNosetipCloud();
     cleanNeighborhoodCloud();
 });
@@ -880,6 +875,7 @@ function setFilterCardEvents(filterName) {
     });
     document.getElementById(`${filterName}RemoveInput`).addEventListener('click', e => {
         document.getElementById(`${filterName}File`).nextElementSibling.innerHTML = 'Clique aqui';
+        document.getElementById(`${filterName}File`).value = '';
         removeCloudFilter(e, `${filterName}File`);
     });
     document.getElementById(`${filterName}HideInput`).addEventListener('click', e => {
@@ -1032,9 +1028,6 @@ async function findFiducialPoint() {
         return;
     }
 
-    cleanCloudLogEntries();
-    cleanPointAnalysis();
-
     const inputUrl = pcdFile.blobURL;
     const sendBlob = await fetch(inputUrl).then(blob => blob.blob());
     const randomFilename = Math.random().toString(36).substring(7) + '.pcd'
@@ -1085,14 +1078,80 @@ async function findFiducialPoint() {
         return;
     }
 
-    data.intermediary_clouds.forEach(cloudLog => addPointCloudFromCloudLog(cloudLog));
+    data.intermediary_clouds = data.intermediary_clouds.map(cloud => {
+        const [color] = getRandomColorAndSize();
+        return {
+            ...cloud,
+            color,
+            size: 1
+        };
+    });
 
-    const fiducialPointCloudLog = {
+    const [color] = getRandomColorAndSize();
+    const clouds = [{
+        cloud: [{ x: data.point.x, y: data.point.y, z: data.point.z }],
         cloud_label: 'Ponto fiducial',
-        cloud: [{ x: data.point.x, y: data.point.y, z: data.point.z }]
-    };
+        color,
+        size: 4.5
+    }, ...data.intermediary_clouds];
 
-    addPointCloudFromCloudLog(fiducialPointCloudLog, 150, 400, 1, 4, '#FFFFFF');
+    const div = document.getElementById('nosetipIntermediaryClouds');
+    clearIntermediaryClouds(div);
+    insertIntermediaryClouds(div, clouds);
+}
+
+function clearIntermediaryClouds(div) {
+    const removeButtons = [...div.getElementsByClassName('btn-danger')];
+    removeButtons.forEach(btn => btn.click());
+}
+
+function insertIntermediaryClouds(div, clouds) {
+    div.innerHTML = '';
+
+    clouds.forEach(({ cloud, cloud_label, color, size }) => {
+        const cloudInfo = document.createElement('div');
+        cloudInfo.innerHTML = `
+            <div class="d-flex mt-2 justify-content-between align-items-center w-100">
+                <div class="upload-cloud d-flex">
+                    <span title="${cloud_label}">${cloud_label}</span>
+                </div>
+                <div class="d-flex right-buttons">
+                    <div class="d-flex align-items-center">
+                        <label for="${cloud_label}Color" class="form-label font-weight-bold">Color:</label>
+                        <input type="color" class="form-control form-control-color mx-2" role="button" id="${cloud_label}Color" value="${color}" title="Escolhar a cor da nuvem">
+                        <label for=${cloud_label}Slider" class="form-label font-weight-bold">Size:</label>
+                        <input type="number" min="0" max="10" class="form-control form-control mx-2" id="${cloud_label}Slider" value="${size}" step="0.1" title="Escolhar o tamanho dos pontos da nuvem">
+                    </div>
+                    <div class="d-flex align-items-center">
+                        <button class="btn btn-secondary mx-2" id="${cloud_label}Hide" title="Show/hide">
+                            <i class="far fa-eye"></i>
+                        </button>
+                        <button class="btn btn-danger" id="${cloud_label}Remove" title="Remover nuvem">
+                            <i class="fas fa-minus-circle"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        div.appendChild(cloudInfo);
+
+        convertCloudToPoints(cloud, cloud_label, color, size);
+
+        document.getElementById(`${cloud_label}Color`).addEventListener('change', e => {
+            colorHandler(e, cloud_label);
+        });
+        document.getElementById(`${cloud_label}Slider`).addEventListener('click', e => {
+            sizeHandler(e, cloud_label);
+        });
+        document.getElementById(`${cloud_label}Hide`).addEventListener('click', e => {
+            toggleVisibilityHandler(e, cloud_label);
+        });
+        document.getElementById(`${cloud_label}Remove`).addEventListener('click', e => {
+            removeCloudFilter(e, cloud_label);
+            cloudInfo.innerHTML = '';
+        });
+    });
 }
 
 async function getPointAnalysis() {
@@ -1118,6 +1177,9 @@ async function getPointAnalysis() {
 
     showLoading(btn.analysisPointButton, btn.analysisPointButtonLoading);
 
+    const cloudName = 'pointAnalysis';
+    scene.remove(scene.getObjectByName(cloudName));
+
     const response = await fetch('http://localhost:3000/point-analysis', {
         method: 'POST',
         body: formData
@@ -1133,13 +1195,21 @@ async function getPointAnalysis() {
     }
 
     insertPointAnalysisOnHTML(data.point_analysis);
+    convertCloudToPoints(data.point_analysis.neighborhood, cloudName, '#1105ad', 1);
 
-    const cloudLog = {
-        cloud_label: 'Vizinhança',
-        cloud: data.point_analysis.neighborhood
-    };
-
-    addPointCloudFromCloudLog(cloudLog);
+    document.getElementById('getPointAnalysisColor').addEventListener('change', e => {
+        colorHandler(e, cloudName);
+    });
+    document.getElementById('getPointAnalysisSize').addEventListener('change', e => {
+        sizeHandler(e, cloudName);
+    });
+    document.getElementById('getPointAnalysisHide').addEventListener('click', e => {
+        toggleVisibilityHandler(e, cloudName);
+    });
+    // document.getElementById('getPointAnalysisRemove').addEventListener('click', e => {
+    //     removeCloudFilter(e, cloudName);
+    //     cleanSelectedNosetipCloud();
+    // });
 }
 
 function onPointerMove(event) {
@@ -1216,9 +1286,9 @@ function runMultiplePointsRaycast() {
     }
 }
 
-function runRaycast() {
-    mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
-    mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
+function runRaycast(e) {
+    mouse.x = ( e.clientX / window.innerWidth ) * 2 - 1;
+    mouse.y = - ( e.clientY / window.innerHeight ) * 2 + 1;
 
     raycaster.setFromCamera(mouse, camera);
 
@@ -1250,8 +1320,8 @@ function runRaycast() {
         const newCloud = new THREE.Points(geometry, material);
         scene.add(newCloud);
 
-        const guiColor = gui.addColor(new ColorGUIHelper(newCloud.material, 'color'), 'value').name(`Selected point ${fileCounter}`);
-        const guiSize = gui.add(new SizeGUIHelper(newCloud.material, 'size'), 'value', 150, 400, 1).name(`Selected point ${fileCounter}`);
+        const guiColor = gui.addColor(new ColorGUIHelper(newCloud.material, 'color'), 'value').name(`Selected point`);
+        const guiSize = gui.add(new SizeGUIHelper(newCloud.material, 'size'), 'value', 150, 400, 1).name(`Selected point`);
 
         selectedNosetipCloud = {
             cloud: newCloud,
@@ -1274,6 +1344,9 @@ function toggleFocusRaycaster(e) {
 }
 
 function insertPointAnalysisOnHTML(pointAnalysis) {
+    if (!pointAnalysisCloudContainer.classList.contains('show')) {
+        document.getElementById('pointAnalysisCloudButtons').classList.add('show');
+    }
     document.getElementById('pointAnalysisResult').innerHTML = `
         <li class="list-group-item"><span class="font-weight-bold">Ponto (x, y, z):</span> (${selectedNosetipCloud.point.x.toFixed(5)}, ${selectedNosetipCloud.point.y.toFixed(5)}, ${selectedNosetipCloud.point.z.toFixed(5)})</li>
         <li class="list-group-item"><span class="font-weight-bold">Número de pontos:</span> ${pointAnalysis.neighborhood.length}</li>
@@ -1297,20 +1370,36 @@ function insertPointAnalysisOnHTML(pointAnalysis) {
     document.getElementById('clearPointAnalysis').style.display = 'inline-block';
 }
 
-function addPointCloudFromCloudLog(cloudLog, minSize = 0, maxSize = 150, step = 1, initialPointSize = 2, color = undefined) {
+function convertCloudToPoints(cloud, label, color, size) {
+    const material = new THREE.PointsMaterial({ size, color });
+    const points = cloud.map(point => new THREE.Vector3(point.x, point.y, point.z));
+    const geometry = new THREE.BufferGeometry().setFromPoints(points);
+    const newCloud = new THREE.Points(geometry, material);
+    newCloud.userData.points = points;
+    newCloud.name = label;
+    scene.add(newCloud);
+
+    if (!pcdFile || (Object.keys(pcdFile).length === 0 && pcdFile.constructor === Object)) {
+        newCloud.geometry.computeBoundingSphere();
+        const inputCenter = newCloud.geometry.boundingSphere.center;
+        center.x = inputCenter.x;
+        center.y = inputCenter.y;
+        center.z = inputCenter.z;
+        controls.target.set(center.x, center.y, center.z);
+        controls.update();
+    }
+}
+
+function addPointCloudFromCloudLog(cloudLog, minSize = 0, maxSize = 150, step = 1, initialPointSize = 1, color = undefined, label = undefined) {
     let materialColor = color;
 
     if (!color) {
-        materialColor = `#${Math.floor(Math.random()*16777215).toString(16)}`;
+        const [color] = getRandomColorAndSize();
+        materialColor = color;
     }
 
     const material = new THREE.PointsMaterial({ size: initialPointSize, color: materialColor });
-    const points = [];
-
-    cloudLog.cloud.forEach(point => {
-        points.push(new THREE.Vector3(point.x, point.y, point.z));
-    });
-
+    const points = cloudLog.cloud.map(point => new THREE.Vector3(point.x, point.y, point.z));
     const geometry = new THREE.BufferGeometry().setFromPoints(points);
     const newCloud = new THREE.Points(geometry, material);
     newCloud.userData.points = points;
@@ -1358,7 +1447,7 @@ function downloadMultiplePoints() {
         baseFile += `${points[i].x} ${points[i].y} ${points[i].z}\n`
     }
 
-    saveData(baseFile, `points_${pcdFile.filename}`);
+    saveData(baseFile, `points_${pcdFile.filename.split('.')[0]}_${Date.now()}.pcd`);
     multiplePointsRaycaster();
     multiplesPoints.forEach(point => scene.remove(point.cloud));
     multiplesPoints = [];
@@ -1369,7 +1458,7 @@ function download() {
         return;
     }
 
-    const cloud = scene.getObjectByName('neighborhood', true);
+    const cloud = scene.getObjectByName('pointAnalysis', true);
 
     let baseFile = '# .PCD v0.7 - Point Cloud Data file format\nVERSION 0.7\nFIELDS x y z\nSIZE 4 4 4\nTYPE F F F\nCOUNT 1 1 1\nWIDTH 1\nHEIGHT 1\nVIEWPOINT 0 0 0 1 0 0 0\nPOINTS 1\nDATA ascii\n';
     baseFile = baseFile + `${selectedNosetipCloud.point.x} ${selectedNosetipCloud.point.y} ${selectedNosetipCloud.point.z}\n`;
@@ -1379,7 +1468,7 @@ function download() {
         baseFile += `${points[i].x} ${points[i].y} ${points[i].z}\n`
     }
 
-    saveData(baseFile, `neighborhood_${pcdFile.filename}`);
+    saveData(baseFile, `point_analysis_${pcdFile.filename.split('.')[0]}_${Date.now()}.pcd`);
 }
 
 const saveData = (function () {
@@ -1444,8 +1533,8 @@ function cleanCloudLogEntries() {
         const c = cloudLogFiles[i];
 
         scene.remove(c.cloud);
-        gui.remove(c.guiColor);
-        gui.remove(c.guiSize);
+        // gui.remove(c.guiColor);
+        // gui.remove(c.guiSize);
     }
 
     cloudLogFiles = [];
@@ -1475,11 +1564,6 @@ function removeAllSceneChildren() {
 
 function cleanScene() {
     pcdFile = {};
-    // cleanPCDFile();
-    // cleanSelectedNosetipCloud();
-    // cleanCloudLogEntries();
-    // multiplesPoints.forEach(point => scene.remove(point.cloud));
-    // removeAllSceneChildren();
     removeAllSceneChildren();
     cleanCloudLogEntries();
     [...document.getElementsByClassName('upload-cloud-button')].forEach(btn => {
@@ -1490,6 +1574,7 @@ function cleanScene() {
         uploadDivs[i].remove();
     }
     document.getElementsByClassName('joined-clouds')[0].innerHTML = '';
+    document.getElementById('nosetipIntermediaryClouds').innerHTML = '';
 }
 
 function focusOnNewPoint(e) {
@@ -1803,8 +1888,9 @@ $(document).ready(function() {
     if (element) {
         const resizer = document.createElement('div');
         resizer.className = 'draghandle';
-        resizer.style.width = '6px';
-        resizer.style.height = '100vh';
+        resizer.style.width = '10px';
+        resizer.style.minHeight = '100%';
+        resizer.style.bottom = 0;
         element.appendChild(resizer);
         resizer.addEventListener('mousedown', initResize, false);
     }
