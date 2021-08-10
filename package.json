@@ -5,8 +5,7 @@
   "main": "app.js",
   "scripts": {
     "dev": "nodemon app.js --ext js",
-    "install": "npm install && cd public/js/pcd-viewer && npm install",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "install": "npm install && cd public/js/pcd-viewer && npm install"
   },
   "author": "",
   "license": "ISC",
@@ -14,7 +13,6 @@
     "bindings": "^1.5.0",
     "express": "^4.17.1",
     "formidable": "^1.2.2",
-    "jszip": "^3.5.0",
     "nodemon": "^2.0.3"
   }
 }
