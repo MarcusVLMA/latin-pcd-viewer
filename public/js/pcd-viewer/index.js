@@ -675,7 +675,7 @@ function toggleVisibilityHandler(e, cloudName) {
     }
 
     if (cloud.material.size === 0) {
-        cloud.material.size = 0.8;
+        cloud.material.size = document.getElementById(e.currentTarget.id.replace('Hide', 'Slider')).value;;
         document.getElementById(e.currentTarget.id).firstElementChild.classList.remove('fa-eye-slash');
         document.getElementById(e.currentTarget.id).firstElementChild.classList.add('fa-eye');
         return;
