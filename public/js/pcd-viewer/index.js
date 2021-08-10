@@ -1458,17 +1458,19 @@ function download() {
         return;
     }
 
-    const cloud = scene.getObjectByName('pointAnalysis', true);
+    const value = document.getElementById('pointAnalysisComputationRadiusOrKSize').value;
+    const radiusOrK = document.getElementById('pointAnalysisRadiusMethod').checked ? `radius_${value}` : `k_${value}`;
 
     let baseFile = '# .PCD v0.7 - Point Cloud Data file format\nVERSION 0.7\nFIELDS x y z\nSIZE 4 4 4\nTYPE F F F\nCOUNT 1 1 1\nWIDTH 1\nHEIGHT 1\nVIEWPOINT 0 0 0 1 0 0 0\nPOINTS 1\nDATA ascii\n';
     baseFile = baseFile + `${selectedNosetipCloud.point.x} ${selectedNosetipCloud.point.y} ${selectedNosetipCloud.point.z}\n`;
-
+    
+    const cloud = scene.getObjectByName('pointAnalysis', true);
     const points = cloud.userData.points;
     for (let i = 0; i < points.length; i++) {
         baseFile += `${points[i].x} ${points[i].y} ${points[i].z}\n`
     }
 
-    saveData(baseFile, `point_analysis_${pcdFile.filename.split('.')[0]}_${Date.now()}.pcd`);
+    saveData(baseFile, `point_analysis_${radiusOrK}_${pcdFile.filename.split('.')[0]}_${Date.now()}.pcd`);
 }
 
 const saveData = (function () {
