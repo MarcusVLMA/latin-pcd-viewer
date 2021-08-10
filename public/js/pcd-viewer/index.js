@@ -6,7 +6,7 @@ import { TrackballControls} from './node_modules/three/examples/jsm/controls/Tra
 import { GUI } from './node_modules/three/examples/jsm/libs/dat.gui.module.js';
 import { ColorGUIHelper, SizeGUIHelper } from './helpers/index.js';
 import * as btn from './buttons.js';
-import { filterMap, inverseFilterMap} from './maps.js';
+import { filterMap, inverseFilterMap, landmarksMap } from './maps.js';
 import { createFilterDiv } from './filters.js';
 import { getRandomColorAndSize } from './utils.js';
 // import Stats from './node_modules/three/examples/jsm/libs/stats.module.js';
@@ -46,8 +46,8 @@ const featuresCheckboxes = document.querySelectorAll('input[type="checkbox"][dat
 // inputs
 // const featuresThresholdInput = document.getElementById('featuresThreshold');
 
-const pointXYZInput = document.getElementById('pointXYZ');
-const pointXYZSelectButton = document.getElementById('pointXYZSelect');
+// const pointXYZInput = document.getElementById('pointXYZ');
+// const pointXYZSelectButton = document.getElementById('pointXYZSelect');
 
 const canvas = document.getElementById('canvas');
 const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
@@ -75,16 +75,15 @@ const focusRaycaster = new THREE.Raycaster();
 
 let pcdFile = {};
 let cloudLogFiles = [];
-let multiplesPoints = [];
 let runningRaycaster = false;
 let multipleRunningRaycaster = false;
 let runningFocusRaycaster = false;
 let selectedNosetipCloud = {};
 let neighborhoodCloud = {};
-let pointAnalysis = {};
 
 function init() {
     addEventListeners();
+    loadFiducialPoints();
     loadAvaliableClouds();
 
     // controls settings
@@ -152,10 +151,8 @@ function addEventListeners() {
 
     btn.findFiducialPointButton.addEventListener('click', findFiducialPoint);
     btn.selectPointButton.addEventListener('click', toggleRaycaster);
-    btn.selectMultiplePointsButton.addEventListener('click', multiplePointsRaycaster);
     btn.analysisPointButton.addEventListener('click', getPointAnalysis)
     btn.downloadButton.addEventListener('click', download);
-    btn.downloadMultiplePointsButton.addEventListener('click', downloadMultiplePoints);
 
     [...featuresCheckboxes].forEach(c => c.addEventListener('change', e => {
         e.currentTarget.timeval = new Date().getTime();
@@ -278,7 +275,7 @@ function insertNextChild() {
                 <label for="pcdInputFile${currentCounter}Color" class="form-label font-weight-bold">Color:</label>
                 <input type="color" class="form-control form-control-color mx-2" role="button" id="pcdInputFile${currentCounter}Color" value="#1105ad" title="Escolhar a cor da nuvem">
                 <label for="pcdInputFile${currentCounter}Slider" class="form-label font-weight-bold">Size:</label>
-                <input type="number" min="0" max="10" class="form-control form-control mx-2" id="pcdInputFile${currentCounter}Slider" value="0.8" step="0.1" min="0" title="Escolhar o tamanho dos pontos da nuvem">
+                <input type="number" min="0" max="10" class="form-control form-control mx-2" id="pcdInputFile${currentCounter}Slider" value="1" step="0.1" min="0" title="Escolhar o tamanho dos pontos da nuvem">
             </div>
             <div class="d-flex align-items-center">
                 <button class="btn btn-secondary mx-2" id="pcdInputFile${currentCounter}Hide" title="Show/hide">
@@ -314,6 +311,86 @@ function insertNextChild() {
     document.getElementById(`pcdInputFile${currentCounter}`).addEventListener('change', uploadCloudWrapper);
 }
 
+function loadFiducialPoints() {
+    const div = document.getElementById('landmarks');
+
+    landmarksMap.forEach(l => {
+        const child = document.createElement('div');
+        child.classList.add('d-flex');
+        child.innerHTML = `
+            <div class="upload-cloud d-flex align-items-center">
+                <button id="${l.label}" class="select-landmark-button bg-transparent" title="${l.name}">
+                    <i class="fas fa-mouse-pointer"></i>
+                    <span>${l.name}</span>
+                </button>
+            </div>
+            <div class="d-flex mt-2 right-buttons justify-content-end align-items-center" style="margin-right: 15px;">
+                <div class="d-flex align-items-center">
+                    <label for="${l.label}Color" class="form-label font-weight-bold">Color:</label>
+                    <input type="color" class="form-control form-control-color mx-2" role="button" id="${l.label}Color" value="#ffffff" title="Escolhar a cor da nuvem">
+                    <label for="${l.label}Slider" class="form-label font-weight-bold">Size:</label>
+                    <input type="number" min="0" max="10" class="form-control form-control mx-2" id="${l.label}Slider" value="2" step="0.1" min="0" title="Escolhar o tamanho dos pontos da nuvem">
+                </div>
+                <div class="d-flex align-items-center">
+                    <button class="btn btn-secondary mx-2" id="${l.label}Hide" title="Show/hide">
+                        <i class="far fa-eye"></i>
+                    </button>
+                    <button class="btn btn-danger" id="${l.label}Remove" title="Remover nuvem">
+                        <i class="fas fa-minus-circle"></i>
+                    </button>
+                </div>
+            </div>
+        `;
+
+        div.appendChild(child);
+
+        document.getElementById(l.label).addEventListener('click', e => {
+            e.stopPropagation();
+            toggleRaycaster2(e);
+        });
+        document.getElementById(`${l.label}Color`).addEventListener('change', e => {
+            colorHandler(e, l.label);
+        });
+        document.getElementById(`${l.label}Slider`).addEventListener('change', e => {
+            sizeHandler(e, l.label);
+        });
+        document.getElementById(`${l.label}Hide`).addEventListener('click', e => {
+            toggleVisibilityHandler(e, l.label);
+        });
+        document.getElementById(`${l.label}Remove`).addEventListener('click', e => {
+            document.getElementById(l.label).disabled = false;
+            removeCloudFilter(e, l.label);
+        });
+    });
+
+    document.getElementById('downloadMultiplePoints').addEventListener('click', () => {
+        const allLandmarksButtons = landmarksMap.map(l => document.getElementById(l.label));
+        const buttonsSelected = allLandmarksButtons.filter(btn => btn.disabled === true);
+        if (!buttonsSelected.length) return;
+
+        downloadMultiplePoints(buttonsSelected);
+    });
+
+    document.getElementById('clearMultiplePoints').addEventListener('click', () => {
+        landmarksMap.filter(l => {
+            document.getElementById(`${l.label}Remove`).click();
+        });
+    });
+}
+
+function downloadMultiplePoints(landmarks) {
+    const points = landmarks.map(landmark => scene.getObjectByName(landmark.id).userData.point);
+    const n = points.length;
+
+    let baseFile = `# .PCD v0.7 - Point Cloud Data file format\nVERSION 0.7\nFIELDS x y z\nSIZE 4 4 4\nTYPE F F F\nCOUNT 1 1 1\nWIDTH 1\nHEIGHT ${n}\nVIEWPOINT 0 0 0 1 0 0 0\nPOINTS ${n}\nDATA ascii\n`;
+
+    points.forEach(point => {
+        baseFile += `${point.x} ${point.y} ${point.z}\n`
+    });
+
+    saveData(baseFile, `points_${pcdFile.filename.split('.')[0]}_${Date.now()}.pcd`);
+}
+
 function loadConfiguration(e) {
     const reader = new FileReader();
 
@@ -338,10 +415,11 @@ function loadConfiguration(e) {
         e.target.value = '';
     }
 
-    reader.readAsText(event.target.files[0]);
+    reader.readAsText(e.target.files[0]);
 }
 
 btn.mergeButton.addEventListener('click', joinClouds);
+
 document.getElementById('joinClouds').addEventListener('change', e => {
     const filename = e.target.files[0].name.split('.')[0];
     outputJoinedCloudFilename.value = `merged_${filename}_${Date.now()}.pcd`;
@@ -1225,20 +1303,6 @@ document.onkeydown = e => {
     }
 };
 
-function multiplePointsRaycaster() {
-    if (!pcdFile.cloud) return;
-
-    if (multipleRunningRaycaster) {
-        scene.remove(sphere);
-        canvas.removeEventListener('click', runMultiplePointsRaycast);
-    } else {
-        scene.add(sphere);
-        canvas.addEventListener('click', runMultiplePointsRaycast);
-    }
-
-    multipleRunningRaycaster = !multipleRunningRaycaster;
-}
-
 function toggleRaycaster() {
     if (!pcdFile.cloud) return;
 
@@ -1253,36 +1317,45 @@ function toggleRaycaster() {
     runningRaycaster = !runningRaycaster;
 }
 
-function runMultiplePointsRaycast() {
-    mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
-    mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
+function toggleRaycaster2(e0) {
+    if (!pcdFile.cloud) return;
 
+    if (runningRaycaster) {
+        scene.remove(sphere);
+        $('#canvas').off('click');
+    } else {
+        scene.add(sphere);
+        const cloudName = e0.currentTarget.id;
+        $('#canvas').on('click', e => runRaycast2(e, cloudName));
+    }
+
+    runningRaycaster = !runningRaycaster;
+}
+
+function runRaycast2(e, cloudName) {
+    mouse.x = ( e.clientX / window.innerWidth ) * 2 - 1;
+    mouse.y = - ( e.clientY / window.innerHeight ) * 2 + 1;
     raycaster.setFromCamera(mouse, camera);
 
     const intersects = raycaster.intersectObject(pcdFile.cloud);
 
     if (intersects.length) {
-        const newColor = new THREE.Color();
-        newColor.setRGB(1, 1, 1);
-
+        toggleRaycaster2(e);
         const index = intersects[0].index;
         const material = new THREE.PointsMaterial({ size: 2, color: '#FFFFFF' });
         const point = {
             x: pcdFile.cloud.geometry.getAttribute('position').getX(index),
             y: pcdFile.cloud.geometry.getAttribute('position').getY(index),
             z: pcdFile.cloud.geometry.getAttribute('position').getZ(index)
-        }
+        };
         const geometry = new THREE.BufferGeometry().setFromPoints(
             [new THREE.Vector3(point.x, point.y, point.z)]
         );
         const newCloud = new THREE.Points(geometry, material);
+        newCloud.name = cloudName;
+        newCloud.userData.point = point;
         scene.add(newCloud);
-
-        multiplesPoints.push({
-            cloud: newCloud,
-            point,
-            index
-        });
+        document.getElementById(cloudName).disabled = true;
     }
 }
 
@@ -1433,26 +1506,6 @@ function addPointCloudFromCloudLog(cloudLog, minSize = 0, maxSize = 150, step = 
     };
 }
 
-function downloadMultiplePoints() {
-    if (!multiplesPoints.length) {
-        return;
-    }
-
-    const points = multiplesPoints.map(point => point.point);
-    const n = points.length;
-
-    let baseFile = `# .PCD v0.7 - Point Cloud Data file format\nVERSION 0.7\nFIELDS x y z\nSIZE 4 4 4\nTYPE F F F\nCOUNT 1 1 1\nWIDTH 1\nHEIGHT ${n}\nVIEWPOINT 0 0 0 1 0 0 0\nPOINTS ${n}\nDATA ascii\n`;
-
-    for (let i = 0; i < points.length; i++) {
-        baseFile += `${points[i].x} ${points[i].y} ${points[i].z}\n`
-    }
-
-    saveData(baseFile, `points_${pcdFile.filename.split('.')[0]}_${Date.now()}.pcd`);
-    multiplePointsRaycaster();
-    multiplesPoints.forEach(point => scene.remove(point.cloud));
-    multiplesPoints = [];
-}
-
 function download() {
     if (!selectedNosetipCloud.point) {
         return;
@@ -1463,7 +1516,7 @@ function download() {
 
     let baseFile = '# .PCD v0.7 - Point Cloud Data file format\nVERSION 0.7\nFIELDS x y z\nSIZE 4 4 4\nTYPE F F F\nCOUNT 1 1 1\nWIDTH 1\nHEIGHT 1\nVIEWPOINT 0 0 0 1 0 0 0\nPOINTS 1\nDATA ascii\n';
     baseFile = baseFile + `${selectedNosetipCloud.point.x} ${selectedNosetipCloud.point.y} ${selectedNosetipCloud.point.z}\n`;
-    
+
     const cloud = scene.getObjectByName('pointAnalysis', true);
     const points = cloud.userData.points;
     for (let i = 0; i < points.length; i++) {
@@ -1609,8 +1662,8 @@ function loadAvaliableClouds() {
         response.json().then(res => {
             setAvaliableFoldersHTML(res);
             $('#pills-tab a').on('click', function (e) {
-                e.preventDefault()
-                $(this).tab('show')
+                e.preventDefault();
+                $(this).tab('show');
               })
         })
     });

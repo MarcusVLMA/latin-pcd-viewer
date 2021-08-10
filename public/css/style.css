@@ -253,6 +253,11 @@ aside.sidebar-left .draghandle {
     border: 0;
 }
 
+.select-landmark-button {
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
 .upload-cloud > label {
     cursor: pointer;
     text-overflow: ellipsis;
@@ -270,4 +275,9 @@ textarea {
 
 .fiducial-point-title {
     font-size: 1.6rem !important;    
+}
+
+#landmarks {
+    height: 20rem;
+    overflow-y: auto;
 }

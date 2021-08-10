@@ -146,7 +146,107 @@ const inverseFilterMap = {
     }
 };
 
+const landmarksMap = [
+    {
+        name: 'Outer left eyebrow',
+        label: 'landmarkOuterLeftEyebrow'
+    },
+    {
+        name: 'Middle left eyebrow',
+        label: 'landmarkMiddleLeftEyebrow'
+    },
+    {
+        name: 'Inner left eyebrow',
+        label: 'landmarkInnerLeftEyebrow'
+    },
+    {
+        name: 'Inner right eyebrow',
+        label: 'landmarkInnerRightEyebrow'
+    },
+    {
+        name: 'Middle right eyebrow',
+        label: 'landmarkMiddleRightEyebrow'
+    },
+    {
+        name: 'Outer right eyebrow',
+        label: 'landmarkOuterRightEyebrow'
+    },
+    {
+        name: 'Outer left eye corner',
+        label: 'landmarkOuterLeftEyeCorner'
+    },
+    {
+        name: 'Inner left eye corner',
+        label: 'landmarkInnerLeftEyeCorner'
+    },
+    {
+        name: 'Inner right eye corner',
+        label: 'landmarkInnerRightEyeCorner'
+    },
+    {
+        name: 'Outer right eye corner',
+        label: 'landmarkOuterRightEyeCorner'
+    },
+    {
+        name: 'Nose saddle left',
+        label: 'landmarkNoseSaddleLeft'
+    },
+    {
+        name: 'Nose saddle right',
+        label: 'landmarkNoseSaddleRight'
+    },
+    {
+        name: 'Left nose peak',
+        label: 'landmarkLeftNosePeak'
+    },
+    {
+        name: 'Nose tip',
+        label: 'landmarkNoseTip'
+    },
+    {
+        name: 'Right nose peak',
+        label: 'landmarkRightNosePeak'
+    },
+    {
+        name: 'Left mouth corner',
+        label: 'landmarkLeftMouthCorner'
+    },
+    {
+        name: 'Upper lip outer middle',
+        label: 'landmarkUpperLipOuterMiddle'
+    },
+    {
+        name: 'Right mouth corner',
+        label: 'landmarkRightMouthCorner'
+    },
+    {
+        name: 'Upper lip inner middle',
+        label: 'landmarkUpperLipInnerMiddle'
+    },
+    {
+        name: 'Lower lip inner middle',
+        label: 'landmarkLowerLipInnerMiddle'
+    },
+    {
+        name: 'Lower lip outer middle',
+        label: 'landmarkLowerLipOuterMiddle'
+    },
+    {
+        name: 'Chin middle',
+        label: 'landmarkChinMiddle'
+    },
+    {
+        name: 'Left ear lobe',
+        label: 'landmarkLeftEarLobe'
+    },
+    {
+        name: 'Right ear lobe',
+        label: 'landmarkRightEarLobe'
+    },
+];
+
 export {
     filterMap,
-    inverseFilterMap
+    inverseFilterMap,
+    landmarksMap
 };
